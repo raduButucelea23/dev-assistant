@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  auto-dev:
+    build: .
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./input-data:/app/input-data
+    ports:
+      - "8502:8501"  # Streamlit UI port (external:internal)
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped 

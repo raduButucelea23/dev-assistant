@@ -1,0 +1,538 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-04-23",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Navigation System",
+    "documentId": "FMEA-IVI-NAV-001",
+    "status": "Released",
+    "reviewDate": "2025-04-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Navigation System",
+    "description": "The Navigation System in the IVI allows users to search for destinations, plan routes, and receive turn-by-turn guidance through visual and audio cues. It integrates with vehicle sensors, GPS, and network services to provide real-time position, traffic information, and route optimization.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Ambient temperature -40°C to +85°C",
+      "Operating voltage 9-16V",
+      "GPS signal availability may vary by location"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-NAV-01",
+      "description": "The Navigation System shall not provide dangerously incorrect or misleading guidance that could lead to unsafe driving maneuvers",
+      "asilRating": "ASIL B",
+      "rationale": "Incorrect navigation instructions could lead to sudden or dangerous maneuvers in traffic, potentially causing accidents",
+      "relatedHazards": ["H-NAV-01", "H-NAV-02"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-NAV-01",
+          "description": "The IVI system shall validate navigation instructions against map data and vehicle position before presentation to the driver",
+          "verification": "Test and analysis",
+          "traceability": "SG-NAV-01"
+        },
+        {
+          "id": "FSR-NAV-02",
+          "description": "The IVI system shall provide sufficient advance notice of upcoming maneuvers",
+          "verification": "Test",
+          "traceability": "SG-NAV-01"
+        },
+        {
+          "id": "FSR-NAV-03",
+          "description": "The IVI system shall include appropriate disclaimers for all navigation guidance",
+          "verification": "Test",
+          "traceability": "SG-NAV-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-NAV-02",
+      "description": "The Navigation System shall not cause excessive driver distraction through complex interactions or visual elements",
+      "asilRating": "ASIL B",
+      "rationale": "Complex navigation interactions while driving could lead to prolonged distraction and increased accident risk",
+      "relatedHazards": ["H-NAV-03", "H-NAV-04"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-NAV-04",
+          "description": "The IVI system shall limit navigation interactions while vehicle is in motion",
+          "verification": "Test and analysis",
+          "traceability": "SG-NAV-02"
+        },
+        {
+          "id": "FSR-NAV-05",
+          "description": "The IVI system shall provide simplified visual guidance appropriate for at-a-glance viewing",
+          "verification": "Test",
+          "traceability": "SG-NAV-02"
+        },
+        {
+          "id": "FSR-NAV-06",
+          "description": "The IVI system shall provide clear audio instructions to minimize visual distraction",
+          "verification": "Test",
+          "traceability": "SG-NAV-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-NAV-01",
+      "description": "Incorrect navigation instructions at critical junctions",
+      "operationalSituation": "Vehicle approaching complex junction at normal traffic speeds",
+      "hazardousEvent": "Driver performs late or sudden lane change or turn based on incorrect navigation instruction",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-NAV-02",
+      "description": "Outdated map data causing incorrect routing",
+      "operationalSituation": "Vehicle driving in area with recent road changes",
+      "hazardousEvent": "Driver follows navigation into prohibited or dangerous area",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-NAV-03",
+      "description": "Navigation system requiring complex interaction while driving",
+      "operationalSituation": "Vehicle in motion on busy road",
+      "hazardousEvent": "Driver attention diverted for extended period during complex navigation interaction",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-NAV-04",
+      "description": "Navigation display overloading driver with information",
+      "operationalSituation": "Vehicle in motion in complex traffic situation",
+      "hazardousEvent": "Driver distracted by complex or cluttered navigation display",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Navigation System",
+      "function": "Provide route planning and turn-by-turn guidance to destinations"
+    },
+    "failureModes": [
+      {
+        "id": "FM-NAV-01",
+        "description": "Delayed or missing navigation instructions at critical junctions",
+        "potentialCauses": [
+          "GPS signal latency or inaccuracy",
+          "Processing delay in guidance calculation",
+          "Map data inaccuracy or outdated information"
+        ],
+        "failureEffects": {
+          "local": "Navigation instruction delivered too late or missed entirely",
+          "nextLevel": "Driver continues on incorrect route or makes sudden maneuver",
+          "endEffect": "Potential traffic violation or collision due to unexpected maneuver"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 4,
+        "detectionRating": 3,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Implement predictive instruction timing based on vehicle speed",
+          "Use high-precision GPS with multiple correction sources"
+        ],
+        "detection": [
+          "Monitor timing of instruction delivery versus junction proximity",
+          "Verify map data accuracy with multiple sources"
+        ],
+        "mitigations": [
+          {
+            "description": "Provide advance warnings for upcoming maneuvers with distance countdown",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Implement visual and audible instruction repetition for critical junctions",
+            "type": "Redundant Notification",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-NAV-01",
+            "description": "The Navigation System shall provide initial turn instructions at least 500m before the maneuver point for speeds above 50 km/h",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-NAV-02"
+          },
+          {
+            "id": "TSR-NAV-02",
+            "description": "The Navigation System shall provide both visual and audible instructions for all critical maneuvers",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-NAV-02"
+          }
+        ]
+      },
+      {
+        "id": "FM-NAV-02",
+        "description": "Incorrect routing due to outdated map data",
+        "potentialCauses": [
+          "Delayed map updates",
+          "Failed map update process",
+          "Incompatible map data formats"
+        ],
+        "failureEffects": {
+          "local": "Navigation system provides routing based on outdated road information",
+          "nextLevel": "Driver follows incorrect or invalid route guidance",
+          "endEffect": "Vehicle directed into prohibited areas, closed roads, or hazardous conditions"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 3,
+        "detectionRating": 5,
+        "riskPriorityNumber": 90,
+        "prevention": [
+          "Implement regular automatic map data updates",
+          "Integrate real-time traffic and road closure information"
+        ],
+        "detection": [
+          "Verify map data version and recency on startup",
+          "Implement cloud-based map validation"
+        ],
+        "mitigations": [
+          {
+            "description": "Disclaimer about map data limitations with driver verification requirement",
+            "type": "User Notification",
+            "effectiveness": "Medium"
+          },
+          {
+            "description": "Integration with real-time traffic data to detect road changes",
+            "type": "Data Validation",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-NAV-03",
+            "description": "The Navigation System shall verify map data recency at system startup and notify the driver if updates are required",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-NAV-01"
+          },
+          {
+            "id": "TSR-NAV-04",
+            "description": "The Navigation System shall integrate real-time traffic and road closure information when calculating routes",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-NAV-01"
+          }
+        ]
+      },
+      {
+        "id": "FM-NAV-03",
+        "description": "Complex destination entry requiring extended attention",
+        "potentialCauses": [
+          "Poor UI design for destination entry",
+          "Complex search algorithm requiring multiple steps",
+          "Lack of input validation or suggestion features"
+        ],
+        "failureEffects": {
+          "local": "Driver needs extended time to input destination",
+          "nextLevel": "Driver attention diverted from road for excessive period",
+          "endEffect": "Increased risk of collision due to prolonged distraction"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 4,
+        "detectionRating": 4,
+        "riskPriorityNumber": 96,
+        "prevention": [
+          "Implement simplified destination entry UI",
+          "Disable complex destination entry while driving"
+        ],
+        "detection": [
+          "Monitor interaction time for destination entry",
+          "Track driver attention metrics during interaction"
+        ],
+        "mitigations": [
+          {
+            "description": "Disable keyboard entry while vehicle is in motion",
+            "type": "Motion Lock",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Provide voice control for destination entry",
+            "type": "Alternative Interface",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-NAV-05",
+            "description": "The Navigation System shall disable manual text entry functions when vehicle speed exceeds 5 km/h",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-NAV-04"
+          },
+          {
+            "id": "TSR-NAV-06",
+            "description": "The Navigation System shall provide voice control for destination entry that requires minimal visual confirmation",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-NAV-04"
+          }
+        ]
+      },
+      {
+        "id": "FM-NAV-04",
+        "description": "Visually distracting or cluttered navigation display",
+        "potentialCauses": [
+          "Excessive information density on map view",
+          "Poor contrast or readability of navigation elements",
+          "Inadequate simplification for driving context"
+        ],
+        "failureEffects": {
+          "local": "Navigation display requires extended viewing to comprehend",
+          "nextLevel": "Driver frequently glances at display for extended periods",
+          "endEffect": "Increased risk of collision due to visual distraction"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Implement context-aware display simplification",
+          "Design high-contrast, simplified navigation elements"
+        ],
+        "detection": [
+          "User studies evaluating glance time for navigation information",
+          "A/B testing of display formats for distraction potential"
+        ],
+        "mitigations": [
+          {
+            "description": "Automatic simplification of display when vehicle is in motion",
+            "type": "Adaptive Interface",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Clear audio guidance to reduce dependence on visual display",
+            "type": "Alternative Modality",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-NAV-07",
+            "description": "The Navigation System shall automatically switch to simplified guidance mode with reduced information density when vehicle speed exceeds 20 km/h",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-NAV-05"
+          },
+          {
+            "id": "TSR-NAV-08",
+            "description": "The Navigation System shall provide clear audio instructions for all maneuvers to reduce reliance on visual display",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-NAV-06"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-NAV-01",
+      "description": "Multi-stage Navigation Announcements",
+      "mechanism": "Tiered audio and visual guidance system",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-NAV-01"],
+      "implementationDetails": "System provides initial notification at 500m, reminder at 200m, and final instruction at 50m before maneuver point, with visual countdown indicators"
+    },
+    {
+      "id": "SM-NAV-02",
+      "description": "Map Validation System",
+      "mechanism": "Multiple data source validation for map accuracy",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-NAV-02"],
+      "implementationDetails": "System cross-references map data with cloud-based real-time traffic information and road closure databases"
+    },
+    {
+      "id": "SM-NAV-03",
+      "description": "Motion Lock for Complex Inputs",
+      "mechanism": "Speed-based feature restriction",
+      "diagnosticCoverage": "98%",
+      "failureModesCovered": ["FM-NAV-03"],
+      "implementationDetails": "System disables keyboard input and complex destination search when vehicle speed exceeds 5 km/h"
+    },
+    {
+      "id": "SM-NAV-04",
+      "description": "Voice Control Navigation",
+      "mechanism": "Speech recognition for hands-free navigation control",
+      "diagnosticCoverage": "80%",
+      "failureModesCovered": ["FM-NAV-03"],
+      "implementationDetails": "System provides full-featured voice control for destination entry and route modifications with minimal visual confirmation"
+    },
+    {
+      "id": "SM-NAV-05",
+      "description": "Adaptive Display Simplification",
+      "mechanism": "Context-aware display mode switching",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-NAV-04"],
+      "implementationDetails": "System automatically switches to high-contrast, reduced information display mode at speeds above 20 km/h"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-NAV-01",
+        "description": "Verify navigation instruction timing",
+        "relatedRequirements": ["TSR-NAV-01"],
+        "testProcedure": "Test navigation system on predefined route at various speeds and measure instruction timing relative to maneuver points",
+        "acceptanceCriteria": "Initial instructions provided at least 500m before junction at speeds above 50 km/h",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-NAV-02",
+        "description": "Verify multi-modal instruction delivery",
+        "relatedRequirements": ["TSR-NAV-02"],
+        "testProcedure": "Navigate predefined route and verify both visual and audio instructions for all maneuvers",
+        "acceptanceCriteria": "100% of critical maneuvers have both visual and audio instructions",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-NAV-03",
+        "description": "Verify map data validation",
+        "relatedRequirements": ["TSR-NAV-03"],
+        "testProcedure": "Start navigation system with outdated maps and verify notification behavior",
+        "acceptanceCriteria": "System detects outdated maps and notifies user with appropriate warning",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-NAV-04",
+        "description": "Verify real-time traffic integration",
+        "relatedRequirements": ["TSR-NAV-04"],
+        "testProcedure": "Create route through area with simulated road closure and observe system response",
+        "acceptanceCriteria": "System reroutes to avoid closed road using real-time data",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-NAV-05",
+        "description": "Verify motion lock for text entry",
+        "relatedRequirements": ["TSR-NAV-05"],
+        "testProcedure": "Attempt text entry for destination at various vehicle speeds",
+        "acceptanceCriteria": "Keyboard input disabled at speeds above 5 km/h",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-NAV-06",
+        "description": "Verify voice control functionality",
+        "relatedRequirements": ["TSR-NAV-06"],
+        "testProcedure": "Test voice commands for destination entry and route modification while driving",
+        "acceptanceCriteria": "Voice commands successfully process 95% of standard destination entry requests with minimal visual confirmation",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-NAV-07",
+        "description": "Verify display simplification",
+        "relatedRequirements": ["TSR-NAV-07"],
+        "testProcedure": "Drive at various speeds and observe display mode changes",
+        "acceptanceCriteria": "System switches to simplified display above 20 km/h with reduced information density",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-NAV-08",
+        "description": "Verify audio instruction clarity",
+        "relatedRequirements": ["TSR-NAV-08"],
+        "testProcedure": "Test audio instructions in various ambient noise conditions and verify comprehension",
+        "acceptanceCriteria": "Audio instructions clearly audible and comprehensible in 90% of normal driving conditions",
+        "results": "Passed"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-NAV-01",
+        "functionalSafetyRequirements": ["FSR-NAV-01", "FSR-NAV-02", "FSR-NAV-03"],
+        "technicalSafetyRequirements": ["TSR-NAV-01", "TSR-NAV-02", "TSR-NAV-03", "TSR-NAV-04"]
+      },
+      {
+        "safetyGoalId": "SG-NAV-02",
+        "functionalSafetyRequirements": ["FSR-NAV-04", "FSR-NAV-05", "FSR-NAV-06"],
+        "technicalSafetyRequirements": ["TSR-NAV-05", "TSR-NAV-06", "TSR-NAV-07", "TSR-NAV-08"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-NAV-01",
+        "testCaseIds": ["TC-NAV-01"]
+      },
+      {
+        "requirementId": "TSR-NAV-02",
+        "testCaseIds": ["TC-NAV-02"]
+      },
+      {
+        "requirementId": "TSR-NAV-03",
+        "testCaseIds": ["TC-NAV-03"]
+      },
+      {
+        "requirementId": "TSR-NAV-04",
+        "testCaseIds": ["TC-NAV-04"]
+      },
+      {
+        "requirementId": "TSR-NAV-05",
+        "testCaseIds": ["TC-NAV-05"]
+      },
+      {
+        "requirementId": "TSR-NAV-06",
+        "testCaseIds": ["TC-NAV-06"]
+      },
+      {
+        "requirementId": "TSR-NAV-07",
+        "testCaseIds": ["TC-NAV-07"]
+      },
+      {
+        "requirementId": "TSR-NAV-08",
+        "testCaseIds": ["TC-NAV-08"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "NAV": "Navigation System",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "GPS": "Global Positioning System",
+    "UI": "User Interface"
+  },
+  "searchTerms": [
+    "navigation system",
+    "route guidance",
+    "turn-by-turn",
+    "GPS navigation",
+    "map data",
+    "destination entry",
+    "driver distraction",
+    "route planning",
+    "navigation display",
+    "traffic information",
+    "map updates",
+    "voice guidance",
+    "junction navigation",
+    "navigation accuracy",
+    "simplified navigation",
+    "visual guidance",
+    "audio instructions",
+    "navigation timing",
+    "real-time traffic",
+    "motion lock"
+  ]
+} 

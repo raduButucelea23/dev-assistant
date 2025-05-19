@@ -1,0 +1,418 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Threat Scenarios",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-05-01",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "reviewers": ["Cybersecurity Team", "Safety Engineering", "Product Security"],
+    "documentId": "TARA-TS-NAV-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Navigation System"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "Navigation System",
+      "assetType": "Function",
+      "assetDescription": "Provides route planning and guidance for vehicle navigation",
+      "relatedComponents": ["IVI System", "GPS Receiver", "Map Database", "Cellular Modem", "CAN Bus"]
+    },
+    "cybersecurityProperties": {
+      "integrity": {
+        "goal": "Ensure the integrity of navigation data, routes, and positioning information",
+        "description": "Navigation data and GPS signals must be protected from tampering or falsification"
+      },
+      "availability": {
+        "goal": "Ensure consistent access to navigation functionality",
+        "description": "Navigation system must be resistant to denial-of-service attacks"
+      },
+      "confidentiality": {
+        "goal": "Protect user's navigation history and saved locations",
+        "description": "Location data must be secured against unauthorized access"
+      }
+    },
+    "threatScenarios": [
+      {
+        "id": "TS-NAV-01",
+        "title": "Map Database Manipulation",
+        "description": "Attacker manipulates map database content during update process to introduce false routing information",
+        "attackVectors": [
+          {
+            "vector": "Compromised Map Update Server",
+            "description": "Attacker compromises the OEM's map update server and inserts malicious data into legitimate updates"
+          },
+          {
+            "vector": "Man-in-the-Middle During Updates",
+            "description": "Attacker intercepts map update communication and alters data before it reaches the vehicle"
+          },
+          {
+            "vector": "Local Manipulation via USB",
+            "description": "Attacker provides user with USB containing compromised map data for manual update"
+          }
+        ],
+        "attackSteps": [
+          "Identify map update mechanism and protocols",
+          "Develop exploit for update process vulnerability or compromise update server",
+          "Insert malicious routing data into map database updates",
+          "Vehicle downloads and installs compromised map data",
+          "Navigation system provides incorrect route guidance based on manipulated data"
+        ],
+        "stpaAnalysis": {
+          "unsafeControlActions": [
+            {
+              "controlAction": "Route Planning",
+              "hazardousCondition": "Map data integrity verification not performed or bypassed during update process",
+              "hazardType": "Safety"
+            },
+            {
+              "controlAction": "Map Database Update",
+              "hazardousCondition": "Update process accepts unsigned/unverified map data packages",
+              "hazardType": "Security"
+            }
+          ],
+          "controlFlaws": [
+            {
+              "flaw": "Inadequate verification of map data integrity",
+              "description": "System does not properly validate digital signatures or checksums for map updates"
+            },
+            {
+              "flaw": "Insufficient protection of update communication channel",
+              "description": "Update communications are not properly encrypted or authenticated"
+            },
+            {
+              "flaw": "Weak access controls for map database",
+              "description": "Map database accessible without proper authorization checks"
+            }
+          ]
+        },
+        "impactReference": "DA-NAV-01",
+        "securityPropertyViolated": "Integrity",
+        "cybersecurityGoalViolated": "CSG-NAV-01"
+      },
+      {
+        "id": "TS-NAV-02",
+        "title": "GPS Signal Spoofing",
+        "description": "Attacker broadcasts counterfeit GPS signals to deceive the navigation system about vehicle position",
+        "attackVectors": [
+          {
+            "vector": "Portable GPS Simulator",
+            "description": "Attacker uses specialized equipment to generate fake GPS signals stronger than authentic satellite signals"
+          },
+          {
+            "vector": "Software-Defined Radio (SDR)",
+            "description": "Attacker employs SDR to broadcast simulated GPS signals matching the format of legitimate GPS data"
+          }
+        ],
+        "attackSteps": [
+          "Acquire or build GPS signal simulator",
+          "Position simulator near target vehicle",
+          "Transmit counterfeit GPS signals at higher power than authentic satellite signals",
+          "Vehicle GPS receiver locks onto the stronger spoofed signals",
+          "Navigation system displays incorrect position and calculates routes based on false position"
+        ],
+        "stpaAnalysis": {
+          "unsafeControlActions": [
+            {
+              "controlAction": "Position Determination",
+              "hazardousCondition": "GPS signal verification insufficient or circumvented",
+              "hazardType": "Security"
+            },
+            {
+              "controlAction": "Route Recalculation",
+              "hazardousCondition": "System recalculates routes based on unverified position changes",
+              "hazardType": "Safety"
+            }
+          ],
+          "controlFlaws": [
+            {
+              "flaw": "Overreliance on single-source positioning",
+              "description": "System depends solely on GPS without secondary verification methods"
+            },
+            {
+              "flaw": "Lack of GPS signal consistency checking",
+              "description": "System does not identify unnatural position jumps or physically impossible movements"
+            },
+            {
+              "flaw": "Insufficient filtering of suspicious GPS signals",
+              "description": "Signal authentication mechanisms inadequate to detect sophisticated spoofing"
+            }
+          ]
+        },
+        "impactReference": "DA-NAV-02",
+        "securityPropertyViolated": "Integrity",
+        "cybersecurityGoalViolated": "CSG-NAV-02"
+      },
+      {
+        "id": "TS-NAV-03",
+        "title": "Navigation History Data Breach",
+        "description": "Attacker extracts stored navigation history revealing user travel patterns and sensitive locations",
+        "attackVectors": [
+          {
+            "vector": "Physical Access to IVI Storage",
+            "description": "Attacker with physical access to the vehicle extracts data from navigation storage"
+          },
+          {
+            "vector": "Cloud Synchronization Interception",
+            "description": "Attacker compromises cloud account where navigation history is backed up"
+          },
+          {
+            "vector": "Mobile App Exploitation",
+            "description": "Attacker exploits vulnerabilities in companion mobile app to access synchronized navigation data"
+          }
+        ],
+        "attackSteps": [
+          "Identify storage location of navigation history data",
+          "Exploit vulnerability in access controls or encryption",
+          "Extract raw data from storage or cloud backup",
+          "Decrypt or decode data if necessary",
+          "Analyze history data to extract patterns and sensitive locations"
+        ],
+        "stpaAnalysis": {
+          "unsafeControlActions": [
+            {
+              "controlAction": "Data Storage",
+              "hazardousCondition": "Navigation history stored without adequate encryption or access controls",
+              "hazardType": "Privacy"
+            },
+            {
+              "controlAction": "Cloud Synchronization",
+              "hazardousCondition": "Sensitive location data transmitted or stored insecurely",
+              "hazardType": "Privacy"
+            }
+          ],
+          "controlFlaws": [
+            {
+              "flaw": "Weak encryption for stored location data",
+              "description": "Navigation history not protected with strong encryption or is stored in plaintext"
+            },
+            {
+              "flaw": "Insufficient access controls",
+              "description": "Navigation database accessible without proper authentication/authorization"
+            },
+            {
+              "flaw": "Insecure data transmission",
+              "description": "Data synchronized to cloud without proper transport layer security"
+            }
+          ]
+        },
+        "impactReference": "DA-NAV-03",
+        "securityPropertyViolated": "Confidentiality",
+        "cybersecurityGoalViolated": "CSG-NAV-03"
+      }
+    ],
+    "threatAssessment": {
+      "methodology": {
+        "name": "CVSS Base Attack Feasibility",
+        "description": "Assessment of attack feasibility based on attack vector, complexity, privileges required, and user interaction needed",
+        "feasibilityLevels": ["Low", "Medium", "High"]
+      },
+      "threatAssessments": [
+        {
+          "threatId": "TS-NAV-01",
+          "attackVectorComplexity": {
+            "attackVector": "Network",
+            "description": "Attack can be conducted remotely during OTA map updates",
+            "rating": "Medium"
+          },
+          "attackComplexity": {
+            "description": "Requires compromising update infrastructure or intercepting update communications",
+            "rating": "High"
+          },
+          "privilegesRequired": {
+            "description": "Requires privileged access to update servers or update verification infrastructure",
+            "rating": "High"
+          },
+          "userInteraction": {
+            "description": "Requires user to initiate map update or install manipulated updates via USB",
+            "rating": "Required"
+          },
+          "overallFeasibility": "Medium",
+          "justification": "While attack complexity and privileges required are high, the widespread distribution of map updates increases the potential attack surface"
+        },
+        {
+          "threatId": "TS-NAV-02",
+          "attackVectorComplexity": {
+            "attackVector": "Physical/Adjacent",
+            "description": "Requires proximity to the vehicle but not direct physical access",
+            "rating": "Medium"
+          },
+          "attackComplexity": {
+            "description": "Requires specialized equipment and knowledge of GPS signal structures",
+            "rating": "High"
+          },
+          "privilegesRequired": {
+            "description": "No system privileges required, attack targets external sensor input",
+            "rating": "None"
+          },
+          "userInteraction": {
+            "description": "No user interaction required to execute attack",
+            "rating": "None"
+          },
+          "overallFeasibility": "Medium",
+          "justification": "While specialized equipment and knowledge are required, GPS spoofing equipment is increasingly available and GPS signals are inherently vulnerable to spoofing"
+        },
+        {
+          "threatId": "TS-NAV-03",
+          "attackVectorComplexity": {
+            "attackVector": "Physical/Network",
+            "description": "Can be conducted via physical access to vehicle or remotely via cloud access",
+            "rating": "Low"
+          },
+          "attackComplexity": {
+            "description": "Requires exploiting vulnerabilities in access controls or encryption",
+            "rating": "Medium"
+          },
+          "privilegesRequired": {
+            "description": "May require user account credentials or physical access to IVI system",
+            "rating": "Low/Medium"
+          },
+          "userInteraction": {
+            "description": "May require user to approve app permissions or enable cloud sync",
+            "rating": "Required (for some vectors)"
+          },
+          "overallFeasibility": "Medium",
+          "justification": "Multiple attack vectors with varying complexity; cloud synchronization creates additional exposure but requires extra authentication steps"
+        }
+      ],
+      "vulnerabilities": [
+        {
+          "id": "VUL-NAV-01",
+          "title": "Inadequate Map Update Verification",
+          "description": "Navigation system fails to properly validate digital signatures or checksums of map updates",
+          "relatedThreats": ["TS-NAV-01"],
+          "cweReference": "CWE-345: Insufficient Verification of Data Authenticity"
+        },
+        {
+          "id": "VUL-NAV-02",
+          "title": "Weak GPS Signal Authentication",
+          "description": "System lacks adequate mechanisms to detect and reject spoofed GPS signals",
+          "relatedThreats": ["TS-NAV-02"],
+          "cweReference": "CWE-346: Origin Validation Error"
+        },
+        {
+          "id": "VUL-NAV-03",
+          "title": "Insufficient Location Data Protection",
+          "description": "Navigation history and saved locations inadequately encrypted or protected",
+          "relatedThreats": ["TS-NAV-03"],
+          "cweReference": "CWE-311: Missing Encryption of Sensitive Data"
+        }
+      ],
+      "existingControls": [
+        {
+          "id": "CTL-NAV-01",
+          "title": "Map Update Integrity Checks",
+          "description": "Basic checksums used to verify map data integrity during updates",
+          "controlType": "Detective",
+          "effectiveness": "Limited",
+          "mitigatedThreats": ["TS-NAV-01"]
+        },
+        {
+          "id": "CTL-NAV-02",
+          "title": "GPS Signal Consistency Monitoring",
+          "description": "Basic monitoring for sudden position jumps or impossible vehicle movements",
+          "controlType": "Detective",
+          "effectiveness": "Limited",
+          "mitigatedThreats": ["TS-NAV-02"]
+        },
+        {
+          "id": "CTL-NAV-03",
+          "title": "Navigation Database Access Control",
+          "description": "Standard file system permissions limiting navigation data access",
+          "controlType": "Preventive",
+          "effectiveness": "Limited",
+          "mitigatedThreats": ["TS-NAV-03"]
+        }
+      ]
+    }
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-NAV-001",
+        "documentType": "Impact Analysis",
+        "relationship": "informedBy",
+        "linkedItems": ["DA-NAV-01", "DA-NAV-02", "DA-NAV-03"]
+      },
+      {
+        "documentId": "TARA-RA-NAV-001",
+        "documentType": "Risk Assessment",
+        "relationship": "informsNext",
+        "linkedItems": ["RISK-NAV-01", "RISK-NAV-02", "RISK-NAV-03"]
+      },
+      {
+        "documentId": "SYS-ARCH-IVI-001",
+        "documentType": "System Architecture",
+        "relationship": "informedBy",
+        "linkedItems": ["Navigation Module", "Connectivity Module"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "8.5",
+        "description": "Threat scenario identification"
+      },
+      {
+        "standardId": "SAE J3061",
+        "clause": "5.5",
+        "description": "Threat analysis and attack methods"
+      },
+      {
+        "standardId": "UNECE WP.29",
+        "clause": "7.3.4",
+        "description": "Vulnerability analysis"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "REQ-NAV-SEC-01",
+        "description": "The navigation system shall verify the authenticity of all map updates",
+        "cybersecurityGoal": "CSG-NAV-01"
+      },
+      {
+        "requirementId": "REQ-NAV-SEC-02",
+        "description": "The navigation system shall implement methods to detect GPS signal anomalies",
+        "cybersecurityGoal": "CSG-NAV-02"
+      },
+      {
+        "requirementId": "REQ-NAV-SEC-03",
+        "description": "The navigation system shall encrypt all stored user location data",
+        "cybersecurityGoal": "CSG-NAV-03"
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "Threat Scenario": "Description of how an attacker might exploit vulnerabilities to compromise a system",
+    "GPS": "Global Positioning System",
+    "Attack Vector": "Method used by an attacker to gain unauthorized access",
+    "CVSS": "Common Vulnerability Scoring System",
+    "STPA": "System-Theoretic Process Analysis",
+    "CWE": "Common Weakness Enumeration",
+    "OTA": "Over-the-Air",
+    "SDR": "Software-Defined Radio"
+  },
+  "searchTerms": [
+    "navigation system",
+    "threat scenarios",
+    "map database",
+    "GPS spoofing",
+    "navigation history",
+    "location privacy",
+    "data breach",
+    "attack vector",
+    "attack complexity",
+    "vulnerability",
+    "security control",
+    "map data integrity",
+    "route manipulation",
+    "positioning system",
+    "threat assessment",
+    "CVSS",
+    "ISO21434",
+    "user travel patterns"
+  ],
+  "contentSummary": "Threat scenarios analysis for the Navigation System identifying three key threats: Map Database Manipulation (TS-NAV-01), GPS Signal Spoofing (TS-NAV-02), and Navigation History Data Breach (TS-NAV-03). Each scenario details attack vectors, attack steps, and STPA analysis examining control flaws that enable attacks. Threat assessment using CVSS Base methodology rates the attack feasibility of each threat as Medium. The document identifies relevant vulnerabilities and existing controls, noting their limited effectiveness against the sophisticated threats described. This analysis identifies the need for additional security controls as specified in the risk assessment document."
+} 

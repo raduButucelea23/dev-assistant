@@ -1,0 +1,539 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-04-23",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Software Update System",
+    "documentId": "FMEA-IVI-SUS-001",
+    "status": "Released",
+    "reviewDate": "2025-04-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Software Update System",
+    "description": "The Software Update System enables over-the-air (OTA) updates for IVI software components, ensuring the vehicle maintains current software versions with latest features and security fixes. The system handles download, verification, installation, and rollback of updates while enforcing safety measures to prevent vehicle functionality disruption.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode (for installation)",
+      "Vehicle parked and engine off (for major updates)",
+      "Network connectivity with sufficient bandwidth",
+      "Stable power supply during update process",
+      "Ambient temperature -40°C to +85°C"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-SUS-01",
+      "description": "The Software Update System shall not compromise vehicle safety during or after update process",
+      "asilRating": "ASIL C",
+      "rationale": "Incorrect or corrupted software updates could affect critical vehicle functions and create safety hazards",
+      "relatedHazards": ["H-SUS-01", "H-SUS-02"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-SUS-01",
+          "description": "The IVI system shall verify integrity and authenticity of all software updates before installation",
+          "verification": "Test and analysis",
+          "traceability": "SG-SUS-01"
+        },
+        {
+          "id": "FSR-SUS-02",
+          "description": "The IVI system shall perform compatibility checks for all software updates",
+          "verification": "Test",
+          "traceability": "SG-SUS-01"
+        },
+        {
+          "id": "FSR-SUS-03",
+          "description": "The IVI system shall maintain recovery mechanisms for failed updates",
+          "verification": "Test",
+          "traceability": "SG-SUS-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-SUS-02",
+      "description": "The Software Update System shall not disrupt critical vehicle functions during the update process",
+      "asilRating": "ASIL B",
+      "rationale": "Update processes occurring during vehicle operation could impair critical functions and create safety hazards",
+      "relatedHazards": ["H-SUS-03", "H-SUS-04"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-SUS-04",
+          "description": "The IVI system shall restrict major system updates to when vehicle is stationary",
+          "verification": "Test and analysis",
+          "traceability": "SG-SUS-02"
+        },
+        {
+          "id": "FSR-SUS-05",
+          "description": "The IVI system shall maintain critical IVI functions during background update processes",
+          "verification": "Test",
+          "traceability": "SG-SUS-02"
+        },
+        {
+          "id": "FSR-SUS-06",
+          "description": "The IVI system shall prioritize vehicle operational functions over update activities",
+          "verification": "Test",
+          "traceability": "SG-SUS-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-SUS-01",
+      "description": "Installation of corrupted or malicious software update",
+      "operationalSituation": "Vehicle in any operational state",
+      "hazardousEvent": "Critical vehicle or IVI functions compromised due to corrupted/malicious software",
+      "asilRating": "ASIL C",
+      "severityRating": "S3",
+      "exposureRating": "E2",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-SUS-02",
+      "description": "Failed update without proper fallback",
+      "operationalSituation": "Vehicle in any operational state",
+      "hazardousEvent": "Loss of critical IVI functions due to incomplete update without recovery",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E2",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-SUS-03",
+      "description": "System update process consuming excessive resources",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Critical IVI functions become slow or unresponsive during update",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-SUS-04",
+      "description": "Update process initiating system restart during vehicle operation",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Temporary loss of IVI functions including critical displays during system restart",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E2",
+      "controllabilityRating": "C2"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Software Update System",
+      "function": "Securely update IVI software components over-the-air"
+    },
+    "failureModes": [
+      {
+        "id": "FM-SUS-01",
+        "description": "Verification failure allowing installation of invalid software",
+        "potentialCauses": [
+          "Cryptographic verification bypass",
+          "Signature verification error",
+          "Hash validation failure"
+        ],
+        "failureEffects": {
+          "local": "Corrupted or unauthorized software installed",
+          "nextLevel": "IVI system functions compromised",
+          "endEffect": "Vehicle functions impaired, potential security breach"
+        },
+        "asilRating": "ASIL C",
+        "severityRating": 8,
+        "occurrenceRating": 3,
+        "detectionRating": 3,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Implement multi-layer cryptographic verification",
+          "Secure boot process with hardware root of trust"
+        ],
+        "detection": [
+          "Redundant verification methods",
+          "Runtime integrity checking"
+        ],
+        "mitigations": [
+          {
+            "description": "Multi-stage verification with independent cryptographic algorithms",
+            "type": "Security Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Hardware-backed security for verification process",
+            "type": "Hardware Security",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-SUS-01",
+            "description": "The Software Update System shall implement minimum 3 independent verification methods for all updates",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-SUS-01"
+          },
+          {
+            "id": "TSR-SUS-02",
+            "description": "The Software Update System shall use hardware security module for cryptographic verification of all updates",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-SUS-01"
+          }
+        ]
+      },
+      {
+        "id": "FM-SUS-02",
+        "description": "Update process interruption without recovery",
+        "potentialCauses": [
+          "Power interruption during installation",
+          "Memory corruption during update",
+          "System crash during update process"
+        ],
+        "failureEffects": {
+          "local": "Update process fails to complete",
+          "nextLevel": "System in potentially unstable state",
+          "endEffect": "IVI functions unavailable or compromised"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 4,
+        "detectionRating": 3,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Implement atomic update mechanisms",
+          "Use dual-bank memory architecture"
+        ],
+        "detection": [
+          "Update progress monitoring",
+          "Validation of critical update stages"
+        ],
+        "mitigations": [
+          {
+            "description": "Dual-bank memory with fallback mechanism",
+            "type": "System Architecture",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Automatic rollback on detection of incomplete update",
+            "type": "Recovery Mechanism",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-SUS-03",
+            "description": "The Software Update System shall implement dual-bank architecture with automatic fallback for failed updates",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-SUS-03"
+          },
+          {
+            "id": "TSR-SUS-04",
+            "description": "The Software Update System shall verify complete system integrity after update before committing changes",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-SUS-03"
+          }
+        ]
+      },
+      {
+        "id": "FM-SUS-03",
+        "description": "Resource contention during update process",
+        "potentialCauses": [
+          "Insufficient CPU throttling during update",
+          "Memory leaks in update process",
+          "Update process priority too high"
+        ],
+        "failureEffects": {
+          "local": "Critical system resources consumed by update process",
+          "nextLevel": "IVI functions become slow or unresponsive",
+          "endEffect": "Driver distraction or loss of critical information"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Implement strict resource limits for update process",
+          "Design background update process with low priority"
+        ],
+        "detection": [
+          "Resource usage monitoring",
+          "System responsiveness verification"
+        ],
+        "mitigations": [
+          {
+            "description": "Resource governance with strict limits for update processes",
+            "type": "Resource Management",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Automatic suspension of update when system load exceeds thresholds",
+            "type": "Process Control",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-SUS-05",
+            "description": "The Software Update System shall limit CPU usage to maximum 20% and memory usage to 15% during background updates",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-SUS-05"
+          },
+          {
+            "id": "TSR-SUS-06",
+            "description": "The Software Update System shall automatically pause update activities when resource utilization exceeds safety thresholds",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-SUS-06"
+          }
+        ]
+      },
+      {
+        "id": "FM-SUS-04",
+        "description": "Inappropriate timing of update installation",
+        "potentialCauses": [
+          "Vehicle motion detection failure",
+          "Update timing policy error",
+          "User override of safety constraints"
+        ],
+        "failureEffects": {
+          "local": "Critical system update starts during inappropriate vehicle state",
+          "nextLevel": "IVI functions disrupted during vehicle operation",
+          "endEffect": "Driver distraction or loss of critical vehicle information"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 3,
+        "riskPriorityNumber": 63,
+        "prevention": [
+          "Implement multi-factor vehicle state validation",
+          "Enforce update policies based on safety impact"
+        ],
+        "detection": [
+          "Continuous monitoring of vehicle operational state",
+          "Verification of conditions before update initiation"
+        ],
+        "mitigations": [
+          {
+            "description": "Multi-source vehicle state verification before critical updates",
+            "type": "System Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Update impact classification with corresponding safety requirements",
+            "type": "Policy Enforcement",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-SUS-07",
+            "description": "The Software Update System shall verify vehicle is stationary using at least two independent sources before initiating major updates",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-SUS-04"
+          },
+          {
+            "id": "TSR-SUS-08",
+            "description": "The Software Update System shall classify updates by impact level and enforce corresponding vehicle state requirements",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Process Audit",
+            "parentRequirement": "FSR-SUS-04"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-SUS-01",
+      "description": "Multi-layer Cryptographic Verification",
+      "mechanism": "Multiple independent verification methods for updates",
+      "diagnosticCoverage": "99%",
+      "failureModesCovered": ["FM-SUS-01"],
+      "implementationDetails": "System implements signature verification, hash validation, and certificate chain verification with hardware security module support for all update packages"
+    },
+    {
+      "id": "SM-SUS-02",
+      "description": "Dual-Bank Update Architecture",
+      "mechanism": "Redundant storage with fallback capability",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-SUS-02"],
+      "implementationDetails": "Updates installed to inactive memory bank with integrity verification before switching; automatic fallback to previous version on failure detection"
+    },
+    {
+      "id": "SM-SUS-03",
+      "description": "Resource Governance System",
+      "mechanism": "Dynamic resource allocation control for updates",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-SUS-03"],
+      "implementationDetails": "System enforces strict CPU, memory, and I/O limits for update processes with automatic suspension when thresholds exceeded"
+    },
+    {
+      "id": "SM-SUS-04",
+      "description": "Vehicle State Validation",
+      "mechanism": "Multi-source vehicle operational state verification",
+      "diagnosticCoverage": "98%",
+      "failureModesCovered": ["FM-SUS-04"],
+      "implementationDetails": "System verifies vehicle is stationary through speed sensors, transmission state, parking brake status before allowing safety-critical updates"
+    },
+    {
+      "id": "SM-SUS-05",
+      "description": "Update Impact Classification",
+      "mechanism": "Safety-based classification system for updates",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-SUS-04"],
+      "implementationDetails": "Updates classified by impact level with corresponding safety requirements; high-impact updates require stringent vehicle state and user confirmation"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-SUS-01",
+        "description": "Verify cryptographic validation",
+        "relatedRequirements": ["TSR-SUS-01", "TSR-SUS-02"],
+        "testProcedure": "Attempt to install updates with invalid signatures, hashes, and certificates",
+        "acceptanceCriteria": "All invalid updates rejected with appropriate error messages",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-SUS-02",
+        "description": "Verify hardware security module usage",
+        "relatedRequirements": ["TSR-SUS-02"],
+        "testProcedure": "Analyze cryptographic operations during update verification",
+        "acceptanceCriteria": "Critical cryptographic operations performed within hardware security module",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-SUS-03",
+        "description": "Verify dual-bank fallback mechanism",
+        "relatedRequirements": ["TSR-SUS-03"],
+        "testProcedure": "Force update interruption at various stages and observe recovery behavior",
+        "acceptanceCriteria": "System automatically recovers to previous version within 30 seconds",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-SUS-04",
+        "description": "Verify post-update integrity verification",
+        "relatedRequirements": ["TSR-SUS-04"],
+        "testProcedure": "Inject corrupted files during update process and observe system response",
+        "acceptanceCriteria": "System detects corruption and rolls back to previous version",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-SUS-05",
+        "description": "Verify resource limitation enforcement",
+        "relatedRequirements": ["TSR-SUS-05"],
+        "testProcedure": "Monitor resource usage during update process under various conditions",
+        "acceptanceCriteria": "Update process never exceeds 20% CPU and 15% memory usage",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-SUS-06",
+        "description": "Verify update suspension under load",
+        "relatedRequirements": ["TSR-SUS-06"],
+        "testProcedure": "Create system load exceeding thresholds during update and observe behavior",
+        "acceptanceCriteria": "Update process automatically pauses when thresholds exceeded and resumes when resources available",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-SUS-07",
+        "description": "Verify vehicle state validation",
+        "relatedRequirements": ["TSR-SUS-07"],
+        "testProcedure": "Attempt to initiate major updates in various vehicle states",
+        "acceptanceCriteria": "Major updates only proceed when vehicle confirmed stationary by multiple sources",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-SUS-08",
+        "description": "Verify update classification enforcement",
+        "relatedRequirements": ["TSR-SUS-08"],
+        "testProcedure": "Test update process with updates of various impact classifications",
+        "acceptanceCriteria": "System enforces appropriate vehicle state requirements based on update impact level",
+        "results": "Passed"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-SUS-01",
+        "functionalSafetyRequirements": ["FSR-SUS-01", "FSR-SUS-02", "FSR-SUS-03"],
+        "technicalSafetyRequirements": ["TSR-SUS-01", "TSR-SUS-02", "TSR-SUS-03", "TSR-SUS-04"]
+      },
+      {
+        "safetyGoalId": "SG-SUS-02",
+        "functionalSafetyRequirements": ["FSR-SUS-04", "FSR-SUS-05", "FSR-SUS-06"],
+        "technicalSafetyRequirements": ["TSR-SUS-05", "TSR-SUS-06", "TSR-SUS-07", "TSR-SUS-08"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-SUS-01",
+        "testCaseIds": ["TC-SUS-01"]
+      },
+      {
+        "requirementId": "TSR-SUS-02",
+        "testCaseIds": ["TC-SUS-01", "TC-SUS-02"]
+      },
+      {
+        "requirementId": "TSR-SUS-03",
+        "testCaseIds": ["TC-SUS-03"]
+      },
+      {
+        "requirementId": "TSR-SUS-04",
+        "testCaseIds": ["TC-SUS-04"]
+      },
+      {
+        "requirementId": "TSR-SUS-05",
+        "testCaseIds": ["TC-SUS-05"]
+      },
+      {
+        "requirementId": "TSR-SUS-06",
+        "testCaseIds": ["TC-SUS-06"]
+      },
+      {
+        "requirementId": "TSR-SUS-07",
+        "testCaseIds": ["TC-SUS-07"]
+      },
+      {
+        "requirementId": "TSR-SUS-08",
+        "testCaseIds": ["TC-SUS-08"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "SUS": "Software Update System",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "OTA": "Over-The-Air",
+    "HSM": "Hardware Security Module"
+  },
+  "searchTerms": [
+    "software update",
+    "over-the-air update",
+    "OTA update",
+    "firmware update",
+    "update verification",
+    "software integrity",
+    "update rollback",
+    "dual-bank update",
+    "secure update",
+    "update authentication",
+    "update validation",
+    "cryptographic verification",
+    "update interruption",
+    "update safety",
+    "update impact",
+    "vehicle state verification",
+    "resource management",
+    "update process",
+    "system recovery",
+    "update installation"
+  ]
+} 

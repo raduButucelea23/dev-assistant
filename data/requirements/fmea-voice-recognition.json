@@ -1,0 +1,538 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-04-23",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Voice Recognition System",
+    "documentId": "FMEA-IVI-VRS-001",
+    "status": "Released",
+    "reviewDate": "2025-04-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Voice Recognition System",
+    "description": "The Voice Recognition System in the IVI allows users to control various vehicle functions through natural language voice commands. It processes audio input, performs speech-to-text conversion, analyzes user intent, and executes corresponding actions across navigation, media, phone, climate control, and other vehicle systems.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Ambient temperature -40°C to +85°C",
+      "Operating voltage 9-16V",
+      "Varying cabin noise conditions (30-85 dB)"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-VRS-01",
+      "description": "The Voice Recognition System shall not cause driver distraction through prolonged interaction or excessive feedback",
+      "asilRating": "ASIL A",
+      "rationale": "Extended voice interactions or complex feedback could divert driver attention from the road for unsafe periods",
+      "relatedHazards": ["H-VRS-01", "H-VRS-02"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-VRS-01",
+          "description": "The IVI system shall limit voice interaction sessions to minimize driver distraction",
+          "verification": "Test and analysis",
+          "traceability": "SG-VRS-01"
+        },
+        {
+          "id": "FSR-VRS-02",
+          "description": "The IVI system shall provide concise feedback for voice commands",
+          "verification": "Test",
+          "traceability": "SG-VRS-01"
+        },
+        {
+          "id": "FSR-VRS-03",
+          "description": "The IVI system shall terminate voice interaction sessions that exceed safety thresholds",
+          "verification": "Test",
+          "traceability": "SG-VRS-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-VRS-02",
+      "description": "The Voice Recognition System shall not execute unsafe commands or misinterpret safety-critical commands",
+      "asilRating": "ASIL B",
+      "rationale": "Misinterpreted commands could lead to unexpected vehicle behavior and potentially dangerous situations",
+      "relatedHazards": ["H-VRS-03", "H-VRS-04"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-VRS-04",
+          "description": "The IVI system shall verify safety-critical voice commands before execution",
+          "verification": "Test and analysis",
+          "traceability": "SG-VRS-02"
+        },
+        {
+          "id": "FSR-VRS-05",
+          "description": "The IVI system shall provide explicit confirmation for safety-critical voice commands",
+          "verification": "Test",
+          "traceability": "SG-VRS-02"
+        },
+        {
+          "id": "FSR-VRS-06",
+          "description": "The IVI system shall reject ambiguous voice commands for safety-critical functions",
+          "verification": "Test",
+          "traceability": "SG-VRS-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-VRS-01",
+      "description": "Extended voice interaction causing prolonged driver distraction",
+      "operationalSituation": "Vehicle in motion on busy road",
+      "hazardousEvent": "Driver attention diverted from road for extended period during voice interaction",
+      "asilRating": "ASIL A",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C3"
+    },
+    {
+      "id": "H-VRS-02",
+      "description": "Complex voice feedback requiring driver comprehension",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Driver diverts attention to comprehend system feedback",
+      "asilRating": "ASIL A",
+      "severityRating": "S1",
+      "exposureRating": "E4",
+      "controllabilityRating": "C3"
+    },
+    {
+      "id": "H-VRS-03",
+      "description": "Misinterpretation of safety-critical voice commands",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "System executes unintended action based on misinterpreted command",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-VRS-04",
+      "description": "Unintended activation of voice commands",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "System executes commands not intentionally issued by driver",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Voice Recognition System",
+      "function": "Process spoken commands to control vehicle functions"
+    },
+    "failureModes": [
+      {
+        "id": "FM-VRS-01",
+        "description": "Extended voice interaction session",
+        "potentialCauses": [
+          "Poor speech recognition requiring multiple attempts",
+          "Complex multi-turn dialog flows",
+          "Ambiguous command processing requiring clarification"
+        ],
+        "failureEffects": {
+          "local": "Voice interaction session extends beyond safety threshold",
+          "nextLevel": "Driver attention diverted from road for extended period",
+          "endEffect": "Increased risk of collision due to prolonged distraction"
+        },
+        "asilRating": "ASIL A",
+        "severityRating": 6,
+        "occurrenceRating": 4,
+        "detectionRating": 3,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Optimize speech recognition for first-attempt success",
+          "Simplify dialog flows for driving scenarios"
+        ],
+        "detection": [
+          "Monitor interaction duration with timeout limits",
+          "Track recognition confidence scores"
+        ],
+        "mitigations": [
+          {
+            "description": "Automatic session timeout after predefined thresholds",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Simplified command structure for driving contexts",
+            "type": "Design Adaptation",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-VRS-01",
+            "description": "The Voice Recognition System shall automatically terminate voice interaction sessions after 30 seconds of continuous dialog",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VRS-03"
+          },
+          {
+            "id": "TSR-VRS-02",
+            "description": "The Voice Recognition System shall limit voice interaction sessions to a maximum of 2 clarification requests before providing alternate interaction method",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VRS-01"
+          }
+        ]
+      },
+      {
+        "id": "FM-VRS-02",
+        "description": "Verbose or complex voice feedback",
+        "potentialCauses": [
+          "Poorly designed voice responses",
+          "Multiple information items in single response",
+          "Unnecessary technical details in responses"
+        ],
+        "failureEffects": {
+          "local": "System provides feedback requiring extended attention",
+          "nextLevel": "Driver must concentrate to comprehend feedback",
+          "endEffect": "Driver distraction leading to delayed reaction to traffic conditions"
+        },
+        "asilRating": "ASIL A",
+        "severityRating": 5,
+        "occurrenceRating": 4,
+        "detectionRating": 4,
+        "riskPriorityNumber": 80,
+        "prevention": [
+          "Design concise, simple voice responses",
+          "Limit information density in responses"
+        ],
+        "detection": [
+          "Analyze voice response complexity metrics",
+          "User testing for response comprehension time"
+        ],
+        "mitigations": [
+          {
+            "description": "Context-adaptive response brevity based on vehicle speed",
+            "type": "Adaptive Interface",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Visual summary of complex information with simple audio confirmation",
+            "type": "Multimodal Feedback",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-VRS-03",
+            "description": "The Voice Recognition System shall limit voice responses to 10 words or less when vehicle is in motion",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VRS-02"
+          },
+          {
+            "id": "TSR-VRS-04",
+            "description": "The Voice Recognition System shall adapt feedback complexity based on driving context and vehicle speed",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VRS-02"
+          }
+        ]
+      },
+      {
+        "id": "FM-VRS-03",
+        "description": "Misinterpretation of safety-critical commands",
+        "potentialCauses": [
+          "Acoustic similarity between different commands",
+          "Background noise interference",
+          "Accent or pronunciation variations"
+        ],
+        "failureEffects": {
+          "local": "System interprets command incorrectly",
+          "nextLevel": "System executes unintended action",
+          "endEffect": "Potential safety hazard due to unexpected vehicle behavior"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Design acoustically distinct command phrases",
+          "Implement advanced noise cancellation"
+        ],
+        "detection": [
+          "Monitor recognition confidence scores",
+          "Verify commands with multiple recognition models"
+        ],
+        "mitigations": [
+          {
+            "description": "Explicit confirmation for safety-critical commands",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Multi-factor authentication for high-risk commands",
+            "type": "Security Measure",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-VRS-05",
+            "description": "The Voice Recognition System shall require explicit user confirmation for all safety-critical commands",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VRS-05"
+          },
+          {
+            "id": "TSR-VRS-06",
+            "description": "The Voice Recognition System shall reject voice commands with confidence scores below 85% for safety-critical functions",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VRS-06"
+          }
+        ]
+      },
+      {
+        "id": "FM-VRS-04",
+        "description": "Unintended activation of voice command system",
+        "potentialCauses": [
+          "False trigger of wake word detection",
+          "Conversation misinterpreted as commands",
+          "Media audio misinterpreted as commands"
+        ],
+        "failureEffects": {
+          "local": "System activates and processes unintended audio as commands",
+          "nextLevel": "System executes commands not intentionally issued by driver",
+          "endEffect": "Unexpected vehicle behavior potentially creating safety hazard"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 5,
+        "riskPriorityNumber": 105,
+        "prevention": [
+          "Optimize wake word detection algorithm",
+          "Implement directional microphones for driver focus"
+        ],
+        "detection": [
+          "Monitor false activation rate",
+          "Track command source direction"
+        ],
+        "mitigations": [
+          {
+            "description": "Clear audio and visual indicators of system activation state",
+            "type": "User Feedback",
+            "effectiveness": "Medium"
+          },
+          {
+            "description": "Confirmation required for unexpected or unusual commands",
+            "type": "Software Control",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-VRS-07",
+            "description": "The Voice Recognition System shall provide clear audio and visual indication when voice recognition is active",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VRS-05"
+          },
+          {
+            "id": "TSR-VRS-08",
+            "description": "The Voice Recognition System shall require confirmation for commands issued without explicit wake word activation",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VRS-04"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-VRS-01",
+      "description": "Voice Interaction Timeout",
+      "mechanism": "Automatic session termination after threshold",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-VRS-01"],
+      "implementationDetails": "System automatically terminates voice interaction after 30 seconds of continuous dialog or 15 seconds of silence, with graceful exit message"
+    },
+    {
+      "id": "SM-VRS-02",
+      "description": "Adaptive Response Brevity",
+      "mechanism": "Context-aware voice response adaptation",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-VRS-02"],
+      "implementationDetails": "System adjusts response verbosity based on vehicle speed, providing abbreviated responses at speeds >20 km/h"
+    },
+    {
+      "id": "SM-VRS-03",
+      "description": "Command Confidence Threshold",
+      "mechanism": "Confidence-based command validation",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-VRS-03"],
+      "implementationDetails": "System enforces minimum speech recognition confidence threshold of 85% for safety-critical commands with fallback to confirmation"
+    },
+    {
+      "id": "SM-VRS-04",
+      "description": "Critical Command Confirmation",
+      "mechanism": "Explicit confirmation for high-risk commands",
+      "diagnosticCoverage": "98%",
+      "failureModesCovered": ["FM-VRS-03", "FM-VRS-04"],
+      "implementationDetails": "System requires explicit verbal or touch confirmation for commands affecting vehicle operation or safety"
+    },
+    {
+      "id": "SM-VRS-05",
+      "description": "Activation State Indication",
+      "mechanism": "Clear multi-modal status indication",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-VRS-04"],
+      "implementationDetails": "System provides consistent visual indicator and audio tone when voice recognition is active or waiting for command"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-VRS-01",
+        "description": "Verify voice interaction timeout",
+        "relatedRequirements": ["TSR-VRS-01"],
+        "testProcedure": "Initiate voice session and measure system behavior after 30 seconds of continuous dialog",
+        "acceptanceCriteria": "System automatically terminates session after 30 seconds with appropriate notification",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VRS-02",
+        "description": "Verify clarification limit",
+        "relatedRequirements": ["TSR-VRS-02"],
+        "testProcedure": "Issue ambiguous commands requiring multiple clarifications and observe system behavior",
+        "acceptanceCriteria": "System limits to 2 clarification requests before offering alternative interaction method",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VRS-03",
+        "description": "Verify response brevity while driving",
+        "relatedRequirements": ["TSR-VRS-03"],
+        "testProcedure": "Test voice commands at various vehicle speeds and measure response length",
+        "acceptanceCriteria": "Voice responses limited to 10 words or less when vehicle in motion",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VRS-04",
+        "description": "Verify adaptive response complexity",
+        "relatedRequirements": ["TSR-VRS-04"],
+        "testProcedure": "Issue complex queries at different vehicle speeds and measure response complexity",
+        "acceptanceCriteria": "Response complexity decreases with increasing vehicle speed",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VRS-05",
+        "description": "Verify critical command confirmation",
+        "relatedRequirements": ["TSR-VRS-05"],
+        "testProcedure": "Issue various safety-critical voice commands and observe system confirmation behavior",
+        "acceptanceCriteria": "100% of safety-critical commands require explicit confirmation before execution",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VRS-06",
+        "description": "Verify confidence threshold enforcement",
+        "relatedRequirements": ["TSR-VRS-06"],
+        "testProcedure": "Issue commands with varying clarity and observe system response based on confidence score",
+        "acceptanceCriteria": "System rejects commands with confidence below 85% for safety-critical functions",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VRS-07",
+        "description": "Verify activation state indication",
+        "relatedRequirements": ["TSR-VRS-07"],
+        "testProcedure": "Activate voice recognition in various conditions and observe feedback indicators",
+        "acceptanceCriteria": "Clear visual and audio indication provided for all activation state changes",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VRS-08",
+        "description": "Verify unexpected command handling",
+        "relatedRequirements": ["TSR-VRS-08"],
+        "testProcedure": "Simulate commands without explicit wake word and observe system behavior",
+        "acceptanceCriteria": "System requires confirmation for commands detected without explicit activation",
+        "results": "Passed"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-VRS-01",
+        "functionalSafetyRequirements": ["FSR-VRS-01", "FSR-VRS-02", "FSR-VRS-03"],
+        "technicalSafetyRequirements": ["TSR-VRS-01", "TSR-VRS-02", "TSR-VRS-03", "TSR-VRS-04"]
+      },
+      {
+        "safetyGoalId": "SG-VRS-02",
+        "functionalSafetyRequirements": ["FSR-VRS-04", "FSR-VRS-05", "FSR-VRS-06"],
+        "technicalSafetyRequirements": ["TSR-VRS-05", "TSR-VRS-06", "TSR-VRS-07", "TSR-VRS-08"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-VRS-01",
+        "testCaseIds": ["TC-VRS-01"]
+      },
+      {
+        "requirementId": "TSR-VRS-02",
+        "testCaseIds": ["TC-VRS-02"]
+      },
+      {
+        "requirementId": "TSR-VRS-03",
+        "testCaseIds": ["TC-VRS-03"]
+      },
+      {
+        "requirementId": "TSR-VRS-04",
+        "testCaseIds": ["TC-VRS-04"]
+      },
+      {
+        "requirementId": "TSR-VRS-05",
+        "testCaseIds": ["TC-VRS-05"]
+      },
+      {
+        "requirementId": "TSR-VRS-06",
+        "testCaseIds": ["TC-VRS-06"]
+      },
+      {
+        "requirementId": "TSR-VRS-07",
+        "testCaseIds": ["TC-VRS-07"]
+      },
+      {
+        "requirementId": "TSR-VRS-08",
+        "testCaseIds": ["TC-VRS-08"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "VRS": "Voice Recognition System",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "NLP": "Natural Language Processing",
+    "ASR": "Automatic Speech Recognition"
+  },
+  "searchTerms": [
+    "voice recognition",
+    "speech command",
+    "voice control",
+    "voice assistant",
+    "speech recognition",
+    "command processing",
+    "voice interface",
+    "natural language",
+    "speech-to-text",
+    "wake word",
+    "voice trigger",
+    "command confirmation",
+    "voice feedback",
+    "speech clarity",
+    "noise cancellation",
+    "driver distraction",
+    "command accuracy",
+    "voice interaction",
+    "dialog system",
+    "voice safety"
+  ]
+} 

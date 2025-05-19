@@ -1,0 +1,517 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Risk Assessment",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-07-20",
+    "status": "Draft",
+    "reviewDate": "2025-08-05",
+    "reviewers": ["Cybersecurity Team", "Connectivity Team", "Product Security"],
+    "documentId": "TARA-RA-BT-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Bluetooth Connectivity"
+  },
+  "sections": {
+    "riskAssessmentMethodology": {
+      "methodology": "Risk is assessed using ISO21434 methodology combining attack feasibility and impact severity",
+      "feasibilityFactors": [
+        "Attack Vector (AV)",
+        "Attack Complexity (AC)",
+        "Privileges Required (PR)",
+        "User Interaction (UI)"
+      ],
+      "impactFactors": [
+        "Safety Impact",
+        "Financial Impact",
+        "Operational Impact",
+        "Privacy Impact",
+        "Regulatory Impact",
+        "Reputational Impact"
+      ],
+      "riskMatrix": {
+        "rows": ["Low Feasibility", "Medium Feasibility", "High Feasibility"],
+        "columns": ["Low Impact", "Medium Impact", "High Impact"],
+        "cells": [
+          ["Low Risk", "Low Risk", "Medium Risk"],
+          ["Low Risk", "Medium Risk", "High Risk"],
+          ["Medium Risk", "High Risk", "High Risk"]
+        ]
+      }
+    },
+    "risks": [
+      {
+        "id": "RISK-BT-01",
+        "title": "Unauthorized Device Pairing Risk",
+        "description": "Risk of attackers gaining unauthorized access to vehicle systems through exploitation of Bluetooth pairing vulnerabilities",
+        "relatedThreatScenario": "TS-BT-01",
+        "relatedDamageScenario": "DA-BT-01",
+        "assetViolated": "Bluetooth Connectivity / Authentication Process",
+        "impactAssessment": {
+          "overallImpact": "High",
+          "impactAreas": {
+            "safety": {
+              "rating": "Medium",
+              "description": "Potential for distractions or improper system operation through unauthorized commands"
+            },
+            "financial": {
+              "rating": "Medium",
+              "description": "Costs associated with addressing vulnerability and potential warranty claims"
+            },
+            "operational": {
+              "rating": "Medium",
+              "description": "Disruption to normal operation of infotainment and connected systems"
+            },
+            "privacy": {
+              "rating": "High",
+              "description": "Unauthorized access to personal contact information, call logs, and other private data"
+            },
+            "regulatory": {
+              "rating": "High",
+              "description": "Potential violation of data protection regulations (e.g., GDPR) due to unauthorized data access"
+            },
+            "reputational": {
+              "rating": "High",
+              "description": "Significant brand damage from publicized security breach of vehicle systems"
+            }
+          }
+        },
+        "attackFeasibilityAssessment": {
+          "overallFeasibility": "Medium",
+          "feasibilityRating": {
+            "attackVector": {
+              "rating": "Physical",
+              "description": "Requires physical proximity but no direct physical access needed"
+            },
+            "attackComplexity": {
+              "rating": "Low",
+              "description": "Particularly if 'Just Works' pairing is enabled, attack complexity is reduced"
+            },
+            "privilegesRequired": {
+              "rating": "None",
+              "description": "No existing privileges required to initiate attack"
+            },
+            "userInteraction": {
+              "rating": "Required",
+              "description": "Vehicle user must initiate or respond to pairing process"
+            }
+          }
+        },
+        "riskRating": {
+          "value": "High",
+          "justification": "The combination of Medium feasibility and High impact results in High risk according to the risk matrix. The privacy and regulatory impacts are particularly significant."
+        },
+        "riskOwner": "Connectivity Team",
+        "riskStatus": "Open",
+        "riskAcceptanceStatus": "Not Accepted"
+      },
+      {
+        "id": "RISK-BT-02",
+        "title": "Bluetooth Communication Eavesdropping Risk",
+        "description": "Risk of sensitive information being exposed through interception of Bluetooth communications",
+        "relatedThreatScenario": "TS-BT-02",
+        "relatedDamageScenario": "DA-BT-02",
+        "assetViolated": "Bluetooth Connectivity / Encrypted Communications",
+        "impactAssessment": {
+          "overallImpact": "High",
+          "impactAreas": {
+            "safety": {
+              "rating": "Low",
+              "description": "Limited direct safety impact from information disclosure"
+            },
+            "financial": {
+              "rating": "Medium",
+              "description": "Costs associated with addressing vulnerability and potential legal liabilities"
+            },
+            "operational": {
+              "rating": "Low",
+              "description": "Minimal impact on system operations as attack is passive"
+            },
+            "privacy": {
+              "rating": "High",
+              "description": "Severe privacy violation from exposure of calls, contacts, and personal data"
+            },
+            "regulatory": {
+              "rating": "High",
+              "description": "Clear violations of data protection regulations resulting in potential penalties"
+            },
+            "reputational": {
+              "rating": "High",
+              "description": "Significant public trust erosion if personal conversations are compromised"
+            }
+          }
+        },
+        "attackFeasibilityAssessment": {
+          "overallFeasibility": "Medium",
+          "feasibilityRating": {
+            "attackVector": {
+              "rating": "Physical",
+              "description": "Requires physical proximity to the vehicle during communications"
+            },
+            "attackComplexity": {
+              "rating": "High",
+              "description": "Requires specialized equipment and technical expertise to intercept and decrypt communications"
+            },
+            "privilegesRequired": {
+              "rating": "None",
+              "description": "No existing privileges required to attempt interception"
+            },
+            "userInteraction": {
+              "rating": "None",
+              "description": "Attack can be carried out without any user interaction"
+            }
+          }
+        },
+        "riskRating": {
+          "value": "Medium",
+          "justification": "The combination of Medium feasibility and High impact results in High risk according to the matrix, but the high attack complexity provides some natural mitigation, warranting a Medium final rating."
+        },
+        "riskOwner": "Cybersecurity Team",
+        "riskStatus": "Open",
+        "riskAcceptanceStatus": "Not Accepted"
+      },
+      {
+        "id": "RISK-BT-03",
+        "title": "Bluetooth Denial of Service Risk",
+        "description": "Risk of vehicle Bluetooth connectivity being disrupted through jamming or resource exhaustion",
+        "relatedThreatScenario": "TS-BT-03",
+        "relatedDamageScenario": "DA-BT-03",
+        "assetViolated": "Bluetooth Connectivity / System Availability",
+        "impactAssessment": {
+          "overallImpact": "Medium",
+          "impactAreas": {
+            "safety": {
+              "rating": "Low",
+              "description": "Potential minor distraction if connectivity is lost during critical operation"
+            },
+            "financial": {
+              "rating": "Low",
+              "description": "Limited financial impact beyond customer support costs"
+            },
+            "operational": {
+              "rating": "Medium",
+              "description": "Disruption to normal operation of Bluetooth-dependent features"
+            },
+            "privacy": {
+              "rating": "Low",
+              "description": "No direct privacy impact from denial of service"
+            },
+            "regulatory": {
+              "rating": "Low",
+              "description": "No significant regulatory implications"
+            },
+            "reputational": {
+              "rating": "Medium",
+              "description": "Negative customer experience resulting in dissatisfaction"
+            }
+          }
+        },
+        "attackFeasibilityAssessment": {
+          "overallFeasibility": "High",
+          "feasibilityRating": {
+            "attackVector": {
+              "rating": "Physical",
+              "description": "Requires physical proximity to target vehicle"
+            },
+            "attackComplexity": {
+              "rating": "Low",
+              "description": "Basic RF jamming requires minimal technical expertise and commonly available equipment"
+            },
+            "privilegesRequired": {
+              "rating": "None",
+              "description": "No existing privileges required"
+            },
+            "userInteraction": {
+              "rating": "None",
+              "description": "Attack can be carried out without any user interaction"
+            }
+          }
+        },
+        "riskRating": {
+          "value": "Medium",
+          "justification": "The combination of High feasibility and Medium impact results in High risk according to the matrix, but the limited overall damage potential justifies a Medium final rating."
+        },
+        "riskOwner": "Connectivity Team",
+        "riskStatus": "Open",
+        "riskAcceptanceStatus": "Not Accepted"
+      }
+    ],
+    "riskTreatmentStrategy": {
+      "riskTreatmentOptions": [
+        {
+          "option": "Risk Reduction",
+          "description": "Implementation of additional controls to reduce risk to acceptable level"
+        },
+        {
+          "option": "Risk Transfer",
+          "description": "Transfer of risk to another party (e.g., through insurance or warranties)"
+        },
+        {
+          "option": "Risk Avoidance",
+          "description": "Elimination of risk by removing the vulnerable feature or functionality"
+        },
+        {
+          "option": "Risk Acceptance",
+          "description": "Formal acceptance of risk with justification and monitoring"
+        }
+      ],
+      "riskTreatmentPlans": [
+        {
+          "riskId": "RISK-BT-01",
+          "selectedOption": "Risk Reduction",
+          "justification": "Risk can be significantly reduced through improved pairing security measures",
+          "proposedControls": [
+            {
+              "id": "CTRL-BT-P-01",
+              "title": "Enhanced Pairing Security",
+              "description": "Implement Secure Connections Only mode and require user confirmation for all pairings",
+              "implementation": "Software update to Bluetooth controller firmware",
+              "effectiveness": "High",
+              "feasibility": "High",
+              "priority": "High",
+              "responsibleParty": "Connectivity Team",
+              "deadline": "2025-Q4"
+            },
+            {
+              "id": "CTRL-BT-P-02",
+              "title": "Pairing Attempt Rate Limiting",
+              "description": "Implement controls to prevent brute force attacks by limiting unsuccessful pairing attempts",
+              "implementation": "Software update to Bluetooth controller firmware",
+              "effectiveness": "Medium",
+              "feasibility": "High",
+              "priority": "Medium",
+              "responsibleParty": "Connectivity Team",
+              "deadline": "2025-Q4"
+            },
+            {
+              "id": "CTRL-BT-P-03",
+              "title": "Pairing Authentication Enhancement",
+              "description": "Implement multi-factor authentication for Bluetooth pairing",
+              "implementation": "Software update to IVI system and Bluetooth controller",
+              "effectiveness": "High",
+              "feasibility": "Medium",
+              "priority": "High",
+              "responsibleParty": "Product Security",
+              "deadline": "2026-Q1"
+            }
+          ],
+          "residualRisk": {
+            "value": "Low",
+            "justification": "Implementation of proposed controls would significantly decrease attack feasibility by addressing key vulnerabilities in the pairing process"
+          }
+        },
+        {
+          "riskId": "RISK-BT-02",
+          "selectedOption": "Risk Reduction",
+          "justification": "Risk can be reduced by strengthening encryption and implementing additional data protection",
+          "proposedControls": [
+            {
+              "id": "CTRL-BT-P-04",
+              "title": "Enhanced Bluetooth Encryption",
+              "description": "Upgrade to strongest available Bluetooth encryption standards and refuse connections with devices supporting only legacy encryption",
+              "implementation": "Software update to Bluetooth controller firmware",
+              "effectiveness": "Medium",
+              "feasibility": "Medium",
+              "priority": "High",
+              "responsibleParty": "Connectivity Team",
+              "deadline": "2025-Q4"
+            },
+            {
+              "id": "CTRL-BT-P-05",
+              "title": "Application-Level Encryption",
+              "description": "Implement additional end-to-end encryption for sensitive data on top of Bluetooth standard encryption",
+              "implementation": "Software update to IVI system applications",
+              "effectiveness": "High",
+              "feasibility": "Medium",
+              "priority": "Medium",
+              "responsibleParty": "Product Security",
+              "deadline": "2026-Q1"
+            },
+            {
+              "id": "CTRL-BT-P-06",
+              "title": "Sensitive Data Classification",
+              "description": "Classify and limit data transmitted over Bluetooth according to sensitivity",
+              "implementation": "Software update to IVI system",
+              "effectiveness": "Medium",
+              "feasibility": "High",
+              "priority": "Medium",
+              "responsibleParty": "Product Security",
+              "deadline": "2025-Q4"
+            }
+          ],
+          "residualRisk": {
+            "value": "Low",
+            "justification": "Additional encryption layers and data protection would significantly reduce the impact of potential eavesdropping attacks"
+          }
+        },
+        {
+          "riskId": "RISK-BT-03",
+          "selectedOption": "Risk Reduction",
+          "justification": "Risk can be mitigated through improved resilience measures and monitoring",
+          "proposedControls": [
+            {
+              "id": "CTRL-BT-P-07",
+              "title": "Advanced Frequency Hopping",
+              "description": "Implement enhanced adaptive frequency hopping to better avoid interference",
+              "implementation": "Software update to Bluetooth controller firmware",
+              "effectiveness": "Medium",
+              "feasibility": "High",
+              "priority": "Medium",
+              "responsibleParty": "Connectivity Team",
+              "deadline": "2025-Q4"
+            },
+            {
+              "id": "CTRL-BT-P-08",
+              "title": "Connection Request Throttling",
+              "description": "Implement controls to limit connection requests from unknown devices",
+              "implementation": "Software update to Bluetooth controller firmware",
+              "effectiveness": "Medium",
+              "feasibility": "High",
+              "priority": "Medium",
+              "responsibleParty": "Connectivity Team",
+              "deadline": "2025-Q4"
+            },
+            {
+              "id": "CTRL-BT-P-09",
+              "title": "Bluetooth Interface Monitoring",
+              "description": "Implement monitoring to detect and respond to potential jamming or DoS attacks",
+              "implementation": "Software update to Bluetooth controller and IVI system",
+              "effectiveness": "Medium",
+              "feasibility": "Medium",
+              "priority": "Low",
+              "responsibleParty": "Product Security",
+              "deadline": "2026-Q2"
+            }
+          ],
+          "residualRisk": {
+            "value": "Low",
+            "justification": "While impossible to completely prevent physical jamming, improved resilience and detection measures would reduce impact and duration of DoS attacks"
+          }
+        }
+      ]
+    },
+    "riskAcceptanceCriteria": {
+      "criteria": [
+        {
+          "riskLevel": "Low",
+          "acceptanceAuthority": "Product Cybersecurity Manager",
+          "requirementsForAcceptance": "Documentation of risk and controls",
+          "reviewFrequency": "Annual"
+        },
+        {
+          "riskLevel": "Medium",
+          "acceptanceAuthority": "Product Security Director",
+          "requirementsForAcceptance": "Formal risk assessment, documented controls, and monitoring plan",
+          "reviewFrequency": "Semi-annual"
+        },
+        {
+          "riskLevel": "High",
+          "acceptanceAuthority": "Chief Information Security Officer",
+          "requirementsForAcceptance": "Detailed risk assessment, comprehensive treatment plan, board notification",
+          "reviewFrequency": "Quarterly"
+        }
+      ]
+    }
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-BT-001",
+        "documentType": "Impact Analysis",
+        "relationship": "informedBy",
+        "linkedItems": ["DA-BT-01", "DA-BT-02", "DA-BT-03"]
+      },
+      {
+        "documentId": "TARA-TS-BT-001",
+        "documentType": "Threat Scenarios",
+        "relationship": "informedBy",
+        "linkedItems": ["TS-BT-01", "TS-BT-02", "TS-BT-03"]
+      },
+      {
+        "documentId": "CTRL-REG-BT-001",
+        "documentType": "Control Register",
+        "relationship": "informsNext",
+        "linkedItems": ["CTRL-BT-P-01", "CTRL-BT-P-02", "CTRL-BT-P-03", "CTRL-BT-P-04", "CTRL-BT-P-05", "CTRL-BT-P-06", "CTRL-BT-P-07", "CTRL-BT-P-08", "CTRL-BT-P-09"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "9.5",
+        "description": "Risk assessment and treatment"
+      },
+      {
+        "standardId": "Bluetooth SIG Security",
+        "clause": "5.3",
+        "description": "Bluetooth security risk management"
+      },
+      {
+        "standardId": "ISO27005",
+        "clause": "8.3",
+        "description": "Risk evaluation and treatment"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "SEC-BT-01",
+        "description": "The Bluetooth system shall implement secure pairing mechanisms with minimum PIN length of 6 digits",
+        "riskIds": ["RISK-BT-01"]
+      },
+      {
+        "requirementId": "SEC-BT-02",
+        "description": "The Bluetooth system shall use AES-128 minimum encryption for all communications",
+        "riskIds": ["RISK-BT-02"]
+      },
+      {
+        "requirementId": "SEC-BT-03",
+        "description": "The Bluetooth system shall implement rate limiting for connection attempts",
+        "riskIds": ["RISK-BT-03"]
+      },
+      {
+        "requirementId": "SEC-BT-04",
+        "description": "The Bluetooth system shall require explicit user confirmation for all device pairings",
+        "riskIds": ["RISK-BT-01"]
+      },
+      {
+        "requirementId": "SEC-BT-05",
+        "description": "The Bluetooth system shall implement additional application-level encryption for sensitive data",
+        "riskIds": ["RISK-BT-02"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "Risk Assessment": "Process of identifying, analyzing and evaluating risk",
+    "Attack Feasibility": "Likelihood that an attack can be successfully carried out",
+    "Impact": "Consequence of a successful attack",
+    "Risk Treatment": "Process to modify risk",
+    "Residual Risk": "Risk remaining after risk treatment",
+    "ISO21434": "International standard for automotive cybersecurity",
+    "AES": "Advanced Encryption Standard",
+    "DoS": "Denial of Service",
+    "IVI": "In-Vehicle Infotainment"
+  },
+  "searchTerms": [
+    "bluetooth risk",
+    "vehicle bluetooth security",
+    "pairing vulnerability",
+    "bluetooth eavesdropping",
+    "wireless denial of service",
+    "bluetooth jamming",
+    "risk assessment",
+    "risk treatment",
+    "attack feasibility",
+    "impact assessment",
+    "residual risk",
+    "bluetooth controls",
+    "wireless connection security",
+    "automotive cybersecurity",
+    "ISO21434",
+    "Bluetooth encryption",
+    "pairing security",
+    "rate limiting",
+    "frequency hopping",
+    "risk acceptance"
+  ],
+  "contentSummary": "This document provides a comprehensive risk assessment for the Bluetooth Connectivity system based on previously identified threat and damage scenarios. Three primary risks are evaluated: Unauthorized Device Pairing (High risk), Bluetooth Communication Eavesdropping (Medium risk), and Bluetooth Denial of Service (Medium risk). Each risk is analyzed according to ISO21434 methodology, combining attack feasibility and impact severity across multiple dimensions including safety, financial, operational, privacy, regulatory and reputational impacts. The assessment reveals that privacy and regulatory impacts are most significant for unauthorized access and eavesdropping risks, while operational impacts dominate for denial of service risks. The document details risk treatment strategies with proposed controls for each risk, including enhanced pairing security, additional encryption layers, and improved resilience measures. Implementation of these controls is expected to reduce all identified risks to a low residual level."
+} 

@@ -1,0 +1,447 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Risk Assessment",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-05-01",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "reviewers": ["Cybersecurity Team", "Safety Engineering", "Product Security"],
+    "documentId": "TARA-RA-DOOR-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Door Lock Control Interface"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "Door Lock Control Interface",
+      "assetType": "Function",
+      "assetDescription": "Control vehicle door locks through IVI system",
+      "relatedComponents": ["IVI System", "CAN Bus", "Body Control Module (BCM)"]
+    },
+    "riskAssessment": {
+      "methodology": {
+        "name": "ISO21434 Risk Assessment",
+        "description": "Combination of impact rating from Impact Analysis and attack feasibility from Threat Scenarios to determine cybersecurity risk",
+        "riskMatrix": {
+          "impactLevels": ["Negligible", "Minor", "Moderate", "Major", "Severe"],
+          "attackFeasibilityLevels": ["Very Low", "Low", "Medium", "High", "Very High"],
+          "riskLevels": ["Negligible", "Low", "Medium", "High", "Critical"]
+        }
+      },
+      "risks": [
+        {
+          "id": "RA-DOOR-01",
+          "title": "Unauthorized Door Unlock Risk",
+          "description": "Risk of an attacker spoofing door unlock commands to gain unauthorized access to the vehicle",
+          "threatScenarioId": "TS-DOOR-01",
+          "damageScenarioId": "DA-DOOR-01",
+          "assessment": {
+            "impactRating": {
+              "value": "Severe",
+              "source": "Impact Analysis DA-DOOR-01",
+              "justification": "Potential for vehicle theft, personal property loss, and serious safety implications if doors unlock while vehicle is in motion"
+            },
+            "attackFeasibilityRating": {
+              "value": "Medium",
+              "source": "Threat Scenario TS-DOOR-01",
+              "justification": "Physical access to the vehicle is required, along with specialized knowledge and equipment to analyze and inject CAN messages"
+            },
+            "riskRating": {
+              "value": "High",
+              "justification": "The combination of Severe impact and Medium attack feasibility results in a High risk rating according to the risk matrix"
+            }
+          },
+          "riskTreatment": {
+            "acceptanceCriteria": "Risk must be reduced to Medium or lower through implementation of security controls",
+            "treatmentOptions": [
+              {
+                "id": "RT-DOOR-01-01",
+                "description": "Implement message authentication for door lock control commands",
+                "effectiveness": "High",
+                "feasibility": "Medium",
+                "costEstimate": "Medium",
+                "recommendedAction": "Implement"
+              },
+              {
+                "id": "RT-DOOR-01-02",
+                "description": "Add contextual validation of door unlock commands (e.g., vehicle state check)",
+                "effectiveness": "Medium",
+                "feasibility": "High",
+                "costEstimate": "Low",
+                "recommendedAction": "Implement"
+              },
+              {
+                "id": "RT-DOOR-01-03",
+                "description": "Implement secure gateway with enhanced filtering for critical messages",
+                "effectiveness": "High",
+                "feasibility": "Medium",
+                "costEstimate": "High",
+                "recommendedAction": "Implement"
+              }
+            ],
+            "selectedTreatments": ["RT-DOOR-01-01", "RT-DOOR-01-02", "RT-DOOR-01-03"],
+            "residualRisk": {
+              "expectedImpactReduction": "None",
+              "expectedFeasibilityReduction": "High to Very Low",
+              "residualRiskRating": "Medium",
+              "justification": "Implementation of selected treatments will significantly reduce attack feasibility without changing impact"
+            }
+          }
+        },
+        {
+          "id": "RA-DOOR-02",
+          "title": "Replay Attack Risk",
+          "description": "Risk of an attacker capturing and replaying door unlock commands to gain unauthorized access to the vehicle",
+          "threatScenarioId": "TS-DOOR-02",
+          "damageScenarioId": "DA-DOOR-02",
+          "assessment": {
+            "impactRating": {
+              "value": "Major",
+              "source": "Impact Analysis DA-DOOR-02",
+              "justification": "Vehicle theft and property loss risks similar to direct spoofing, but generally limited to parked vehicle contexts"
+            },
+            "attackFeasibilityRating": {
+              "value": "Medium",
+              "source": "Threat Scenario TS-DOOR-02",
+              "justification": "Requires initial access to record messages, but replay execution is straightforward with minimal technical knowledge"
+            },
+            "riskRating": {
+              "value": "Medium",
+              "justification": "The combination of Major impact and Medium attack feasibility results in a Medium risk rating according to the risk matrix"
+            }
+          },
+          "riskTreatment": {
+            "acceptanceCriteria": "Risk must be reduced to Low or lower through implementation of security controls",
+            "treatmentOptions": [
+              {
+                "id": "RT-DOOR-02-01",
+                "description": "Implement challenge-response authentication for door lock control",
+                "effectiveness": "High",
+                "feasibility": "Medium",
+                "costEstimate": "Medium",
+                "recommendedAction": "Implement"
+              },
+              {
+                "id": "RT-DOOR-02-02",
+                "description": "Add timestamps or sequence counters to door lock commands",
+                "effectiveness": "High",
+                "feasibility": "High",
+                "costEstimate": "Low",
+                "recommendedAction": "Implement"
+              },
+              {
+                "id": "RT-DOOR-02-03",
+                "description": "Implement session-based authentication for door control operations",
+                "effectiveness": "High",
+                "feasibility": "Medium",
+                "costEstimate": "Medium",
+                "recommendedAction": "Implement"
+              }
+            ],
+            "selectedTreatments": ["RT-DOOR-02-02", "RT-DOOR-02-03"],
+            "residualRisk": {
+              "expectedImpactReduction": "None",
+              "expectedFeasibilityReduction": "Medium to Very Low",
+              "residualRiskRating": "Low",
+              "justification": "Implementation of selected treatments will significantly reduce attack feasibility without changing impact"
+            }
+          }
+        },
+        {
+          "id": "RA-DOOR-03",
+          "title": "Denial of Service Risk",
+          "description": "Risk of an attacker disrupting door lock control functionality through denial of service attack on the CAN bus",
+          "threatScenarioId": "TS-DOOR-03",
+          "damageScenarioId": "DA-DOOR-03",
+          "assessment": {
+            "impactRating": {
+              "value": "Moderate",
+              "source": "Impact Analysis DA-DOOR-03",
+              "justification": "Primarily operational impact with potential for user dissatisfaction, but safety systems typically maintain door state during failure"
+            },
+            "attackFeasibilityRating": {
+              "value": "High",
+              "source": "Threat Scenario TS-DOOR-03",
+              "justification": "Basic technical knowledge is sufficient to execute a DoS attack once access to the CAN bus is obtained"
+            },
+            "riskRating": {
+              "value": "Medium",
+              "justification": "The combination of Moderate impact and High attack feasibility results in a Medium risk rating according to the risk matrix"
+            }
+          },
+          "riskTreatment": {
+            "acceptanceCriteria": "Risk must be reduced to Low or lower through implementation of security controls",
+            "treatmentOptions": [
+              {
+                "id": "RT-DOOR-03-01",
+                "description": "Implement CAN bus monitoring and anomaly detection",
+                "effectiveness": "Medium",
+                "feasibility": "High",
+                "costEstimate": "Medium",
+                "recommendedAction": "Implement"
+              },
+              {
+                "id": "RT-DOOR-03-02",
+                "description": "Add rate limiting for CAN messages in gateway ECU",
+                "effectiveness": "Medium",
+                "feasibility": "High",
+                "costEstimate": "Low",
+                "recommendedAction": "Implement"
+              },
+              {
+                "id": "RT-DOOR-03-03",
+                "description": "Implement redundant communication path for critical functions",
+                "effectiveness": "High",
+                "feasibility": "Low",
+                "costEstimate": "High",
+                "recommendedAction": "Consider for future"
+              },
+              {
+                "id": "RT-DOOR-03-04",
+                "description": "Enhanced bus-off recovery strategy for critical ECUs",
+                "effectiveness": "Medium",
+                "feasibility": "Medium",
+                "costEstimate": "Medium",
+                "recommendedAction": "Implement"
+              }
+            ],
+            "selectedTreatments": ["RT-DOOR-03-01", "RT-DOOR-03-02", "RT-DOOR-03-04"],
+            "residualRisk": {
+              "expectedImpactReduction": "None",
+              "expectedFeasibilityReduction": "High to Low",
+              "residualRiskRating": "Low",
+              "justification": "Implementation of selected treatments will reduce attack feasibility without changing impact"
+            }
+          }
+        }
+      ],
+      "securityControls": [
+        {
+          "id": "SC-DOOR-01",
+          "title": "Message Authentication",
+          "description": "Implement HMAC-based authentication for door control commands using vehicle-specific keys",
+          "type": "Prevention",
+          "implementation": {
+            "component": "BCM",
+            "deadline": "Q3 2025",
+            "responsibleTeam": "Security Team",
+            "verificationMethod": "Security testing",
+            "status": "Planned"
+          },
+          "addressedRisks": ["RA-DOOR-01"],
+          "mappingToRequirements": ["NFR-SEC-005"],
+          "effectiveness": "High"
+        },
+        {
+          "id": "SC-DOOR-02",
+          "title": "Command Timestamping",
+          "description": "Add timestamping to door lock/unlock commands with validation of freshness",
+          "type": "Prevention",
+          "implementation": {
+            "component": "IVI System and BCM",
+            "deadline": "Q3 2025",
+            "responsibleTeam": "Security Team",
+            "verificationMethod": "Security testing",
+            "status": "Planned"
+          },
+          "addressedRisks": ["RA-DOOR-02"],
+          "mappingToRequirements": ["NFR-SEC-005"],
+          "effectiveness": "High"
+        },
+        {
+          "id": "SC-DOOR-03",
+          "title": "Contextual Validation",
+          "description": "Implement validation of vehicle state before executing door unlock commands",
+          "type": "Prevention",
+          "implementation": {
+            "component": "BCM",
+            "deadline": "Q3 2025",
+            "responsibleTeam": "Body Control Team",
+            "verificationMethod": "Functional testing",
+            "status": "Planned"
+          },
+          "addressedRisks": ["RA-DOOR-01"],
+          "mappingToRequirements": ["NFR-SEC-006"],
+          "effectiveness": "Medium"
+        },
+        {
+          "id": "SC-DOOR-04",
+          "title": "Secure Gateway",
+          "description": "Implement secure gateway with enhanced filtering for critical commands",
+          "type": "Prevention",
+          "implementation": {
+            "component": "Vehicle Gateway",
+            "deadline": "Q4 2025",
+            "responsibleTeam": "Network Security Team",
+            "verificationMethod": "Security testing",
+            "status": "Planned"
+          },
+          "addressedRisks": ["RA-DOOR-01", "RA-DOOR-03"],
+          "mappingToRequirements": ["NFR-SEC-005", "NFR-SEC-006"],
+          "effectiveness": "High"
+        },
+        {
+          "id": "SC-DOOR-05",
+          "title": "Session-based Authentication",
+          "description": "Implement session-based authentication for door control operations",
+          "type": "Prevention",
+          "implementation": {
+            "component": "IVI System and BCM",
+            "deadline": "Q3 2025",
+            "responsibleTeam": "Security Team",
+            "verificationMethod": "Security testing",
+            "status": "Planned"
+          },
+          "addressedRisks": ["RA-DOOR-02"],
+          "mappingToRequirements": ["NFR-SEC-006"],
+          "effectiveness": "High"
+        },
+        {
+          "id": "SC-DOOR-06",
+          "title": "CAN Anomaly Detection",
+          "description": "Implement CAN bus monitoring and anomaly detection for DoS attacks",
+          "type": "Detection",
+          "implementation": {
+            "component": "Vehicle Gateway",
+            "deadline": "Q4 2025",
+            "responsibleTeam": "Network Security Team",
+            "verificationMethod": "Security testing",
+            "status": "Planned"
+          },
+          "addressedRisks": ["RA-DOOR-03"],
+          "mappingToRequirements": ["FR-DOOR-02"],
+          "effectiveness": "Medium"
+        },
+        {
+          "id": "SC-DOOR-07",
+          "title": "Rate Limiting",
+          "description": "Implement rate limiting for CAN messages in gateway ECU",
+          "type": "Prevention",
+          "implementation": {
+            "component": "Vehicle Gateway",
+            "deadline": "Q3 2025",
+            "responsibleTeam": "Network Security Team",
+            "verificationMethod": "Performance testing",
+            "status": "Planned"
+          },
+          "addressedRisks": ["RA-DOOR-03"],
+          "mappingToRequirements": ["FR-DOOR-02"],
+          "effectiveness": "Medium"
+        },
+        {
+          "id": "SC-DOOR-08",
+          "title": "Enhanced Bus-off Recovery",
+          "description": "Implement enhanced bus-off recovery strategy for critical ECUs",
+          "type": "Recovery",
+          "implementation": {
+            "component": "BCM and Gateway",
+            "deadline": "Q4 2025",
+            "responsibleTeam": "Network Security Team",
+            "verificationMethod": "Failure recovery testing",
+            "status": "Planned"
+          },
+          "addressedRisks": ["RA-DOOR-03"],
+          "mappingToRequirements": ["FR-DOOR-02"],
+          "effectiveness": "Medium"
+        }
+      ]
+    }
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-DOOR-001",
+        "documentType": "Impact Analysis",
+        "relationship": "basedOn",
+        "linkedItems": ["DA-DOOR-01", "DA-DOOR-02", "DA-DOOR-03"]
+      },
+      {
+        "documentId": "TARA-TS-DOOR-001",
+        "documentType": "Threat Scenarios",
+        "relationship": "basedOn",
+        "linkedItems": ["TS-DOOR-01", "TS-DOOR-02", "TS-DOOR-03"]
+      },
+      {
+        "documentId": "FMEA-IVI-DOOR-001",
+        "documentType": "FMEA",
+        "relationship": "complements",
+        "linkedItems": ["SG-DOOR-01", "SG-DOOR-02", "SM-DOOR-01", "SM-DOOR-02"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "8.8",
+        "description": "Risk assessment and risk treatment decision"
+      },
+      {
+        "standardId": "ISO27001",
+        "clause": "A.8",
+        "description": "Asset management"
+      },
+      {
+        "standardId": "ISO26262",
+        "clause": "7",
+        "description": "Functional safety requirements"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "FR-DOOR-01",
+        "description": "The door locking system shall maintain door security even in the presence of malformed CAN messages",
+        "cybersecurityGoal": "Prevent unauthorized access to vehicle"
+      },
+      {
+        "requirementId": "FR-DOOR-02",
+        "description": "The door locking system shall complete a lock/unlock command within 500ms of user initiation under normal operating conditions",
+        "cybersecurityGoal": "Ensure availability of door security functions"
+      },
+      {
+        "requirementId": "NFR-SEC-005",
+        "description": "The system shall verify the integrity of door lock/unlock commands before execution",
+        "cybersecurityGoal": "Prevent tampering with door lock commands"
+      },
+      {
+        "requirementId": "NFR-SEC-006",
+        "description": "The system shall require authentication for door lock/unlock commands from the IVI interface",
+        "cybersecurityGoal": "Prevent unauthorized door control"
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "CAN": "Controller Area Network",
+    "BCM": "Body Control Module",
+    "IVI": "In-Vehicle Infotainment",
+    "HMAC": "Hash-based Message Authentication Code",
+    "DoS": "Denial of Service",
+    "Risk Treatment": "Process to modify risk",
+    "Residual Risk": "Risk remaining after risk treatment",
+    "Security Control": "Measure that modifies security risk"
+  },
+  "searchTerms": [
+    "door lock",
+    "door unlock",
+    "vehicle security",
+    "risk assessment",
+    "cybersecurity",
+    "risk treatment",
+    "security control",
+    "message authentication",
+    "CAN bus",
+    "denial of service",
+    "command validation",
+    "replay protection",
+    "threat scenario",
+    "attack feasibility",
+    "impact analysis",
+    "risk matrix",
+    "residual risk",
+    "gateway",
+    "anomaly detection",
+    "rate limiting",
+    "authentication"
+  ],
+  "contentSummary": "Risk assessment for Door Lock Control Interface analyzing three key risks: unauthorized door unlock (RA-DOOR-01, High risk), replay attack on door commands (RA-DOOR-02, Medium risk), and denial of service (RA-DOOR-03, Medium risk). Assessment combines impact ratings from impact analysis and attack feasibility from threat scenarios. Risk treatment involves 8 security controls including message authentication, command timestamping, contextual validation, secure gateway implementation, session-based authentication, anomaly detection, rate limiting, and enhanced bus-off recovery. Implementation of these controls is estimated to reduce all risks to acceptable levels (Medium or Low), addressing key security requirements for door lock functionality."
+} 

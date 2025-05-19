@@ -1,0 +1,396 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Risk Assessment",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-05-01",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "reviewers": ["Cybersecurity Team", "Safety Engineering Team"],
+    "documentId": "TARA-RA-HVAC-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "HVAC Control Interface"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "HVAC Control Interface",
+      "assetType": "Function",
+      "assetDescription": "Control cabin climate through IVI system",
+      "relatedComponents": ["IVI System", "CAN Bus", "HVAC Electronic Control Unit (ECU)"]
+    },
+    "cybersecurityProperties": [
+      {
+        "property": "Integrity",
+        "description": "Ensures that HVAC control commands cannot be maliciously modified or spoofed"
+      },
+      {
+        "property": "Availability",
+        "description": "Ensures that climate control functionality remains available to legitimate users"
+      }
+    ],
+    "riskAssessments": [
+      {
+        "id": "RA-HVAC-01",
+        "assessmentReferences": {
+          "damageScenarioId": "DA-HVAC-01",
+          "damageScenarioSummary": "Unintended extreme heating causing driver distraction",
+          "threatScenarioId": "TS-HVAC-01",
+          "threatScenarioSummary": "Spoofed HVAC temperature command via CAN bus"
+        },
+        "riskCalculation": {
+          "method": "ISO21434 Risk Value",
+          "parameters": {
+            "impactRating": 2,
+            "attackFeasibilityRating": 2
+          },
+          "riskValue": 4,
+          "riskLevel": "Medium"
+        },
+        "riskTreatment": {
+          "decision": "Treat risk through mitigation",
+          "justification": "Medium risk level warrants implementation of security controls",
+          "securityControls": [
+            {
+              "id": "SC-HVAC-001",
+              "description": "Implement message authentication code (MAC) for HVAC control commands",
+              "type": "Technical",
+              "category": "Prevention",
+              "implementation": "Add HMAC to all temperature control messages with vehicle-specific keys",
+              "validationMethod": "Security testing and code review",
+              "expectedRiskReduction": "Reduces attack feasibility from High (2) to Low (1)"
+            },
+            {
+              "id": "SC-HVAC-002",
+              "description": "Add plausibility checks for temperature commands",
+              "type": "Technical",
+              "category": "Prevention",
+              "implementation": "Validate temperature commands against feasible operating ranges (16°C to 30°C)",
+              "validationMethod": "Security testing and code review",
+              "expectedRiskReduction": "Reduces impact from Moderate (2) to Low (1)"
+            },
+            {
+              "id": "SC-HVAC-003",
+              "description": "Implement rate limiting for temperature changes",
+              "type": "Technical",
+              "category": "Prevention",
+              "implementation": "Limit the rate at which temperature can change to 2°C per minute",
+              "validationMethod": "Security testing",
+              "expectedRiskReduction": "Further reduces impact by preventing rapid temperature fluctuations"
+            }
+          ],
+          "residualRisk": {
+            "expectedRiskValue": 1,
+            "acceptability": "Acceptable",
+            "justification": "Implemented controls significantly reduce risk to acceptable level"
+          },
+          "verificationPlan": {
+            "testCases": [
+              {
+                "id": "TEST-SC-HVAC-001",
+                "description": "Verify MAC implementation prevents message injection",
+                "procedureSummary": "Attempt to inject spoofed temperature control messages with and without valid MAC",
+                "acceptanceCriteria": "System rejects messages with invalid MAC"
+              },
+              {
+                "id": "TEST-SC-HVAC-002",
+                "description": "Verify temperature range validation",
+                "procedureSummary": "Attempt to send temperature commands outside valid range",
+                "acceptanceCriteria": "System rejects or caps temperature values outside 16°C to 30°C range"
+              },
+              {
+                "id": "TEST-SC-HVAC-003",
+                "description": "Verify temperature change rate limiting",
+                "procedureSummary": "Send rapid temperature change commands and verify max rate of change",
+                "acceptanceCriteria": "System limits temperature change to 2°C per minute"
+              }
+            ],
+            "responsibleTeam": "Cybersecurity Validation",
+            "schedule": "Q2 2025"
+          }
+        }
+      },
+      {
+        "id": "RA-HVAC-02",
+        "assessmentReferences": {
+          "damageScenarioId": "DA-HVAC-02",
+          "damageScenarioSummary": "Loss of windshield defogger functionality in critical conditions",
+          "threatScenarioId": "TS-HVAC-02",
+          "threatScenarioSummary": "Denial of Service attack on HVAC defogger function"
+        },
+        "riskCalculation": {
+          "method": "ISO21434 Risk Value",
+          "parameters": {
+            "impactRating": 3,
+            "attackFeasibilityRating": 1
+          },
+          "riskValue": 3,
+          "riskLevel": "Medium"
+        },
+        "riskTreatment": {
+          "decision": "Treat risk through mitigation",
+          "justification": "Medium risk level warrants implementation of security controls",
+          "securityControls": [
+            {
+              "id": "SC-HVAC-004",
+              "description": "Implement message authentication for defogger commands",
+              "type": "Technical",
+              "category": "Prevention",
+              "implementation": "Add HMAC to all defogger control messages with vehicle-specific keys",
+              "validationMethod": "Security testing and code review",
+              "expectedRiskReduction": "Reduces attack feasibility from Medium (1) to Low (0)"
+            },
+            {
+              "id": "SC-HVAC-005",
+              "description": "Implement redundant activation path for critical defogger function",
+              "type": "Technical",
+              "category": "Recovery",
+              "implementation": "Create separate communication channel for critical defogging commands",
+              "validationMethod": "Security testing and functional validation",
+              "expectedRiskReduction": "Reduces impact from High (3) to Moderate (2)"
+            },
+            {
+              "id": "SC-HVAC-006",
+              "description": "Implement automatic defogger activation based on humidity sensors",
+              "type": "Technical",
+              "category": "Recovery",
+              "implementation": "Add direct connection between humidity sensors and defogger function",
+              "validationMethod": "Functional testing",
+              "expectedRiskReduction": "Adds defense-in-depth protection independent of IVI commands"
+            }
+          ],
+          "residualRisk": {
+            "expectedRiskValue": 0,
+            "acceptability": "Acceptable",
+            "justification": "Implemented controls reduce risk to acceptable level through multiple layers of protection"
+          },
+          "verificationPlan": {
+            "testCases": [
+              {
+                "id": "TEST-SC-HVAC-004",
+                "description": "Verify defogger command authentication",
+                "procedureSummary": "Attempt to inject spoofed defogger control messages with and without valid MAC",
+                "acceptanceCriteria": "System rejects messages with invalid MAC"
+              },
+              {
+                "id": "TEST-SC-HVAC-005",
+                "description": "Verify redundant activation path",
+                "procedureSummary": "Block primary communication path and attempt defogger activation through secondary path",
+                "acceptanceCriteria": "Defogger activates despite primary path being blocked"
+              },
+              {
+                "id": "TEST-SC-HVAC-006",
+                "description": "Verify automatic defogger activation",
+                "procedureSummary": "Simulate high humidity conditions and check defogger activation",
+                "acceptanceCriteria": "Defogger activates automatically in response to high humidity"
+              }
+            ],
+            "responsibleTeam": "Cybersecurity Validation",
+            "schedule": "Q2 2025"
+          }
+        }
+      },
+      {
+        "id": "RA-HVAC-03",
+        "assessmentReferences": {
+          "damageScenarioId": "DA-HVAC-03",
+          "damageScenarioSummary": "HVAC system rapid oscillation causing driver distraction",
+          "threatScenarioId": "TS-HVAC-03",
+          "threatScenarioSummary": "Rapid oscillation attack on HVAC system"
+        },
+        "riskCalculation": {
+          "method": "ISO21434 Risk Value",
+          "parameters": {
+            "impactRating": 2,
+            "attackFeasibilityRating": 3
+          },
+          "riskValue": 6,
+          "riskLevel": "Medium"
+        },
+        "riskTreatment": {
+          "decision": "Treat risk through mitigation",
+          "justification": "Medium risk level warrants implementation of security controls",
+          "securityControls": [
+            {
+              "id": "SC-HVAC-007",
+              "description": "Implement command rate limiting for HVAC functions",
+              "type": "Technical",
+              "category": "Prevention",
+              "implementation": "Limit the frequency and rate of change for temperature and fan speed commands",
+              "validationMethod": "Security testing and functional validation",
+              "expectedRiskReduction": "Reduces impact from Moderate (2) to Low (1)"
+            },
+            {
+              "id": "SC-HVAC-008",
+              "description": "Implement anomaly detection for command sequences",
+              "type": "Technical",
+              "category": "Detection",
+              "implementation": "Monitor and flag abnormal patterns of HVAC commands",
+              "validationMethod": "Security testing and functional validation",
+              "expectedRiskReduction": "Reduces attack feasibility from Very High (3) to Medium (1)"
+            },
+            {
+              "id": "SC-HVAC-009",
+              "description": "Implement gradual transition for temperature changes",
+              "type": "Technical",
+              "category": "Prevention",
+              "implementation": "Ensure temperature changes occur gradually even if rapid commands are received",
+              "validationMethod": "Functional testing",
+              "expectedRiskReduction": "Further reduces impact by eliminating sudden changes"
+            }
+          ],
+          "residualRisk": {
+            "expectedRiskValue": 1,
+            "acceptability": "Acceptable",
+            "justification": "Implemented controls reduce risk to acceptable level"
+          },
+          "verificationPlan": {
+            "testCases": [
+              {
+                "id": "TEST-SC-HVAC-007",
+                "description": "Verify command rate limiting",
+                "procedureSummary": "Send rapid sequence of HVAC commands and verify response",
+                "acceptanceCriteria": "System throttles commands to acceptable rate"
+              },
+              {
+                "id": "TEST-SC-HVAC-008",
+                "description": "Verify anomaly detection",
+                "procedureSummary": "Send abnormal pattern of temperature oscillation commands",
+                "acceptanceCriteria": "System detects and flags anomalous command pattern"
+              },
+              {
+                "id": "TEST-SC-HVAC-009",
+                "description": "Verify gradual temperature transition",
+                "procedureSummary": "Send command to change temperature rapidly and verify actual rate of change",
+                "acceptanceCriteria": "System implements gradual temperature transition regardless of command timing"
+              }
+            ],
+            "responsibleTeam": "Cybersecurity Validation",
+            "schedule": "Q3 2025"
+          }
+        }
+      }
+    ]
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-HVAC-001",
+        "documentType": "Impact Analysis",
+        "relationship": "basedOn",
+        "linkedItems": ["DA-HVAC-01", "DA-HVAC-02", "DA-HVAC-03"]
+      },
+      {
+        "documentId": "TARA-TS-HVAC-001",
+        "documentType": "Threat Scenarios",
+        "relationship": "basedOn",
+        "linkedItems": ["TS-HVAC-01", "TS-HVAC-02", "TS-HVAC-03"]
+      },
+      {
+        "documentId": "FMEA-IVI-HVAC-001",
+        "documentType": "FMEA",
+        "relationship": "complements",
+        "linkedItems": ["SG-HVAC-01", "SG-HVAC-02", "FM-HVAC-01", "FM-HVAC-02", "FM-HVAC-03"]
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "FSR-HVAC-01",
+        "description": "The IVI system shall limit HVAC temperature requests to feasible operating ranges",
+        "relationship": "addresses",
+        "source": "Functional Safety Requirements"
+      },
+      {
+        "requirementId": "FSR-HVAC-04",
+        "description": "The IVI system shall authenticate all HVAC control messages using message authentication code",
+        "relationship": "supports",
+        "source": "Functional Safety Requirements"
+      },
+      {
+        "requirementId": "FR-CLI-003",
+        "description": "The IVI system shall implement message authentication for all TEMP_Control_Command messages using vehicle-specific keys",
+        "relationship": "implements",
+        "source": "System Specification"
+      },
+      {
+        "requirementId": "FR-CLI-005",
+        "description": "The IVI system shall transmit the DEFOG_Command signal with value \"ACTIVATE\" when the defog icon is tapped on the touchscreen",
+        "relationship": "implements",
+        "source": "System Specification"
+      },
+      {
+        "requirementId": "NFR-REL-006",
+        "description": "The IVI system shall maintain HVAC functionality after experiencing up to 10 consecutive error events in the CAN communication",
+        "relationship": "supports",
+        "source": "System Specification"
+      },
+      {
+        "requirementId": "TSR-HVAC-06",
+        "description": "The IVI system shall implement redundant validation for temperature values (16°C to 30°C)",
+        "relationship": "implements",
+        "source": "Technical Safety Requirements"
+      }
+    ],
+    "mitigationToControlMapping": [
+      {
+        "securityControlId": "SC-HVAC-001",
+        "implementingRequirements": ["FR-CLI-003", "FSR-HVAC-04"],
+        "mitigatedThreats": ["TS-HVAC-01"]
+      },
+      {
+        "securityControlId": "SC-HVAC-002",
+        "implementingRequirements": ["TSR-HVAC-06", "FSR-HVAC-01"],
+        "mitigatedThreats": ["TS-HVAC-01"]
+      },
+      {
+        "securityControlId": "SC-HVAC-004",
+        "implementingRequirements": ["FR-CLI-003", "FSR-HVAC-04"],
+        "mitigatedThreats": ["TS-HVAC-02"]
+      },
+      {
+        "securityControlId": "SC-HVAC-005",
+        "implementingRequirements": ["NFR-REL-006"],
+        "mitigatedThreats": ["TS-HVAC-02"]
+      },
+      {
+        "securityControlId": "SC-HVAC-007",
+        "implementingRequirements": ["FSR-HVAC-05"],
+        "mitigatedThreats": ["TS-HVAC-03"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "MAC": "Message Authentication Code",
+    "HMAC": "Hash-based Message Authentication Code",
+    "CAN": "Controller Area Network",
+    "HVAC": "Heating, Ventilation, and Air Conditioning",
+    "IVI": "In-Vehicle Infotainment",
+    "ECU": "Electronic Control Unit",
+    "DoS": "Denial of Service"
+  },
+  "searchTerms": [
+    "risk assessment",
+    "risk treatment",
+    "message authentication",
+    "CAN bus security",
+    "HVAC control",
+    "temperature control",
+    "climate control",
+    "security controls",
+    "attack feasibility",
+    "risk calculation",
+    "cybersecurity risk",
+    "defogger",
+    "windshield fogging",
+    "command validation",
+    "security verification",
+    "risk mitigation",
+    "rate limiting",
+    "denial of service",
+    "temperature validation",
+    "anomaly detection",
+    "command sequence"
+  ],
+  "contentSummary": "Asset: Function: Control cabin climate through IVI system. Cyber‑security properties: Integrity and Availability. Three risk assessments: RA-HVAC-01 (Spoofed temperature commands) with Medium risk level, RA-HVAC-02 (Defogger DoS) with Medium risk level, RA-HVAC-03 (Rapid oscillation) with Medium risk level. Security controls include message authentication, plausibility checks, rate limiting, redundant activation paths, and anomaly detection."
+} 

@@ -1,0 +1,394 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Threat Scenarios",
+    "standard": "ISO21434",
+    "version": "1.0",
+    "creationDate": "2025-08-12",
+    "status": "Draft",
+    "reviewDate": "2025-08-26",
+    "reviewers": ["Cybersecurity Team", "HMI Team", "Product Security", "Safety Team"],
+    "documentId": "TARA-TS-VSD-001",
+    "system": "Instrument Cluster",
+    "subsystem": "Vehicle Status Display"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "Vehicle Status Display",
+      "assetType": "Function",
+      "assetDescription": "The Vehicle Status Display function is responsible for collecting, processing, and displaying critical vehicle status information to the driver through the instrument cluster. This includes information such as vehicle speed, engine status, fuel level, battery status, warning indicators, and other safety-critical notifications.",
+      "relatedComponents": ["Instrument Cluster", "CAN Gateway", "Engine Control Module", "Battery Management System", "Body Control Module", "Vehicle Status Controller", "Driver Information System"]
+    },
+    "cybersecurityProperties": {
+      "confidentiality": {
+        "required": false,
+        "justification": "The Vehicle Status Display primarily displays information that is not confidential or sensitive from a privacy perspective. The displayed information is meant to be visible to the driver and passengers."
+      },
+      "integrity": {
+        "required": true,
+        "justification": "The Vehicle Status Display must ensure the integrity of all displayed information as incorrect or manipulated information could lead to unsafe driving decisions and potentially cause accidents."
+      },
+      "availability": {
+        "required": true,
+        "justification": "The Vehicle Status Display must remain available and functional during vehicle operation as it provides critical information needed for safe driving, including speed, warning indicators, and system status."
+      },
+      "authenticity": {
+        "required": true,
+        "justification": "The Vehicle Status Display must ensure that all displayed information comes from authentic sources (legitimate vehicle systems) to prevent spoofed or falsified information."
+      }
+    },
+    "threatScenarios": [
+      {
+        "id": "TS-VSD-01",
+        "title": "CAN Bus Spoofing of Vehicle Status Data",
+        "description": "An attacker gains access to the vehicle's CAN bus (either physically or through a compromised ECU) and injects falsified vehicle status data (e.g., speed, fuel level, warning indicators) that is displayed to the driver, potentially causing the driver to make unsafe driving decisions based on the incorrect information.",
+        "threatType": "Spoofing",
+        "attackVector": "CAN Bus",
+        "attackComplexity": "Medium",
+        "threatSource": ["External Attacker with Physical Access", "Compromised Connected System"],
+        "attackSteps": [
+          "Gain access to the vehicle's CAN bus (physically or through a compromised ECU)",
+          "Monitor CAN bus traffic to identify message IDs related to vehicle status information",
+          "Craft malicious CAN messages with the identified IDs containing falsified data",
+          "Inject the malicious messages onto the CAN bus with higher priority/frequency than legitimate messages",
+          "Vehicle Status Display receives and displays the falsified information to the driver"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Lack of message authentication on CAN bus allows spoofed messages",
+            "No validation of data plausibility before display",
+            "Vehicle Status Display cannot distinguish between legitimate and spoofed data sources",
+            "Insufficient rate limiting allows flooding of CAN messages"
+          ],
+          "controlActions": ["Display Vehicle Status Information"],
+          "unsafeControlActions": [
+            "Display incorrect speed information leading to unsafe driving",
+            "Display falsified safety warnings causing driver confusion",
+            "Suppress legitimate warnings by overriding with normal status data"
+          ],
+          "scenarioReferences": ["UCA-VSD-01", "UCA-VSD-02"]
+        },
+        "prerequisiteConditions": [
+          "Access to vehicle's internal network (physical or remote)",
+          "Knowledge of CAN message IDs related to vehicle status information",
+          "Ability to transmit messages on the CAN bus"
+        ],
+        "damageScenarioIds": ["DA-VSD-01", "DA-VSD-02"],
+        "cybersecurityPropertyImpacted": "Integrity",
+        "targetAssetComponents": ["CAN Gateway", "Vehicle Status Controller", "Instrument Cluster"]
+      },
+      {
+        "id": "TS-VSD-02",
+        "title": "ECU Compromise with Warning Suppression",
+        "description": "An attacker compromises an ECU involved in vehicle status monitoring or display control and modifies its firmware to suppress critical warning messages, preventing the driver from being alerted to potentially dangerous vehicle conditions.",
+        "threatType": "Tampering",
+        "attackVector": "ECU Firmware",
+        "attackComplexity": "High",
+        "threatSource": ["External Attacker with Specialized Knowledge", "Malicious Insider"],
+        "attackSteps": [
+          "Gain access to a target ECU (e.g., Instrument Cluster Controller, Body Control Module)",
+          "Extract and reverse-engineer the ECU firmware to identify warning message handling functions",
+          "Modify the firmware to filter out or suppress specific warning messages",
+          "Reflash the ECU with the modified firmware",
+          "Critical warnings generated by vehicle systems are intercepted and suppressed before reaching the display"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Lack of secure boot verification allows execution of modified firmware",
+            "Insufficient integrity protection for ECU firmware",
+            "No redundant warning notification paths",
+            "No secondary verification of critical warning status"
+          ],
+          "controlActions": ["Process Warning Messages", "Display Warning Indicators"],
+          "unsafeControlActions": [
+            "Failure to display critical safety warnings when conditions warrant",
+            "Suppression of airbag fault indicators",
+            "Filtering of brake system warning messages"
+          ],
+          "scenarioReferences": ["UCA-VSD-03", "UCA-VSD-04"]
+        },
+        "prerequisiteConditions": [
+          "Access to a relevant ECU",
+          "Specialized knowledge and tools for ECU firmware modification",
+          "Ability to bypass ECU security measures (if present)"
+        ],
+        "damageScenarioIds": ["DA-VSD-02"],
+        "cybersecurityPropertyImpacted": "Availability",
+        "targetAssetComponents": ["Vehicle Status Controller", "Instrument Cluster", "Body Control Module"]
+      },
+      {
+        "id": "TS-VSD-03",
+        "title": "False Warning Message Injection",
+        "description": "An attacker injects numerous false warning messages into the vehicle's communication system, causing multiple non-existent warnings to appear on the Vehicle Status Display, creating driver confusion, anxiety, and potential warning fatigue that leads to ignoring legitimate warnings.",
+        "threatType": "Spoofing",
+        "attackVector": "CAN Bus",
+        "attackComplexity": "Medium",
+        "threatSource": ["External Attacker", "Compromised Connected Device"],
+        "attackSteps": [
+          "Gain access to the vehicle's CAN bus or communication network",
+          "Identify message IDs and formats related to warning messages",
+          "Create scripts to generate multiple false warning messages",
+          "Inject the false warnings onto the communication bus at random or strategic intervals",
+          "Driver is presented with numerous warning indicators causing confusion or warning fatigue"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Lack of message authentication allows injection of false warnings",
+            "No rate limiting for warning message frequency",
+            "Warning system has no plausibility checks for multiple simultaneous warnings",
+            "No cross-validation between warning sources and actual system status"
+          ],
+          "controlActions": ["Process Warning Triggers", "Display Warning Messages"],
+          "unsafeControlActions": [
+            "Display too many warnings simultaneously causing cognitive overload",
+            "Display contradictory warning messages causing confusion",
+            "Display false urgent warnings causing unnecessary driver reaction"
+          ],
+          "scenarioReferences": ["UCA-VSD-05", "UCA-VSD-06"]
+        },
+        "prerequisiteConditions": [
+          "Access to vehicle's internal communication network",
+          "Knowledge of warning message protocols and IDs",
+          "Ability to transmit messages on the vehicle's communication bus"
+        ],
+        "damageScenarioIds": ["DA-VSD-03"],
+        "cybersecurityPropertyImpacted": "Authenticity",
+        "targetAssetComponents": ["CAN Gateway", "Vehicle Status Controller", "Instrument Cluster"]
+      },
+      {
+        "id": "TS-VSD-04",
+        "title": "Display System Denial of Service",
+        "description": "An attacker performs a denial of service attack against the Vehicle Status Display by flooding the communication bus with high-priority messages or by exploiting a vulnerability in the display controller, causing the display to freeze, reboot continuously, or become completely non-functional.",
+        "threatType": "Denial of Service",
+        "attackVector": "CAN Bus / Display Controller",
+        "attackComplexity": "Medium",
+        "threatSource": ["External Attacker", "Compromised Connected System"],
+        "attackSteps": [
+          "Gain access to the vehicle's internal network",
+          "Identify high-priority message IDs or discover vulnerabilities in the display controller",
+          "Generate excessive traffic on the communication bus targeting the display controller",
+          "Alternatively, exploit a vulnerability in the display controller software",
+          "Display system becomes unresponsive, freezes, or reboots continuously"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Lack of resource limitation allows message flooding",
+            "Insufficient error handling for unexpected message volumes",
+            "No redundant display capability for critical information",
+            "Vulnerable to resource exhaustion attacks"
+          ],
+          "controlActions": ["Process Display Information", "Update Display Interface"],
+          "unsafeControlActions": [
+            "Failure to display any vehicle status information",
+            "Display freezes showing outdated information",
+            "Continuous display resets preventing information comprehension"
+          ],
+          "scenarioReferences": ["UCA-VSD-07", "UCA-VSD-08"]
+        },
+        "prerequisiteConditions": [
+          "Access to vehicle's internal network",
+          "Knowledge of CAN bus protocols and message priorities",
+          "Ability to transmit high volumes of messages or exploit display controller vulnerabilities"
+        ],
+        "damageScenarioIds": ["DA-VSD-04"],
+        "cybersecurityPropertyImpacted": "Availability",
+        "targetAssetComponents": ["Vehicle Status Controller", "Instrument Cluster", "CAN Gateway"]
+      }
+    ],
+    "threatAssessment": [
+      {
+        "threatScenarioId": "TS-VSD-01",
+        "assessmentMethod": "CVSS Base",
+        "attackFeasibilityRating": {
+          "rating": "Medium",
+          "score": 5.4,
+          "vector": "AV:P/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N",
+          "justification": "The attack requires physical access to the vehicle and specialized knowledge of automotive networks, but does not require system privileges or user interaction. The impact on integrity is high as it directly affects safety-critical information."
+        },
+        "relevantVulnerabilities": [
+          "Lack of authentication on CAN bus messages",
+          "No message signing for status information",
+          "Insufficient data validation before display",
+          "Limited filtering of potentially malicious CAN messages"
+        ],
+        "existingControls": [
+          "Basic plausibility checks for some vehicle parameters",
+          "CAN bus physical access requires vehicle disassembly",
+          "Network segmentation between critical and non-critical systems"
+        ]
+      },
+      {
+        "threatScenarioId": "TS-VSD-02",
+        "assessmentMethod": "CVSS Base",
+        "attackFeasibilityRating": {
+          "rating": "Low",
+          "score": 4.3,
+          "vector": "AV:P/AC:H/PR:H/UI:N/S:U/C:N/I:H/A:N",
+          "justification": "This attack requires physical access to an ECU, high technical expertise for firmware modification, and would typically require privileged access. The attack is complex due to the need for specialized equipment and knowledge."
+        },
+        "relevantVulnerabilities": [
+          "Insecure ECU firmware update procedures",
+          "Lack of firmware integrity verification",
+          "Absence of secure boot mechanisms on some ECUs",
+          "Insufficient access controls for ECU reprogramming"
+        ],
+        "existingControls": [
+          "ECU reprogramming requires specialized equipment",
+          "Some newer ECUs implement code signing",
+          "Physical access to ECUs typically requires significant vehicle disassembly",
+          "Critical warnings may have redundant display paths in some vehicle systems"
+        ]
+      },
+      {
+        "threatScenarioId": "TS-VSD-03",
+        "assessmentMethod": "CVSS Base",
+        "attackFeasibilityRating": {
+          "rating": "Medium",
+          "score": 5.4,
+          "vector": "AV:P/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N",
+          "justification": "Similar to TS-VSD-01, this attack requires physical access and automotive network knowledge, but focuses on injecting warning messages rather than status information. It has high integrity impact as it affects the trustworthiness of the warning system."
+        },
+        "relevantVulnerabilities": [
+          "Lack of message authentication for warning indicators",
+          "No rate limiting for warning message frequency",
+          "Absence of cross-validation between related systems",
+          "Limited correlation checks between multiple warnings"
+        ],
+        "existingControls": [
+          "Some warning messages have priority hierarchy",
+          "Critical warnings may have dedicated circuits in addition to CAN messages",
+          "Basic filtering of duplicate messages within short timeframes"
+        ]
+      },
+      {
+        "threatScenarioId": "TS-VSD-04",
+        "assessmentMethod": "CVSS Base",
+        "attackFeasibilityRating": {
+          "rating": "Medium",
+          "score": 5.9,
+          "vector": "AV:P/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "justification": "This attack requires physical access and technical knowledge but focuses on availability rather than integrity. The impact on availability is high as it could completely disable the display of critical vehicle information."
+        },
+        "relevantVulnerabilities": [
+          "Susceptibility to CAN bus flooding attacks",
+          "Insufficient resource management in display controller",
+          "Lack of rate limiting for incoming messages",
+          "Limited error recovery mechanisms"
+        ],
+        "existingControls": [
+          "Display controller watchdog timers for crash recovery",
+          "Basic error handling for unexpected message formats",
+          "Some systems implement message filtering for known invalid patterns"
+        ]
+      }
+    ]
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-VSD-001",
+        "documentType": "Impact Analysis",
+        "relationship": "informsPrevious",
+        "linkedItems": ["DA-VSD-01", "DA-VSD-02", "DA-VSD-03", "DA-VSD-04"]
+      },
+      {
+        "documentId": "TARA-RA-VSD-001",
+        "documentType": "Risk Assessment",
+        "relationship": "informsNext",
+        "linkedItems": ["TS-VSD-01", "TS-VSD-02", "TS-VSD-03", "TS-VSD-04"]
+      },
+      {
+        "documentId": "STPA-VSD-001",
+        "documentType": "Safety Analysis",
+        "relationship": "references",
+        "linkedItems": ["UCA-VSD-01", "UCA-VSD-02", "UCA-VSD-03", "UCA-VSD-04", "UCA-VSD-05", "UCA-VSD-06", "UCA-VSD-07", "UCA-VSD-08"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "9.3",
+        "description": "Threat scenario identification"
+      },
+      {
+        "standardId": "ISO21434",
+        "clause": "9.4",
+        "description": "Attack path analysis"
+      },
+      {
+        "standardId": "ISO21434",
+        "clause": "9.5",
+        "description": "Attack feasibility rating"
+      },
+      {
+        "standardId": "UNECE R155",
+        "clause": "Annex 5, Part A",
+        "description": "Mitigation to the threats which are related to 'Vehicle communication channels'"
+      },
+      {
+        "standardId": "SAE J3061",
+        "clause": "5.4",
+        "description": "Threat analysis and risk assessment"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "SYS-IC-01",
+        "description": "The instrument cluster shall display accurate vehicle status information under all operating conditions",
+        "threatScenarioIds": ["TS-VSD-01", "TS-VSD-03"]
+      },
+      {
+        "requirementId": "SYS-IC-02",
+        "description": "The instrument cluster shall display all critical warning messages triggered by vehicle systems",
+        "threatScenarioIds": ["TS-VSD-02"]
+      },
+      {
+        "requirementId": "SYS-IC-03",
+        "description": "The instrument cluster shall maintain display functionality in the presence of interference or attack vectors",
+        "threatScenarioIds": ["TS-VSD-04"]
+      },
+      {
+        "requirementId": "SYS-IC-04",
+        "description": "The instrument cluster shall authenticate the source of all warning messages before display",
+        "threatScenarioIds": ["TS-VSD-01", "TS-VSD-03"]
+      },
+      {
+        "requirementId": "SYS-IC-05",
+        "description": "The instrument cluster shall maintain redundant display capabilities for critical safety information",
+        "threatScenarioIds": ["TS-VSD-02", "TS-VSD-04"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "Threat Scenario": "Description of a potential attack against a system, including attack methods and objectives",
+    "Attack Vector": "Method or path by which an attacker gains access to a system to conduct an attack",
+    "Attack Feasibility": "Measure of how practical and likely a particular attack is to be executed successfully",
+    "CAN Bus": "Controller Area Network bus - standard vehicle communication protocol",
+    "ECU": "Electronic Control Unit - embedded systems controlling vehicle functions",
+    "CVSS": "Common Vulnerability Scoring System - framework for assessing vulnerability severity",
+    "Spoofing": "Attack where an entity successfully masquerades as another by falsifying data",
+    "Tampering": "Unauthorized modification of system, component, or data",
+    "Denial of Service": "Attack aimed at making a system or resource unavailable",
+    "STPA": "System Theoretic Process Analysis - safety analysis methodology",
+    "Control Flaw": "Weakness in a system's control structure that could lead to a hazard",
+    "Warning Suppression": "Prevention of legitimate warning messages from being displayed"
+  },
+  "searchTerms": [
+    "instrument cluster threat",
+    "vehicle display attack",
+    "CAN bus spoofing",
+    "automotive warning suppression",
+    "dashboard denial of service",
+    "vehicle status falsification",
+    "ECU firmware tampering",
+    "false warning injection",
+    "vehicle display security",
+    "automotive TARA methodology",
+    "ISO21434 threat scenario",
+    "instrument cluster cybersecurity",
+    "vehicle status display attack",
+    "vehicle HMI security"
+  ],
+  "contentSummary": "This TARA Threat Scenarios document analyzes four key threat scenarios targeting the Vehicle Status Display function in the Instrument Cluster system. The identified threats are: (1) CAN Bus Spoofing of Vehicle Status Data - falsification of displayed information through injection of spoofed messages; (2) ECU Compromise with Warning Suppression - modification of ECU firmware to prevent critical warnings from being displayed; (3) False Warning Message Injection - generating numerous fake warnings causing driver confusion and warning fatigue; and (4) Display System Denial of Service - preventing the display from functioning through message flooding or component exploitation. Each threat scenario is analyzed in detail, including attack vectors, complexity, prerequisites, and specific attack steps. The STPA analysis identifies control flaws that could enable each attack, such as lack of message authentication, insufficient plausibility checks, and vulnerable error handling. Attack feasibility ratings using CVSS indicate medium feasibility for most scenarios, with ECU firmware compromise rated as more difficult. The document identifies relevant vulnerabilities in current implementations and notes existing security controls. This analysis provides a crucial foundation for risk assessment and security control development to protect the Vehicle Status Display from potential attacks."
+} 

@@ -1,0 +1,540 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-04-23",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Battery Management Display",
+    "documentId": "FMEA-IVI-BMD-001",
+    "status": "Released",
+    "reviewDate": "2025-04-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Battery Management Display System",
+    "description": "The Battery Management Display system in the IVI provides the driver with critical information about the electric vehicle's battery status including state of charge, range estimation, charging status, and energy consumption metrics. It interfaces with the Battery Management System (BMS) to collect, process, and present battery-related information in an intuitive format.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Ambient temperature -40°C to +85°C",
+      "Operating voltage 9-16V",
+      "Various lighting conditions from direct sunlight to night",
+      "During charging and discharging operations"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-BMD-01",
+      "description": "The Battery Management Display shall present accurate and timely battery status information to the driver",
+      "asilRating": "ASIL B",
+      "rationale": "Inaccurate battery status information could lead to unexpected vehicle power loss or charging incidents",
+      "relatedHazards": ["H-BMD-01", "H-BMD-03"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-BMD-01",
+          "description": "The IVI system shall display accurate state of charge information with minimal delay",
+          "verification": "Test and analysis",
+          "traceability": "SG-BMD-01"
+        },
+        {
+          "id": "FSR-BMD-02",
+          "description": "The IVI system shall display accurate range estimation based on current driving conditions",
+          "verification": "Test",
+          "traceability": "SG-BMD-01"
+        },
+        {
+          "id": "FSR-BMD-03",
+          "description": "The IVI system shall clearly indicate potentially hazardous battery conditions",
+          "verification": "Test and analysis",
+          "traceability": "SG-BMD-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-BMD-02",
+      "description": "The Battery Management Display shall prevent driver misinterpretation of battery status information",
+      "asilRating": "ASIL B",
+      "rationale": "Misinterpreted battery information could lead to inappropriate driving decisions and potential safety hazards",
+      "relatedHazards": ["H-BMD-02", "H-BMD-04"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-BMD-04",
+          "description": "The IVI system shall present battery information in a clear, unambiguous format",
+          "verification": "Test and analysis",
+          "traceability": "SG-BMD-02"
+        },
+        {
+          "id": "FSR-BMD-05",
+          "description": "The IVI system shall provide intuitive alerts for critical battery conditions",
+          "verification": "Test",
+          "traceability": "SG-BMD-02"
+        },
+        {
+          "id": "FSR-BMD-06",
+          "description": "The IVI system shall implement consistent display conventions for battery information",
+          "verification": "Test",
+          "traceability": "SG-BMD-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-BMD-01",
+      "description": "Inaccurate state of charge display",
+      "operationalSituation": "Vehicle in motion with low battery level",
+      "hazardousEvent": "Vehicle unexpectedly loses power due to battery depletion not accurately reflected in display",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-BMD-02",
+      "description": "Misleading range estimation display",
+      "operationalSituation": "Vehicle driving with limited battery range",
+      "hazardousEvent": "Driver makes inappropriate journey decisions based on incorrect range information",
+      "asilRating": "ASIL B",
+      "severityRating": "S1",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-BMD-03",
+      "description": "Failure to display critical battery temperature warning",
+      "operationalSituation": "Vehicle charging or in motion with battery thermal issue",
+      "hazardousEvent": "Driver unaware of potentially hazardous battery thermal condition",
+      "asilRating": "ASIL B",
+      "severityRating": "S3",
+      "exposureRating": "E2",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-BMD-04",
+      "description": "Confusing or distracting battery alert display",
+      "operationalSituation": "Vehicle in motion with developing battery issue",
+      "hazardousEvent": "Driver distracted or confused by ambiguous battery alerts",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Battery Management Display System",
+      "function": "Display battery status information to driver"
+    },
+    "failureModes": [
+      {
+        "id": "FM-BMD-01",
+        "description": "Inaccurate state of charge display",
+        "potentialCauses": [
+          "CAN communication error with BMS",
+          "SoC calculation algorithm error",
+          "Display calibration issue"
+        ],
+        "failureEffects": {
+          "local": "State of charge information differs from actual battery level",
+          "nextLevel": "Driver makes decisions based on incorrect battery status",
+          "endEffect": "Vehicle could unexpectedly run out of power or charging could be inappropriate"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Implement BMS data verification algorithms",
+          "Use redundant SoC calculation methods"
+        ],
+        "detection": [
+          "Cross-check SoC data from multiple sources",
+          "Monitor for implausible SoC changes"
+        ],
+        "mitigations": [
+          {
+            "description": "Multi-source SoC data fusion with plausibility checks",
+            "type": "Data Validation",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Conservative range display with safety margin",
+            "type": "Design Approach",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-BMD-01",
+            "description": "The Battery Management Display shall implement data fusion from at least two independent SoC calculation methods",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BMD-01"
+          },
+          {
+            "id": "TSR-BMD-02",
+            "description": "The Battery Management Display shall indicate uncertainty when SoC data sources disagree by more than 5%",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BMD-01"
+          }
+        ]
+      },
+      {
+        "id": "FM-BMD-02",
+        "description": "Incorrect range estimation",
+        "potentialCauses": [
+          "Inaccurate energy consumption model",
+          "Failure to account for environmental factors",
+          "Historical usage data corruption"
+        ],
+        "failureEffects": {
+          "local": "Displayed range differs significantly from actual achievable range",
+          "nextLevel": "Driver makes journey decisions based on incorrect range",
+          "endEffect": "Vehicle stranded due to battery depletion in unsafe location"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 4,
+        "detectionRating": 4,
+        "riskPriorityNumber": 96,
+        "prevention": [
+          "Implement adaptive range prediction algorithms",
+          "Include environmental and driving style factors"
+        ],
+        "detection": [
+          "Monitor deviation between predicted and actual consumption",
+          "Track historical prediction accuracy"
+        ],
+        "mitigations": [
+          {
+            "description": "Conservative range estimation with clear uncertainty indication",
+            "type": "Algorithm Design",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Dynamic range adjustments based on real-time factors",
+            "type": "Adaptive System",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-BMD-03",
+            "description": "The Battery Management Display shall adjust range estimations based on temperature, terrain, driving style, and auxiliary loads",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BMD-02"
+          },
+          {
+            "id": "TSR-BMD-04",
+            "description": "The Battery Management Display shall apply a safety margin to range estimations based on historical prediction accuracy",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BMD-02"
+          }
+        ]
+      },
+      {
+        "id": "FM-BMD-03",
+        "description": "Failure to display critical battery warnings",
+        "potentialCauses": [
+          "Warning message filtering error",
+          "CAN message priority issue",
+          "Warning threshold configuration error"
+        ],
+        "failureEffects": {
+          "local": "Critical battery condition not displayed to driver",
+          "nextLevel": "Driver unaware of potentially hazardous situation",
+          "endEffect": "Battery damage or safety incident due to continued operation"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 8,
+        "occurrenceRating": 3,
+        "detectionRating": 3,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Implement dedicated path for critical battery warnings",
+          "Use redundant warning mechanisms"
+        ],
+        "detection": [
+          "Monitor BMS warning message processing",
+          "Independent monitoring of critical battery parameters"
+        ],
+        "mitigations": [
+          {
+            "description": "Independent monitoring system for critical battery parameters",
+            "type": "System Architecture",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Redundant warning paths with different technology",
+            "type": "Redundancy",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-BMD-05",
+            "description": "The Battery Management Display shall implement a dedicated high-priority processing path for critical battery warnings",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-BMD-03"
+          },
+          {
+            "id": "TSR-BMD-06",
+            "description": "The Battery Management Display shall provide redundant notification methods for critical battery conditions",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BMD-03"
+          }
+        ]
+      },
+      {
+        "id": "FM-BMD-04",
+        "description": "Ambiguous or confusing battery information display",
+        "potentialCauses": [
+          "Poor UI design for battery information",
+          "Inconsistent use of units or symbols",
+          "Excessive information density"
+        ],
+        "failureEffects": {
+          "local": "Battery information difficult to interpret correctly",
+          "nextLevel": "Driver misinterprets battery status or warnings",
+          "endEffect": "Inappropriate driver actions based on misunderstood battery information"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 4,
+        "detectionRating": 4,
+        "riskPriorityNumber": 96,
+        "prevention": [
+          "Implement standardized battery information design",
+          "Use established information hierarchy principles"
+        ],
+        "detection": [
+          "Usability testing with comprehension metrics",
+          "Eye tracking studies during information processing"
+        ],
+        "mitigations": [
+          {
+            "description": "Standardized, intuitive display formats for battery information",
+            "type": "UI Design",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Clear visual distinction between normal and critical battery states",
+            "type": "Visual Design",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-BMD-07",
+            "description": "The Battery Management Display shall implement standardized icons and color schemes consistent with industry norms for battery information",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Design Review",
+            "parentRequirement": "FSR-BMD-04"
+          },
+          {
+            "id": "TSR-BMD-08",
+            "description": "The Battery Management Display shall provide clear textual explanations accompanying all battery warnings",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BMD-05"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-BMD-01",
+      "description": "State of Charge Validation",
+      "mechanism": "Multi-source data fusion and plausibility checking",
+      "diagnosticCoverage": "92%",
+      "failureModesCovered": ["FM-BMD-01"],
+      "implementationDetails": "System combines SoC data from battery voltage monitoring, coulomb counting, and BMS reported values with plausibility checks to detect discrepancies"
+    },
+    {
+      "id": "SM-BMD-02",
+      "description": "Adaptive Range Prediction",
+      "mechanism": "Dynamic range calculation with multiple factors",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-BMD-02"],
+      "implementationDetails": "System dynamically adjusts range calculation based on temperature, terrain, driving style, HVAC usage, and applies safety margin based on historical accuracy"
+    },
+    {
+      "id": "SM-BMD-03",
+      "description": "Critical Warning Fast Path",
+      "mechanism": "High-priority processing for battery warnings",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-BMD-03"],
+      "implementationDetails": "System implements dedicated processing channel for critical battery warnings with guaranteed maximum latency of 200ms from detection to display"
+    },
+    {
+      "id": "SM-BMD-04",
+      "description": "Independent Battery Monitoring",
+      "mechanism": "Secondary battery parameter monitoring",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-BMD-03"],
+      "implementationDetails": "System implements secondary monitoring of critical battery parameters independent of main BMS communication channel as redundancy"
+    },
+    {
+      "id": "SM-BMD-05",
+      "description": "Standardized Information Design",
+      "mechanism": "Consistent information presentation format",
+      "diagnosticCoverage": "80%",
+      "failureModesCovered": ["FM-BMD-04"],
+      "implementationDetails": "System implements standardized visual language for battery information with clear differentiation between normal, advisory, and critical states"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-BMD-01",
+        "description": "Verify SoC data fusion and accuracy",
+        "relatedRequirements": ["TSR-BMD-01"],
+        "testProcedure": "Compare displayed SoC with reference measurements across various operating conditions",
+        "acceptanceCriteria": "Displayed SoC accurate within ±3% across operating range",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BMD-02",
+        "description": "Verify SoC uncertainty indication",
+        "relatedRequirements": ["TSR-BMD-02"],
+        "testProcedure": "Induce disagreement between SoC data sources and observe display behavior",
+        "acceptanceCriteria": "System indicates uncertainty when SoC data sources disagree by more than 5%",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BMD-03",
+        "description": "Verify range adaptation factors",
+        "relatedRequirements": ["TSR-BMD-03"],
+        "testProcedure": "Test range prediction under various conditions (temperature, terrain, driving styles)",
+        "acceptanceCriteria": "Range estimation adjusts appropriately for all tested conditions",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BMD-04",
+        "description": "Verify range prediction safety margin",
+        "relatedRequirements": ["TSR-BMD-04"],
+        "testProcedure": "Compare predicted range with actual achievable range across multiple test drives",
+        "acceptanceCriteria": "Displayed range includes appropriate safety margin based on prediction accuracy",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BMD-05",
+        "description": "Verify critical warning processing",
+        "relatedRequirements": ["TSR-BMD-05"],
+        "testProcedure": "Measure end-to-end latency for critical battery warnings",
+        "acceptanceCriteria": "Critical battery warnings displayed within 200ms of detection",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BMD-06",
+        "description": "Verify redundant warning notification",
+        "relatedRequirements": ["TSR-BMD-06"],
+        "testProcedure": "Simulate critical battery conditions and observe notification methods",
+        "acceptanceCriteria": "Critical battery conditions trigger at least two distinct notification methods",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BMD-07",
+        "description": "Verify standardized information display",
+        "relatedRequirements": ["TSR-BMD-07"],
+        "testProcedure": "Review battery information display against industry standards",
+        "acceptanceCriteria": "All battery information displays use standardized icons and color schemes",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BMD-08",
+        "description": "Verify warning explanation clarity",
+        "relatedRequirements": ["TSR-BMD-08"],
+        "testProcedure": "Evaluate comprehension of battery warning messages through user testing",
+        "acceptanceCriteria": "Battery warnings correctly interpreted by 95% of test users",
+        "results": "Passed"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-BMD-01",
+        "functionalSafetyRequirements": ["FSR-BMD-01", "FSR-BMD-02", "FSR-BMD-03"],
+        "technicalSafetyRequirements": ["TSR-BMD-01", "TSR-BMD-02", "TSR-BMD-03", "TSR-BMD-04", "TSR-BMD-05", "TSR-BMD-06"]
+      },
+      {
+        "safetyGoalId": "SG-BMD-02",
+        "functionalSafetyRequirements": ["FSR-BMD-04", "FSR-BMD-05", "FSR-BMD-06"],
+        "technicalSafetyRequirements": ["TSR-BMD-07", "TSR-BMD-08"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-BMD-01",
+        "testCaseIds": ["TC-BMD-01"]
+      },
+      {
+        "requirementId": "TSR-BMD-02",
+        "testCaseIds": ["TC-BMD-02"]
+      },
+      {
+        "requirementId": "TSR-BMD-03",
+        "testCaseIds": ["TC-BMD-03"]
+      },
+      {
+        "requirementId": "TSR-BMD-04",
+        "testCaseIds": ["TC-BMD-04"]
+      },
+      {
+        "requirementId": "TSR-BMD-05",
+        "testCaseIds": ["TC-BMD-05"]
+      },
+      {
+        "requirementId": "TSR-BMD-06",
+        "testCaseIds": ["TC-BMD-06"]
+      },
+      {
+        "requirementId": "TSR-BMD-07",
+        "testCaseIds": ["TC-BMD-07"]
+      },
+      {
+        "requirementId": "TSR-BMD-08",
+        "testCaseIds": ["TC-BMD-08"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "BMD": "Battery Management Display",
+    "BMS": "Battery Management System",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "SoC": "State of Charge",
+    "EV": "Electric Vehicle"
+  },
+  "searchTerms": [
+    "battery display",
+    "state of charge",
+    "battery range",
+    "range estimation",
+    "battery warning",
+    "charge status",
+    "energy consumption",
+    "battery health",
+    "battery temperature",
+    "battery monitoring",
+    "battery information",
+    "EV range",
+    "range anxiety",
+    "battery depletion",
+    "charging status",
+    "discharge rate",
+    "battery management",
+    "battery safety",
+    "electric vehicle",
+    "battery condition"
+  ]
+} 

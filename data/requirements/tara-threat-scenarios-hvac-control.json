@@ -1,0 +1,416 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Threat Scenarios and Attacks",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-05-01",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "reviewers": ["Cybersecurity Team", "Penetration Testing Team"],
+    "documentId": "TARA-TS-HVAC-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "HVAC Control Interface"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "HVAC Control Interface",
+      "assetType": "Function",
+      "assetDescription": "Control cabin climate through IVI system",
+      "relatedComponents": ["IVI System", "CAN Bus", "HVAC Electronic Control Unit (ECU)"]
+    },
+    "cybersecurityProperties": [
+      {
+        "property": "Integrity",
+        "description": "Ensures that HVAC control commands cannot be maliciously modified or spoofed",
+        "protectionGoal": "Prevent unauthorized entities from manipulating cabin climate settings"
+      },
+      {
+        "property": "Availability",
+        "description": "Ensures that climate control functionality remains available to legitimate users",
+        "protectionGoal": "Maintain essential climate control functions during vehicle operation"
+      }
+    ],
+    "threatScenarios": [
+      {
+        "id": "TS-HVAC-01",
+        "title": "Spoofed HVAC temperature command via CAN bus",
+        "description": "An attacker gains access to the vehicle's CAN bus and injects spoofed HVAC temperature commands that appear to come from the IVI system, causing the cabin temperature to suddenly change to extreme settings",
+        "preconditions": [
+          "Attacker has physical or remote access to vehicle CAN bus",
+          "Current CAN implementation lacks robust message authentication",
+          "HVAC ECU accepts temperature control commands from IVI without strong validation"
+        ],
+        "attackVector": "CAN bus message injection",
+        "vulnerabilities": [
+          {
+            "id": "VUL-HVAC-01",
+            "description": "HVAC control CAN messages lack strong authentication",
+            "cweReference": "CWE-287: Improper Authentication"
+          },
+          {
+            "id": "VUL-HVAC-02",
+            "description": "Temperature command checksum can be bypassed",
+            "cweReference": "CWE-354: Improper Validation of Integrity Check Value"
+          },
+          {
+            "id": "VUL-HVAC-03",
+            "description": "Lack of plausibility checks for temperature commands",
+            "cweReference": "CWE-20: Improper Input Validation"
+          }
+        ],
+        "relatedDamageScenarios": ["DA-HVAC-01", "DA-HVAC-03"],
+        "attackPaths": {
+          "attackSteps": [
+            {
+              "step": 1,
+              "description": "Identify HVAC temperature control CAN ID",
+              "technique": "Bus monitoring followed by message replay or generation",
+              "difficulty": "Medium",
+              "prerequisites": ["CAN bus access", "Knowledge of message structure"]
+            },
+            {
+              "step": 2,
+              "description": "Bypass checksum or authentication",
+              "technique": "Calculate valid checksum for injected message",
+              "difficulty": "Medium",
+              "prerequisites": ["Knowledge of checksum algorithm"]
+            },
+            {
+              "step": 3,
+              "description": "Craft extreme temperature command",
+              "technique": "Set temperature data bytes with extreme values",
+              "difficulty": "Low",
+              "prerequisites": ["Knowledge of temperature command structure"]
+            },
+            {
+              "step": 4,
+              "description": "Send command at strategic time",
+              "technique": "Inject command during vehicle operation",
+              "difficulty": "Low",
+              "prerequisites": ["Basic timing analysis"]
+            }
+          ],
+          "attackFlow": "The attacker first identifies the CAN message responsible for temperature control, then constructs a valid message with an extreme temperature setting and the correct checksum. When injected onto the bus, this message is accepted by the HVAC ECU as legitimate, resulting in a sudden extreme temperature change. The attacker can time this command to be most effective - typically while the vehicle is in motion to maximize driver distraction."
+        },
+        "attackFeasibilityAssessment": {
+          "method": "ISO21434 Attack Feasibility Rating",
+          "elapsedTime": {
+            "value": "≤ 1 week",
+            "score": 1,
+            "justification": "Requires several days to analyze CAN messages and develop appropriate injection technique"
+          },
+          "expertise": {
+            "value": "Expert",
+            "score": 2,
+            "justification": "Requires specialized knowledge of automotive networks and protocols"
+          },
+          "knowledgeOfItem": {
+            "value": "Confidential",
+            "score": 3,
+            "justification": "Requires internal details about message structure and validation mechanisms"
+          },
+          "windowOfOpportunity": {
+            "value": "Easy",
+            "score": 0,
+            "justification": "Attack can be performed whenever attacker has access to the vehicle"
+          },
+          "equipment": {
+            "value": "Bespoke",
+            "score": 4,
+            "justification": "Requires specialized hardware for CAN bus interfacing and custom software for message generation"
+          },
+          "attackFeasibilityRating": {
+            "value": "High",
+            "score": 10,
+            "justification": "The sum of individual scores indicates high attack feasibility"
+          }
+        }
+      },
+      {
+        "id": "TS-HVAC-02",
+        "title": "Denial of Service attack on HVAC defogger function",
+        "description": "An attacker intercepts and blocks defogger activation commands from the IVI to the HVAC ECU, preventing the windshield defogger from operating during cold/humid conditions",
+        "preconditions": [
+          "Attacker has physical or remote access to vehicle CAN bus",
+          "Defogger command lacks sufficient authentication or integrity protection",
+          "No redundant path for critical defogger activation"
+        ],
+        "attackVector": "CAN message blocking or corruption",
+        "vulnerabilities": [
+          {
+            "id": "VUL-HVAC-04",
+            "description": "Defogger commands lack integrity protection",
+            "cweReference": "CWE-345: Insufficient Verification of Data Authenticity"
+          },
+          {
+            "id": "VUL-HVAC-05",
+            "description": "No fallback mechanism for defogging in case of command failure",
+            "cweReference": "CWE-755: Improper Handling of Exceptional Conditions"
+          },
+          {
+            "id": "VUL-HVAC-06",
+            "description": "Single communication path for critical defogger commands",
+            "cweReference": "CWE-778: Insufficient Logging"
+          }
+        ],
+        "relatedDamageScenarios": ["DA-HVAC-02"],
+        "attackPaths": {
+          "attackSteps": [
+            {
+              "step": 1,
+              "description": "Identify defogger control CAN ID",
+              "technique": "Bus monitoring to identify defogger-related messages",
+              "difficulty": "Medium",
+              "prerequisites": ["CAN bus access", "Basic knowledge of CAN protocol"]
+            },
+            {
+              "step": 2,
+              "description": "Implement message blocking mechanism",
+              "technique": "Configure CAN interface to intercept and drop specific messages",
+              "difficulty": "Medium",
+              "prerequisites": ["CAN bus interface hardware", "Programming skills"]
+            },
+            {
+              "step": 3,
+              "description": "Activate attack during adverse conditions",
+              "technique": "Deploy attack when environment sensors detect conditions where defogging would be needed",
+              "difficulty": "High",
+              "prerequisites": ["Knowledge of vehicle environmental data on CAN bus"]
+            }
+          ],
+          "attackFlow": "The attacker identifies the CAN messages used for defogger activation through passive monitoring. Using specialized hardware, they selectively block or corrupt these specific messages while allowing other HVAC commands to pass normally. This makes the attack harder to detect since only the defogger function is impaired. The attack is most effective during cold/humid conditions when the defogger would normally be activated."
+        },
+        "attackFeasibilityAssessment": {
+          "method": "ISO21434 Attack Feasibility Rating",
+          "elapsedTime": {
+            "value": "≤ 1 week",
+            "score": 1,
+            "justification": "Requires time to identify specific defogger messages and create selective blocking mechanism"
+          },
+          "expertise": {
+            "value": "Expert",
+            "score": 2,
+            "justification": "Requires specialized knowledge of automotive networks and selective message blocking"
+          },
+          "knowledgeOfItem": {
+            "value": "Restricted",
+            "score": 2,
+            "justification": "Requires knowledge of defogger message format but not implementation details"
+          },
+          "windowOfOpportunity": {
+            "value": "Moderate",
+            "score": 1,
+            "justification": "Attack requires specific weather conditions to be most effective"
+          },
+          "equipment": {
+            "value": "Specialized",
+            "score": 3,
+            "justification": "Requires CAN interface hardware with message filtering capabilities"
+          },
+          "attackFeasibilityRating": {
+            "value": "Medium",
+            "score": 9,
+            "justification": "The sum of individual scores indicates medium attack feasibility"
+          }
+        }
+      },
+      {
+        "id": "TS-HVAC-03",
+        "title": "Rapid oscillation attack on HVAC system",
+        "description": "An attacker injects a sequence of rapidly changing temperature and fan speed commands to cause the HVAC system to oscillate erratically, creating noise and temperature fluctuations that distract the driver",
+        "preconditions": [
+          "Attacker has physical or remote access to vehicle CAN bus",
+          "HVAC system lacks rate limiting for control commands",
+          "No detection mechanism for abnormal command patterns"
+        ],
+        "attackVector": "CAN message injection with rapid sequence",
+        "vulnerabilities": [
+          {
+            "id": "VUL-HVAC-07",
+            "description": "HVAC system accepts commands without rate limiting",
+            "cweReference": "CWE-770: Allocation of Resources Without Limits or Throttling"
+          },
+          {
+            "id": "VUL-HVAC-08",
+            "description": "Lack of anomaly detection for command sequences",
+            "cweReference": "CWE-754: Improper Check for Unusual or Exceptional Conditions"
+          },
+          {
+            "id": "VUL-HVAC-09",
+            "description": "HVAC ECU unable to filter implausible command sequences",
+            "cweReference": "CWE-20: Improper Input Validation"
+          }
+        ],
+        "relatedDamageScenarios": ["DA-HVAC-03"],
+        "attackPaths": {
+          "attackSteps": [
+            {
+              "step": 1,
+              "description": "Identify temperature and fan control CAN IDs",
+              "technique": "Bus monitoring to identify climate control messages",
+              "difficulty": "Medium",
+              "prerequisites": ["CAN bus access", "Basic knowledge of CAN protocol"]
+            },
+            {
+              "step": 2,
+              "description": "Develop script for rapid command generation",
+              "technique": "Create automated script to generate alternating extreme settings",
+              "difficulty": "Medium",
+              "prerequisites": ["Programming skills", "CAN message formatting knowledge"]
+            },
+            {
+              "step": 3,
+              "description": "Deploy attack with maximum oscillation frequency",
+              "technique": "Tune command frequency to maximize audible and temperature variations",
+              "difficulty": "Medium",
+              "prerequisites": ["Understanding of HVAC system response characteristics"]
+            }
+          ],
+          "attackFlow": "The attacker identifies the CAN messages used for temperature and fan control through passive monitoring. They then develop an automated script that generates a rapid sequence of alternating commands (hot/cold temperature, high/low fan speed). When injected onto the CAN bus, these commands cause the HVAC system to continuously fluctuate, creating distracting noise from the fan and noticeable temperature changes in the cabin."
+        },
+        "attackFeasibilityAssessment": {
+          "method": "ISO21434 Attack Feasibility Rating",
+          "elapsedTime": {
+            "value": "≤ 1 day",
+            "score": 0,
+            "justification": "Once CAN message formats are known, creating oscillation script is relatively quick"
+          },
+          "expertise": {
+            "value": "Proficient",
+            "score": 1,
+            "justification": "Requires working knowledge of CAN bus protocol but not deep expertise"
+          },
+          "knowledgeOfItem": {
+            "value": "Restricted",
+            "score": 2,
+            "justification": "Requires knowledge of HVAC message formats but not implementation details"
+          },
+          "windowOfOpportunity": {
+            "value": "Easy",
+            "score": 0,
+            "justification": "Attack can be performed whenever attacker has access to the vehicle"
+          },
+          "equipment": {
+            "value": "Standard",
+            "score": 1,
+            "justification": "Requires common CAN bus interface tools available to researchers"
+          },
+          "attackFeasibilityRating": {
+            "value": "Very High",
+            "score": 4,
+            "justification": "The sum of individual scores indicates very high attack feasibility"
+          }
+        }
+      }
+    ]
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-HVAC-001",
+        "documentType": "Impact Analysis",
+        "relationship": "basedOn",
+        "linkedItems": ["DA-HVAC-01", "DA-HVAC-02", "DA-HVAC-03"]
+      },
+      {
+        "documentId": "TARA-RA-HVAC-001",
+        "documentType": "Risk Assessment",
+        "relationship": "informs",
+        "linkedItems": ["RA-HVAC-01", "RA-HVAC-02", "RA-HVAC-03"]
+      },
+      {
+        "documentId": "FMEA-IVI-HVAC-001",
+        "documentType": "FMEA",
+        "relationship": "complements",
+        "linkedItems": ["SG-HVAC-01", "SG-HVAC-02", "FM-HVAC-01", "FM-HVAC-02", "FM-HVAC-03"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "8.6",
+        "description": "Threat analysis and risk assessment methods"
+      },
+      {
+        "standardId": "ISO26262",
+        "clause": "7",
+        "description": "Functional safety requirements"
+      }
+    ],
+    "mitreMappings": [
+      {
+        "technique": "T0835",
+        "tacticCategory": "Execution",
+        "description": "Manipulate Vehicle Controls"
+      },
+      {
+        "technique": "T0814",
+        "tacticCategory": "Impact",
+        "description": "Denial of Service"
+      },
+      {
+        "technique": "T0816",
+        "tacticCategory": "Collection",
+        "description": "Traffic Sniffing"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "FR-CLI-003",
+        "description": "The IVI system shall implement message authentication for all TEMP_Control_Command messages using vehicle-specific keys",
+        "mitigation": "Mitigates TS-HVAC-01 and TS-HVAC-03"
+      },
+      {
+        "requirementId": "TSR-HVAC-06",
+        "description": "The IVI system shall implement redundant validation for temperature values (16°C to 30°C)",
+        "mitigation": "Mitigates TS-HVAC-01"
+      },
+      {
+        "requirementId": "NFR-REL-006",
+        "description": "The IVI system shall maintain HVAC functionality after experiencing up to 10 consecutive error events in the CAN communication",
+        "mitigation": "Mitigates TS-HVAC-02"
+      },
+      {
+        "requirementId": "NFR-SEC-008",
+        "description": "The IVI system shall maintain separate security domains for entertainment functions and vehicle control functions including HVAC controls",
+        "mitigation": "Mitigates TS-HVAC-01 and TS-HVAC-03"
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "CAN": "Controller Area Network",
+    "HVAC": "Heating, Ventilation, and Air Conditioning",
+    "IVI": "In-Vehicle Infotainment",
+    "ECU": "Electronic Control Unit",
+    "Checksum": "Value used to verify data integrity",
+    "MITM": "Man-in-the-Middle attack",
+    "DoS": "Denial of Service",
+    "MAC": "Message Authentication Code"
+  },
+  "searchTerms": [
+    "CAN bus",
+    "message injection",
+    "spoofed command",
+    "HVAC control",
+    "temperature control",
+    "climate control",
+    "defogger",
+    "windshield fogging",
+    "message authentication",
+    "checksum bypass",
+    "threat scenario",
+    "attack path",
+    "attack feasibility",
+    "vehicle network security",
+    "command oscillation",
+    "authentication bypass",
+    "attack vector",
+    "denial of service",
+    "message blocking",
+    "command validation",
+    "rate limiting"
+  ],
+  "contentSummary": "Asset: Function: Control cabin climate through IVI system. Cyber‑security properties: Integrity and Availability. Damage scenarios: DA-HVAC-01, DA-HVAC-02, DA-HVAC-03. Threat scenarios: TS-HVAC-01 – Spoofed HVAC temperature command via CAN bus, TS-HVAC-02 – Denial of Service attack on HVAC defogger function, TS-HVAC-03 – Rapid oscillation attack on HVAC system. Attack feasibility → TS-HVAC-01: High (10), TS-HVAC-02: Medium (9), TS-HVAC-03: Very High (4)."
+} 

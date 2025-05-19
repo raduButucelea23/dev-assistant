@@ -1,0 +1,333 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Impact Analysis",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-05-01",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "reviewers": ["Cybersecurity Team", "Safety Engineering", "Product Security"],
+    "documentId": "TARA-IA-NAV-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Navigation System"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "Navigation System",
+      "assetType": "Function",
+      "assetDescription": "Provides route planning and guidance for vehicle navigation",
+      "relatedComponents": ["IVI System", "GPS Receiver", "Map Database", "Cellular Modem", "CAN Bus"]
+    },
+    "damageScenarios": [
+      {
+        "id": "DA-NAV-01",
+        "title": "Navigation Misdirection",
+        "description": "Compromised navigation system provides incorrect directions that could lead the driver into dangerous areas, restricted zones, or inefficient routes",
+        "impactAreas": [
+          {
+            "area": "Safety",
+            "description": "Driver could be directed into hazardous areas (e.g., wrong-way driving, non-vehicular paths, flood zones)",
+            "impactRating": "High",
+            "justification": "Could potentially lead to accidents or vehicle damage in worst-case scenarios"
+          },
+          {
+            "area": "Financial",
+            "description": "Inefficient routing increases fuel consumption and vehicle wear",
+            "impactRating": "Low",
+            "justification": "Limited direct financial impact for individual drivers"
+          },
+          {
+            "area": "Operational",
+            "description": "Driver may become lost or delayed, requiring manual navigation correction",
+            "impactRating": "Medium",
+            "justification": "Delays could be significant but most drivers would eventually recognize the issue"
+          },
+          {
+            "area": "Privacy",
+            "description": "No direct privacy impact from incorrect navigation",
+            "impactRating": "None",
+            "justification": "Misdirection itself doesn't compromise private data"
+          },
+          {
+            "area": "Regulatory",
+            "description": "Potential regulatory concerns if drivers are directed to restricted areas",
+            "impactRating": "Medium",
+            "justification": "Could result in unintentional regulatory violations (restricted zones, protected areas)"
+          },
+          {
+            "area": "Reputational",
+            "description": "Brand damage from unreliable navigation system",
+            "impactRating": "Medium",
+            "justification": "Would affect customer satisfaction and potentially sales if widely reported"
+          }
+        ],
+        "overallImpactRating": "Severe",
+        "justification": "High safety concerns combined with moderate operational and reputational impacts",
+        "asilRating": "ASIL B",
+        "asilJustification": "Potential for physical harm via navigation misdirection warrants ASIL B classification",
+        "fmeaRating": {
+          "severity": 7,
+          "occurrence": 4,
+          "detection": 5,
+          "rpn": 140
+        }
+      },
+      {
+        "id": "DA-NAV-02",
+        "title": "Position Falsification",
+        "description": "Navigation system displays incorrect vehicle position, causing driver confusion and disorientation",
+        "impactAreas": [
+          {
+            "area": "Safety",
+            "description": "Driver disorientation could contribute to unsafe driving behavior",
+            "impactRating": "Medium",
+            "justification": "Most drivers would recognize discrepancy but could cause momentary distraction"
+          },
+          {
+            "area": "Financial",
+            "description": "Limited direct financial impact",
+            "impactRating": "Low",
+            "justification": "Minimal cost impact beyond potential for slightly inefficient routing"
+          },
+          {
+            "area": "Operational",
+            "description": "Navigation system becomes unusable temporarily",
+            "impactRating": "Medium",
+            "justification": "Drivers would lose trust in system but could revert to other navigation methods"
+          },
+          {
+            "area": "Privacy",
+            "description": "No direct privacy impact",
+            "impactRating": "None",
+            "justification": "Position falsification doesn't inherently expose private data"
+          },
+          {
+            "area": "Regulatory",
+            "description": "No significant regulatory impact",
+            "impactRating": "None",
+            "justification": "Position falsification isn't specifically regulated"
+          },
+          {
+            "area": "Reputational",
+            "description": "Damage to product reputation for reliability",
+            "impactRating": "Medium",
+            "justification": "Would affect customer satisfaction if occurring regularly"
+          }
+        ],
+        "overallImpactRating": "Moderate",
+        "justification": "Medium safety impact combined with medium operational and reputational impacts",
+        "asilRating": "ASIL A",
+        "asilJustification": "Potential for distraction-related safety issues warrants ASIL A classification",
+        "fmeaRating": {
+          "severity": 5,
+          "occurrence": 4,
+          "detection": 4,
+          "rpn": 80
+        }
+      },
+      {
+        "id": "DA-NAV-03",
+        "title": "Navigation History Exposure",
+        "description": "User's navigation history, saved locations, and frequent destinations are exposed to unauthorized parties",
+        "impactAreas": [
+          {
+            "area": "Safety",
+            "description": "Exposure of home location could create physical safety risk",
+            "impactRating": "Medium",
+            "justification": "Could potentially enable physical targeting of vehicle owner"
+          },
+          {
+            "area": "Financial",
+            "description": "Costs associated with identity theft if combined with other personal information",
+            "impactRating": "Medium",
+            "justification": "Limited direct financial impact but could contribute to broader identity theft"
+          },
+          {
+            "area": "Operational",
+            "description": "No significant operational impact to navigation function",
+            "impactRating": "None",
+            "justification": "Exposure doesn't affect system operation"
+          },
+          {
+            "area": "Privacy",
+            "description": "Severe privacy violation revealing user movements and patterns",
+            "impactRating": "High",
+            "justification": "Location history provides detailed insight into user's daily patterns and sensitive destinations"
+          },
+          {
+            "area": "Regulatory",
+            "description": "Violation of data protection regulations (GDPR, CCPA, etc.)",
+            "impactRating": "High",
+            "justification": "Location data is protected by multiple privacy regulations globally"
+          },
+          {
+            "area": "Reputational",
+            "description": "Significant brand damage from privacy breach",
+            "impactRating": "High",
+            "justification": "Privacy breaches are highly publicized and damage consumer trust"
+          }
+        ],
+        "overallImpactRating": "Severe",
+        "justification": "High privacy, regulatory and reputational impacts combined with medium safety concerns",
+        "asilRating": "QM",
+        "asilJustification": "Primary impact is privacy rather than direct safety, categorized as Quality Management",
+        "fmeaRating": {
+          "severity": 8,
+          "occurrence": 3,
+          "detection": 6,
+          "rpn": 144
+        }
+      }
+    ],
+    "assetValueAssessment": {
+      "methodology": {
+        "name": "ISO21434 Asset Value Assessment",
+        "description": "Assessment of asset value based on importance to vehicle functionality, safety, and security"
+      },
+      "valueFactors": [
+        {
+          "factor": "Functional Criticality",
+          "rating": "Medium",
+          "justification": "Navigation is an important convenience feature but not critical to basic vehicle operation"
+        },
+        {
+          "factor": "Safety Relevance",
+          "rating": "Medium",
+          "justification": "Can indirectly impact safety through driver distraction or misdirection, but does not directly control vehicle motion"
+        },
+        {
+          "factor": "Data Sensitivity",
+          "rating": "High",
+          "justification": "Contains sensitive location history that reveals user patterns and behaviors"
+        },
+        {
+          "factor": "Integration Level",
+          "rating": "Medium",
+          "justification": "Connected to vehicle networks but with limited write access to critical systems"
+        },
+        {
+          "factor": "External Exposure",
+          "rating": "High",
+          "justification": "Receives external inputs (GPS, map updates) and potentially connects to phones and cloud services"
+        }
+      ],
+      "overallAssetValue": "High",
+      "justification": "High data sensitivity and external exposure combined with medium safety relevance and integration"
+    },
+    "cybersecurityGoals": [
+      {
+        "id": "CSG-NAV-01",
+        "title": "Navigation Integrity",
+        "description": "The system shall ensure the integrity of navigation data and routing instructions",
+        "damageScenarios": ["DA-NAV-01"],
+        "securityProperty": "Integrity",
+        "asilRating": "ASIL B"
+      },
+      {
+        "id": "CSG-NAV-02",
+        "title": "Position Accuracy",
+        "description": "The system shall maintain and verify the accuracy of displayed vehicle position",
+        "damageScenarios": ["DA-NAV-02"],
+        "securityProperty": "Integrity",
+        "asilRating": "ASIL A"
+      },
+      {
+        "id": "CSG-NAV-03",
+        "title": "Navigation Privacy",
+        "description": "The system shall protect the confidentiality of user location history and saved destinations",
+        "damageScenarios": ["DA-NAV-03"],
+        "securityProperty": "Confidentiality",
+        "asilRating": "QM"
+      }
+    ]
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "SYS-ARCH-IVI-001",
+        "documentType": "System Architecture",
+        "relationship": "informedBy",
+        "linkedItems": ["Navigation Module", "Connectivity Module"]
+      },
+      {
+        "documentId": "HARA-NAV-001",
+        "documentType": "Hazard Analysis",
+        "relationship": "informedBy",
+        "linkedItems": ["HAZ-NAV-01", "HAZ-NAV-02"]
+      },
+      {
+        "documentId": "TARA-TS-NAV-001",
+        "documentType": "Threat Scenarios",
+        "relationship": "informsNext",
+        "linkedItems": ["TS-NAV-01", "TS-NAV-02", "TS-NAV-03"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "8.3",
+        "description": "Impact rating"
+      },
+      {
+        "standardId": "SAE J3061",
+        "clause": "5.4",
+        "description": "Identify assets and impact assessment"
+      },
+      {
+        "standardId": "UNECE WP.29",
+        "clause": "7.3.3",
+        "description": "Risk assessment identification"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "REQ-NAV-FUNC-01",
+        "description": "The navigation system shall provide accurate routing information",
+        "cybersecurityGoal": "CSG-NAV-01"
+      },
+      {
+        "requirementId": "REQ-NAV-FUNC-02",
+        "description": "The navigation system shall display vehicle position with accuracy of +/- 5 meters",
+        "cybersecurityGoal": "CSG-NAV-02"
+      },
+      {
+        "requirementId": "REQ-NAV-SEC-01",
+        "description": "The navigation system shall encrypt all stored location data",
+        "cybersecurityGoal": "CSG-NAV-03"
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "Impact Analysis": "Assessment of potential damage from security breaches",
+    "GPS": "Global Positioning System",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "QM": "Quality Management (lowest ASIL level)",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "RPN": "Risk Priority Number",
+    "Damage Scenario": "Description of potential harm from cybersecurity incidents"
+  },
+  "searchTerms": [
+    "navigation system",
+    "impact analysis",
+    "navigation misdirection",
+    "position falsification",
+    "location history",
+    "privacy breach",
+    "data exposure",
+    "route integrity",
+    "safety impact",
+    "position accuracy",
+    "map database",
+    "GPS spoofing",
+    "navigation damage",
+    "ISO21434",
+    "asset value",
+    "damage scenarios",
+    "ASIL rating",
+    "cybersecurity goals"
+  ],
+  "contentSummary": "Impact analysis for the Navigation System identifying three key damage scenarios: Navigation Misdirection (Severe impact), Position Falsification (Moderate impact), and Navigation History Exposure (Severe impact). Each scenario is assessed across safety, financial, operational, privacy, regulatory, and reputational dimensions. The document establishes ASIL ratings and FMEA data for each scenario, and defines cybersecurity goals to address each damage scenario. The Navigation System is assessed as a high-value asset due to its data sensitivity and external exposure. This analysis serves as the foundation for threat scenario development and subsequent risk assessment in the TARA process."
+} 

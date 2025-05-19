@@ -1,0 +1,429 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-05-01",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Door Lock Control Interface",
+    "documentId": "FMEA-IVI-DOOR-001",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Door Lock Control Interface Module",
+    "description": "The door lock control interface in the IVI system allows users to lock or unlock vehicle doors through touch interface or voice commands. It communicates with the Body Control Module (BCM) via CAN bus to execute the requested functions.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Operating voltage 9-16V",
+      "Security system active"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-DOOR-01",
+      "description": "The door lock control system shall prevent unintended door lock/unlock operations that could compromise vehicle security or occupant safety",
+      "asilRating": "ASIL B",
+      "rationale": "Unauthorized door operations could lead to security breaches or occupant safety issues during vehicle operation",
+      "relatedHazards": ["H-DOOR-01", "H-DOOR-02"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-DOOR-01",
+          "description": "The IVI system shall authenticate all door lock control messages using message authentication code",
+          "verification": "Test and analysis",
+          "traceability": "SG-DOOR-01"
+        },
+        {
+          "id": "FSR-DOOR-02",
+          "description": "The IVI system shall validate user input for door lock controls before sending commands to the BCM",
+          "verification": "Test",
+          "traceability": "SG-DOOR-01"
+        },
+        {
+          "id": "FSR-DOOR-03",
+          "description": "The IVI system shall provide clear visual confirmation of door lock status changes",
+          "verification": "Test",
+          "traceability": "SG-DOOR-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-DOOR-02",
+      "description": "The door lock control system shall maintain integrity of communication between IVI and Body Control Module",
+      "asilRating": "ASIL B",
+      "rationale": "Compromised communication could lead to unauthorized commands or loss of control functionality",
+      "relatedHazards": ["H-DOOR-01", "H-DOOR-03"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-DOOR-04",
+          "description": "The IVI system shall implement anomaly detection for door lock control CAN messages",
+          "verification": "Test and analysis",
+          "traceability": "SG-DOOR-02"
+        },
+        {
+          "id": "FSR-DOOR-05",
+          "description": "The IVI system shall implement redundant verification for safety-critical door lock operations",
+          "verification": "Test",
+          "traceability": "SG-DOOR-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-DOOR-01",
+      "description": "Unintended door unlocking while vehicle is in motion",
+      "operationalSituation": "Vehicle in motion at highway speeds",
+      "hazardousEvent": "Door opening during driving due to inadvertent unlock command",
+      "asilRating": "ASIL B",
+      "severityRating": "S3",
+      "exposureRating": "E2",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-DOOR-02",
+      "description": "Unauthorized door operations through compromised IVI system",
+      "operationalSituation": "Vehicle parked or in motion",
+      "hazardousEvent": "Unauthorized access to vehicle or distraction due to unexpected door operations",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-DOOR-03",
+      "description": "Inability to operate door locks in emergency situation",
+      "operationalSituation": "Vehicle in emergency situation (accident, fire, etc.)",
+      "hazardousEvent": "Occupants unable to exit vehicle or first responders unable to enter",
+      "asilRating": "ASIL B",
+      "severityRating": "S3",
+      "exposureRating": "E1",
+      "controllabilityRating": "C3"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Door Lock Control Touch Interface",
+      "function": "Allow user to lock or unlock doors through IVI touchscreen"
+    },
+    "failureModes": [
+      {
+        "id": "FM-DOOR-01",
+        "description": "Door lock control becomes unresponsive on touch interface",
+        "potentialCauses": [
+          "Software deadlock in touch input handling",
+          "CAN communication failure between IVI and BCM",
+          "Touch screen hardware failure in door control area"
+        ],
+        "failureEffects": {
+          "local": "User unable to lock/unlock doors via touch interface",
+          "nextLevel": "Potential safety concerns if vehicle cannot be secured",
+          "endEffect": "Unauthorized vehicle access or inability to exit vehicle in emergency"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 8,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 96,
+        "prevention": [
+          "Implement watchdog timer for door lock control functions",
+          "Use input validation with timeout mechanisms"
+        ],
+        "detection": [
+          "Implement door lock command response monitoring",
+          "Add periodic interface self-test for critical vehicle functions"
+        ],
+        "mitigations": [
+          {
+            "description": "Provide redundant physical door lock controls",
+            "type": "Hardware Redundancy",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Implement voice control fallback for door operations",
+            "type": "Alternative Interface",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-DOOR-01",
+            "description": "The IVI system shall detect door lock control interface non-responsiveness within 300ms",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-DOOR-02"
+          },
+          {
+            "id": "TSR-DOOR-02",
+            "description": "The IVI system shall provide feedback to the user when door lock commands cannot be sent to the BCM",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-DOOR-03"
+          }
+        ]
+      },
+      {
+        "id": "FM-DOOR-02",
+        "description": "Unauthorized door lock commands injected through compromised CAN bus",
+        "potentialCauses": [
+          "Missing or insufficient message authentication",
+          "Vulnerability in CAN bus implementation",
+          "Malicious device connected to vehicle network"
+        ],
+        "failureEffects": {
+          "local": "BCM receives and executes unauthorized door lock/unlock commands",
+          "nextLevel": "Unexpected door state changes during vehicle operation",
+          "endEffect": "Security breach, unauthorized vehicle access, or safety hazard"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 8,
+        "occurrenceRating": 2,
+        "detectionRating": 5,
+        "riskPriorityNumber": 80,
+        "prevention": [
+          "Implement message authentication code (HMAC-SHA256) for all door control commands",
+          "Enforce command validation before execution"
+        ],
+        "detection": [
+          "Implement pattern monitoring for suspicious door command sequences",
+          "Add CAN message authentication verification"
+        ],
+        "mitigations": [
+          {
+            "description": "Implement command rate limiting for door operations",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Add contextual validation for door commands based on vehicle state",
+            "type": "Software Control",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-DOOR-03",
+            "description": "The IVI system shall implement HMAC-SHA256 message authentication for all door lock control messages",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-DOOR-01"
+          },
+          {
+            "id": "TSR-DOOR-04",
+            "description": "The IVI system shall prevent door unlock commands when vehicle speed exceeds 20 km/h",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-DOOR-02"
+          }
+        ]
+      },
+      {
+        "id": "FM-DOOR-03",
+        "description": "Door lock status display failure",
+        "potentialCauses": [
+          "Software defect in status processing",
+          "CAN communication failure for status messages",
+          "UI rendering issue for door status indicators"
+        ],
+        "failureEffects": {
+          "local": "Incorrect or missing door lock status information displayed to user",
+          "nextLevel": "User makes decisions based on incorrect door state information",
+          "endEffect": "Vehicle security compromise or occupant safety concerns"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Implement redundant status validation",
+          "Ensure consistent status updates from BCM"
+        ],
+        "detection": [
+          "Add runtime verification of status display",
+          "Implement periodic status refresh and validation"
+        ],
+        "mitigations": [
+          {
+            "description": "Provide alternative status indication via instrument cluster",
+            "type": "Redundant Display",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Implement audible feedback for critical door state changes",
+            "type": "Alternative Feedback",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-DOOR-05",
+            "description": "The IVI system shall validate door status information before display and indicate uncertainty when status cannot be verified",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-DOOR-03"
+          },
+          {
+            "id": "TSR-DOOR-06",
+            "description": "The IVI system shall refresh door status display within 200ms of receiving updated status signals",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-DOOR-03"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-DOOR-01",
+      "description": "Door Lock Control Monitoring",
+      "mechanism": "Software watchdog monitors door lock control responsiveness",
+      "diagnosticCoverage": "92%",
+      "failureModesCovered": ["FM-DOOR-01"],
+      "implementationDetails": "Software checks if door lock control UI responds to user input within 300ms; if not, system attempts recovery and notifies user"
+    },
+    {
+      "id": "SM-DOOR-02",
+      "description": "CAN Communication Monitoring",
+      "mechanism": "CAN bus communication monitoring between IVI and BCM",
+      "diagnosticCoverage": "94%",
+      "failureModesCovered": ["FM-DOOR-01", "FM-DOOR-03"],
+      "implementationDetails": "System monitors CAN message acknowledgements and timeout; implements retry strategy and notification mechanism"
+    },
+    {
+      "id": "SM-DOOR-03",
+      "description": "Message Authentication",
+      "mechanism": "HMAC-SHA256 for door lock control messages",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-DOOR-02"],
+      "implementationDetails": "All door lock control messages on CAN ID 0x321 are authenticated using vehicle-specific keys and HMAC-SHA256"
+    },
+    {
+      "id": "SM-DOOR-04",
+      "description": "Contextual Command Validation",
+      "mechanism": "Vehicle state validation for door commands",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-DOOR-02"],
+      "implementationDetails": "System validates door unlock commands against vehicle speed, gear position, and other contextual data"
+    },
+    {
+      "id": "SM-DOOR-05",
+      "description": "Door Status Verification",
+      "mechanism": "Status validation and cross-checking",
+      "diagnosticCoverage": "93%",
+      "failureModesCovered": ["FM-DOOR-03"],
+      "implementationDetails": "System cross-checks door status signals with expected state based on recent commands and vehicle conditions"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-DOOR-01",
+        "description": "Verify door lock touch control responsiveness",
+        "relatedRequirements": ["TSR-DOOR-01"],
+        "testProcedure": "Simulate touch inputs to door lock controls and measure response time",
+        "acceptanceCriteria": "Response time ≤ 200ms for 95% of inputs",
+        "results": "Pending"
+      },
+      {
+        "id": "TC-DOOR-02",
+        "description": "Verify door lock control redundancy",
+        "relatedRequirements": ["TSR-DOOR-02"],
+        "testProcedure": "Disable touch interface and verify alternate control methods are available",
+        "acceptanceCriteria": "All door lock functions accessible through alternate means",
+        "results": "Pending"
+      },
+      {
+        "id": "TC-DOOR-03",
+        "description": "Verify message authentication mechanism",
+        "relatedRequirements": ["TSR-DOOR-03"],
+        "testProcedure": "Attempt to inject door lock commands with invalid authentication code",
+        "acceptanceCriteria": "All commands with invalid authentication are rejected",
+        "results": "Pending"
+      },
+      {
+        "id": "TC-DOOR-04",
+        "description": "Verify speed-based command validation",
+        "relatedRequirements": ["TSR-DOOR-04"],
+        "testProcedure": "Attempt to send door unlock commands at various vehicle speeds",
+        "acceptanceCriteria": "System rejects door unlock commands when vehicle speed exceeds 20 km/h",
+        "results": "Pending"
+      },
+      {
+        "id": "TC-DOOR-05",
+        "description": "Verify door status display accuracy",
+        "relatedRequirements": ["TSR-DOOR-05", "TSR-DOOR-06"],
+        "testProcedure": "Change door states and verify correct status display",
+        "acceptanceCriteria": "IVI display accurately reflects door states within 200ms of state change",
+        "results": "Pending"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-DOOR-01",
+        "functionalSafetyRequirements": ["FSR-DOOR-01", "FSR-DOOR-02", "FSR-DOOR-03"],
+        "technicalSafetyRequirements": ["TSR-DOOR-01", "TSR-DOOR-02", "TSR-DOOR-03", "TSR-DOOR-04", "TSR-DOOR-05", "TSR-DOOR-06"]
+      },
+      {
+        "safetyGoalId": "SG-DOOR-02",
+        "functionalSafetyRequirements": ["FSR-DOOR-04", "FSR-DOOR-05"],
+        "technicalSafetyRequirements": ["TSR-DOOR-03", "TSR-DOOR-04"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-DOOR-01",
+        "testCaseIds": ["TC-DOOR-01"]
+      },
+      {
+        "requirementId": "TSR-DOOR-02",
+        "testCaseIds": ["TC-DOOR-02"]
+      },
+      {
+        "requirementId": "TSR-DOOR-03",
+        "testCaseIds": ["TC-DOOR-03"]
+      },
+      {
+        "requirementId": "TSR-DOOR-04",
+        "testCaseIds": ["TC-DOOR-04"]
+      },
+      {
+        "requirementId": "TSR-DOOR-05",
+        "testCaseIds": ["TC-DOOR-05"]
+      },
+      {
+        "requirementId": "TSR-DOOR-06",
+        "testCaseIds": ["TC-DOOR-05"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "BCM": "Body Control Module",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "CAN": "Controller Area Network",
+    "HMAC": "Hash-based Message Authentication Code",
+    "SHA-256": "Secure Hash Algorithm 256-bit"
+  },
+  "searchTerms": [
+    "door lock",
+    "door unlock",
+    "door controls",
+    "IVI door",
+    "vehicle security",
+    "door status",
+    "ASIL B",
+    "safety requirements",
+    "door operations",
+    "body control module",
+    "message authentication",
+    "CAN bus security",
+    "command validation",
+    "physical door controls"
+  ]
+} 

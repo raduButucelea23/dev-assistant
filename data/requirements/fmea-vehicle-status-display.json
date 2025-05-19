@@ -1,0 +1,538 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-04-23",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Vehicle Status Display",
+    "documentId": "FMEA-IVI-VSD-001",
+    "status": "Released",
+    "reviewDate": "2025-04-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Vehicle Status Display System",
+    "description": "The Vehicle Status Display system in the IVI presents critical vehicle information to the driver including speed, fuel level, temperature, warning notifications, and system status. It integrates with multiple vehicle systems to collect, process, and display real-time information in a user-friendly format designed for at-a-glance comprehension.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Ambient temperature -40°C to +85°C",
+      "Operating voltage 9-16V",
+      "Various lighting conditions from direct sunlight to night"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-VSD-01",
+      "description": "The Vehicle Status Display shall present accurate and timely critical vehicle information to the driver",
+      "asilRating": "ASIL B",
+      "rationale": "Inaccurate or delayed critical vehicle information could lead to unsafe driving decisions or vehicle operation",
+      "relatedHazards": ["H-VSD-01", "H-VSD-03"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-VSD-01",
+          "description": "The IVI system shall display accurate vehicle speed information with minimal delay",
+          "verification": "Test and analysis",
+          "traceability": "SG-VSD-01"
+        },
+        {
+          "id": "FSR-VSD-02",
+          "description": "The IVI system shall display critical warning notifications within specified time constraints",
+          "verification": "Test",
+          "traceability": "SG-VSD-01"
+        },
+        {
+          "id": "FSR-VSD-03",
+          "description": "The IVI system shall verify the integrity of displayed vehicle status information",
+          "verification": "Test and analysis",
+          "traceability": "SG-VSD-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-VSD-02",
+      "description": "The Vehicle Status Display shall present information in a clear, unambiguous manner that minimizes driver distraction",
+      "asilRating": "ASIL B",
+      "rationale": "Cluttered or confusing vehicle status information could cause prolonged driver attention and distraction",
+      "relatedHazards": ["H-VSD-02", "H-VSD-04"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-VSD-04",
+          "description": "The IVI system shall implement display formats that enable at-a-glance comprehension",
+          "verification": "Test and analysis",
+          "traceability": "SG-VSD-02"
+        },
+        {
+          "id": "FSR-VSD-05",
+          "description": "The IVI system shall prioritize and filter vehicle status information based on criticality",
+          "verification": "Test",
+          "traceability": "SG-VSD-02"
+        },
+        {
+          "id": "FSR-VSD-06",
+          "description": "The IVI system shall adapt display characteristics to various environmental conditions",
+          "verification": "Test",
+          "traceability": "SG-VSD-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-VSD-01",
+      "description": "Inaccurate vehicle speed display",
+      "operationalSituation": "Vehicle in motion in speed-limited zone",
+      "hazardousEvent": "Driver exceeds speed limit due to incorrect speed display",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-VSD-02",
+      "description": "Cluttered or distracting status display",
+      "operationalSituation": "Vehicle in motion in complex traffic situation",
+      "hazardousEvent": "Driver attention diverted for excessive time to interpret display",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-VSD-03",
+      "description": "Delayed or missing critical warning display",
+      "operationalSituation": "Vehicle in motion with developing critical condition",
+      "hazardousEvent": "Driver unaware of critical vehicle condition requiring immediate action",
+      "asilRating": "ASIL B",
+      "severityRating": "S3",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-VSD-04",
+      "description": "Poor display visibility in extreme lighting",
+      "operationalSituation": "Vehicle in motion in direct sunlight or night conditions",
+      "hazardousEvent": "Driver unable to read critical vehicle information",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Vehicle Status Display System",
+      "function": "Display critical vehicle information to driver"
+    },
+    "failureModes": [
+      {
+        "id": "FM-VSD-01",
+        "description": "Inaccurate speed display",
+        "potentialCauses": [
+          "CAN bus communication error",
+          "Calculation error in speed processing",
+          "Display calibration drift"
+        ],
+        "failureEffects": {
+          "local": "Displayed speed differs from actual vehicle speed",
+          "nextLevel": "Driver operates vehicle based on incorrect speed information",
+          "endEffect": "Potential traffic violation or unsafe driving condition"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Implement redundant speed signal processing",
+          "Periodic calibration verification"
+        ],
+        "detection": [
+          "Cross-check speed data from multiple sources",
+          "Plausibility checks on speed values"
+        ],
+        "mitigations": [
+          {
+            "description": "Redundant speed data processing with cross-validation",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Speed value plausibility checking with error indication",
+            "type": "Data Validation",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-VSD-01",
+            "description": "The Vehicle Status Display shall implement cross-validation of speed data from at least two independent sources",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VSD-01"
+          },
+          {
+            "id": "TSR-VSD-02",
+            "description": "The Vehicle Status Display shall indicate display uncertainty when speed data sources disagree by more than 3 km/h",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VSD-03"
+          }
+        ]
+      },
+      {
+        "id": "FM-VSD-02",
+        "description": "Information overload causing driver distraction",
+        "potentialCauses": [
+          "Too many status items displayed simultaneously",
+          "Poor information hierarchy implementation",
+          "Inefficient use of display space"
+        ],
+        "failureEffects": {
+          "local": "Status display requires extended viewing to comprehend",
+          "nextLevel": "Driver must focus on display for excessive time",
+          "endEffect": "Increased risk of collision due to distraction"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 4,
+        "detectionRating": 4,
+        "riskPriorityNumber": 96,
+        "prevention": [
+          "Implement information prioritization algorithms",
+          "Design minimalist display layouts"
+        ],
+        "detection": [
+          "User testing with eye tracking",
+          "Measurement of information density metrics"
+        ],
+        "mitigations": [
+          {
+            "description": "Dynamic information prioritization based on driving context",
+            "type": "Adaptive Interface",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Progressive disclosure of non-critical information",
+            "type": "UI Design Pattern",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-VSD-03",
+            "description": "The Vehicle Status Display shall limit simultaneously displayed information items to no more than 7 when vehicle is in motion",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VSD-04"
+          },
+          {
+            "id": "TSR-VSD-04",
+            "description": "The Vehicle Status Display shall implement context-based information prioritization that adapts to driving conditions",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VSD-05"
+          }
+        ]
+      },
+      {
+        "id": "FM-VSD-03",
+        "description": "Delayed critical warning notification",
+        "potentialCauses": [
+          "Processing bottlenecks in warning system",
+          "CAN bus communication delays",
+          "Inefficient warning prioritization"
+        ],
+        "failureEffects": {
+          "local": "Critical warning displayed with delay",
+          "nextLevel": "Driver receives critical information too late",
+          "endEffect": "Insufficient time for driver to respond to critical condition"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 8,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 96,
+        "prevention": [
+          "Implement dedicated processing path for critical warnings",
+          "Prioritize warning message traffic on communication buses"
+        ],
+        "detection": [
+          "Monitor warning system response times",
+          "End-to-end latency testing"
+        ],
+        "mitigations": [
+          {
+            "description": "High-priority processing path for critical warning messages",
+            "type": "System Architecture",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Redundant warning paths for critical systems",
+            "type": "Redundancy",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-VSD-05",
+            "description": "The Vehicle Status Display shall present critical warnings within 200ms of detection",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VSD-02"
+          },
+          {
+            "id": "TSR-VSD-06",
+            "description": "The Vehicle Status Display shall implement dedicated processing resources for critical warning messages",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-VSD-02"
+          }
+        ]
+      },
+      {
+        "id": "FM-VSD-04",
+        "description": "Poor display visibility in extreme lighting conditions",
+        "potentialCauses": [
+          "Insufficient display brightness range",
+          "Poor contrast ratio in direct sunlight",
+          "Inadequate automatic brightness adjustment"
+        ],
+        "failureEffects": {
+          "local": "Display information difficult or impossible to read",
+          "nextLevel": "Driver unable to obtain critical vehicle information",
+          "endEffect": "Unsafe vehicle operation due to information deficit"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 4,
+        "detectionRating": 3,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Use high-brightness, high-contrast display technology",
+          "Implement advanced ambient light sensing"
+        ],
+        "detection": [
+          "Monitor ambient light conditions",
+          "Test display readability in various lighting"
+        ],
+        "mitigations": [
+          {
+            "description": "Adaptive contrast and color schemes based on ambient lighting",
+            "type": "Adaptive Interface",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Redundant critical information display with different technology",
+            "type": "Redundancy",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-VSD-07",
+            "description": "The Vehicle Status Display shall maintain minimum contrast ratio of 7:1 for critical information under all lighting conditions",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VSD-06"
+          },
+          {
+            "id": "TSR-VSD-08",
+            "description": "The Vehicle Status Display shall automatically adjust brightness and contrast based on ambient light conditions",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-VSD-06"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-VSD-01",
+      "description": "Speed Data Validation",
+      "mechanism": "Cross-validation of speed information from multiple sources",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-VSD-01"],
+      "implementationDetails": "System compares speed data from at least two independent sources (wheel speed sensors, GPS, transmission) and flags discrepancies exceeding 3 km/h"
+    },
+    {
+      "id": "SM-VSD-02",
+      "description": "Dynamic Information Prioritization",
+      "mechanism": "Context-aware display content management",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-VSD-02"],
+      "implementationDetails": "System dynamically adjusts displayed information based on vehicle status, speed, and driving conditions to minimize distraction"
+    },
+    {
+      "id": "SM-VSD-03",
+      "description": "Critical Warning Fast Path",
+      "mechanism": "Dedicated processing channel for critical warnings",
+      "diagnosticCoverage": "98%",
+      "failureModesCovered": ["FM-VSD-03"],
+      "implementationDetails": "System implements high-priority processing path for critical warnings with guaranteed maximum latency of 200ms from detection to display"
+    },
+    {
+      "id": "SM-VSD-04",
+      "description": "Adaptive Display Parameters",
+      "mechanism": "Light-sensing display parameter adjustment",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-VSD-04"],
+      "implementationDetails": "System continuously measures ambient light conditions and adjusts brightness, contrast, color schemes to maintain readability"
+    },
+    {
+      "id": "SM-VSD-05",
+      "description": "Display Integrity Monitoring",
+      "mechanism": "Continuous verification of display content",
+      "diagnosticCoverage": "92%",
+      "failureModesCovered": ["FM-VSD-01", "FM-VSD-03"],
+      "implementationDetails": "System implements checksum verification for display content and performs periodic validation of critical information accuracy"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-VSD-01",
+        "description": "Verify speed display accuracy",
+        "relatedRequirements": ["TSR-VSD-01", "TSR-VSD-02"],
+        "testProcedure": "Compare displayed speed with reference speed measurement at various speeds",
+        "acceptanceCriteria": "Displayed speed accurate within ±2 km/h or indication of uncertainty when sources disagree",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VSD-02",
+        "description": "Verify speed display with corrupted data",
+        "relatedRequirements": ["TSR-VSD-02"],
+        "testProcedure": "Inject corrupted speed data and observe system response",
+        "acceptanceCriteria": "System indicates uncertainty when speed data sources disagree by more than 3 km/h",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VSD-03",
+        "description": "Verify information density limits",
+        "relatedRequirements": ["TSR-VSD-03"],
+        "testProcedure": "Generate multiple status events and measure display content density",
+        "acceptanceCriteria": "No more than 7 information items displayed simultaneously when in motion",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VSD-04",
+        "description": "Verify context-based prioritization",
+        "relatedRequirements": ["TSR-VSD-04"],
+        "testProcedure": "Test display content in various driving scenarios",
+        "acceptanceCriteria": "Information prioritization adapts appropriately to different driving contexts",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VSD-05",
+        "description": "Verify critical warning timing",
+        "relatedRequirements": ["TSR-VSD-05"],
+        "testProcedure": "Measure end-to-end latency for critical warning display",
+        "acceptanceCriteria": "Critical warnings displayed within 200ms of detection",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VSD-06",
+        "description": "Verify dedicated warning processing",
+        "relatedRequirements": ["TSR-VSD-06"],
+        "testProcedure": "Analyze system architecture and test warning processing under high system load",
+        "acceptanceCriteria": "Critical warnings processed with dedicated resources unaffected by system load",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VSD-07",
+        "description": "Verify display contrast in bright conditions",
+        "relatedRequirements": ["TSR-VSD-07"],
+        "testProcedure": "Test display readability under simulated bright sunlight",
+        "acceptanceCriteria": "Critical information maintains minimum 7:1 contrast ratio in all lighting conditions",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-VSD-08",
+        "description": "Verify adaptive brightness adjustment",
+        "relatedRequirements": ["TSR-VSD-08"],
+        "testProcedure": "Test display adaptation under changing light conditions",
+        "acceptanceCriteria": "Display automatically adjusts brightness and contrast within 2 seconds of lighting change",
+        "results": "Passed"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-VSD-01",
+        "functionalSafetyRequirements": ["FSR-VSD-01", "FSR-VSD-02", "FSR-VSD-03"],
+        "technicalSafetyRequirements": ["TSR-VSD-01", "TSR-VSD-02", "TSR-VSD-05", "TSR-VSD-06"]
+      },
+      {
+        "safetyGoalId": "SG-VSD-02",
+        "functionalSafetyRequirements": ["FSR-VSD-04", "FSR-VSD-05", "FSR-VSD-06"],
+        "technicalSafetyRequirements": ["TSR-VSD-03", "TSR-VSD-04", "TSR-VSD-07", "TSR-VSD-08"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-VSD-01",
+        "testCaseIds": ["TC-VSD-01"]
+      },
+      {
+        "requirementId": "TSR-VSD-02",
+        "testCaseIds": ["TC-VSD-01", "TC-VSD-02"]
+      },
+      {
+        "requirementId": "TSR-VSD-03",
+        "testCaseIds": ["TC-VSD-03"]
+      },
+      {
+        "requirementId": "TSR-VSD-04",
+        "testCaseIds": ["TC-VSD-04"]
+      },
+      {
+        "requirementId": "TSR-VSD-05",
+        "testCaseIds": ["TC-VSD-05"]
+      },
+      {
+        "requirementId": "TSR-VSD-06",
+        "testCaseIds": ["TC-VSD-06"]
+      },
+      {
+        "requirementId": "TSR-VSD-07",
+        "testCaseIds": ["TC-VSD-07"]
+      },
+      {
+        "requirementId": "TSR-VSD-08",
+        "testCaseIds": ["TC-VSD-08"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "VSD": "Vehicle Status Display",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "CAN": "Controller Area Network",
+    "HMI": "Human-Machine Interface"
+  },
+  "searchTerms": [
+    "vehicle status",
+    "dashboard display",
+    "information display",
+    "speed display",
+    "warning notification",
+    "status information",
+    "critical warning",
+    "vehicle information",
+    "driver information",
+    "display visibility",
+    "information prioritization",
+    "display accuracy",
+    "display latency",
+    "lighting adaptation",
+    "display contrast",
+    "display brightness",
+    "information density",
+    "glance time",
+    "display readability",
+    "status monitoring"
+  ]
+} 

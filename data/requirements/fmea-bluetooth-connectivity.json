@@ -1,0 +1,538 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-04-23",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Bluetooth Connectivity",
+    "documentId": "FMEA-IVI-BTC-001",
+    "status": "Released",
+    "reviewDate": "2025-04-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Bluetooth Connectivity System",
+    "description": "The Bluetooth Connectivity system in the IVI enables wireless pairing and communication between the vehicle and personal devices such as smartphones and tablets. It provides functionality for hands-free calling, audio streaming, contact synchronization, and messaging integration while enforcing safety protocols to minimize driver distraction.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Ambient temperature -40°C to +85°C",
+      "Operating voltage 9-16V",
+      "Bluetooth signals may experience interference in certain environments"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-BTC-01",
+      "description": "The Bluetooth Connectivity system shall manage hands-free calls with minimal driver distraction",
+      "asilRating": "ASIL A",
+      "rationale": "Phone call management through Bluetooth interfaces is a common cause of driver distraction that could lead to accidents",
+      "relatedHazards": ["H-BTC-01", "H-BTC-02"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-BTC-01",
+          "description": "The IVI system shall provide simplified hands-free call controls optimized for minimal visual attention",
+          "verification": "Test and analysis",
+          "traceability": "SG-BTC-01"
+        },
+        {
+          "id": "FSR-BTC-02",
+          "description": "The IVI system shall limit complex phone features while vehicle is in motion",
+          "verification": "Test",
+          "traceability": "SG-BTC-01"
+        },
+        {
+          "id": "FSR-BTC-03",
+          "description": "The IVI system shall prioritize voice commands for Bluetooth phone operations",
+          "verification": "Test",
+          "traceability": "SG-BTC-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-BTC-02",
+      "description": "The Bluetooth Connectivity system shall not adversely affect other critical vehicle systems",
+      "asilRating": "ASIL B",
+      "rationale": "Bluetooth connectivity issues or resource contention could impact safety-critical vehicle systems",
+      "relatedHazards": ["H-BTC-03", "H-BTC-04"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-BTC-04",
+          "description": "The IVI system shall isolate Bluetooth connectivity processes from safety-critical vehicle functions",
+          "verification": "Test and analysis",
+          "traceability": "SG-BTC-02"
+        },
+        {
+          "id": "FSR-BTC-05",
+          "description": "The IVI system shall monitor and limit Bluetooth system resource utilization",
+          "verification": "Test",
+          "traceability": "SG-BTC-02"
+        },
+        {
+          "id": "FSR-BTC-06",
+          "description": "The IVI system shall manage Bluetooth connection failures gracefully without impacting vehicle operation",
+          "verification": "Test",
+          "traceability": "SG-BTC-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-BTC-01",
+      "description": "Complex Bluetooth pairing procedure requiring extended attention",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Driver attention diverted from road for extended period during device pairing",
+      "asilRating": "ASIL A",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C3"
+    },
+    {
+      "id": "H-BTC-02",
+      "description": "Distracting incoming call handling",
+      "operationalSituation": "Vehicle in motion in complex traffic situation",
+      "hazardousEvent": "Driver distraction during incoming call management",
+      "asilRating": "ASIL A",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C3"
+    },
+    {
+      "id": "H-BTC-03",
+      "description": "Bluetooth system crash affecting other vehicle functions",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Critical vehicle information display interrupted due to Bluetooth system failure",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-BTC-04",
+      "description": "Resource contention impacting vehicle systems",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "System lag or unresponsiveness in critical displays due to Bluetooth operations",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Bluetooth Connectivity System",
+      "function": "Enable wireless connection between personal devices and vehicle systems"
+    },
+    "failureModes": [
+      {
+        "id": "FM-BTC-01",
+        "description": "Complex pairing procedure requiring extended attention",
+        "potentialCauses": [
+          "Unintuitive pairing interface",
+          "Multiple step pairing process",
+          "Insufficient feedback during pairing"
+        ],
+        "failureEffects": {
+          "local": "Driver needs extended time to complete pairing",
+          "nextLevel": "Driver attention diverted from road for excessive period",
+          "endEffect": "Increased risk of collision due to prolonged distraction"
+        },
+        "asilRating": "ASIL A",
+        "severityRating": 5,
+        "occurrenceRating": 4,
+        "detectionRating": 3,
+        "riskPriorityNumber": 60,
+        "prevention": [
+          "Design simplified pairing process",
+          "Implement pairing wizard with minimal steps"
+        ],
+        "detection": [
+          "Monitor pairing duration and complexity",
+          "User testing for distraction potential"
+        ],
+        "mitigations": [
+          {
+            "description": "Disable complex pairing procedures while vehicle is in motion",
+            "type": "Motion Lock",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Alternative pairing methods using NFC or QR codes",
+            "type": "Design Alternative",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-BTC-01",
+            "description": "The Bluetooth system shall disable full device pairing features when vehicle speed exceeds 5 km/h",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BTC-02"
+          },
+          {
+            "id": "TSR-BTC-02",
+            "description": "The Bluetooth system shall limit device pairing procedure to no more than 3 steps with clear feedback",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BTC-01"
+          }
+        ]
+      },
+      {
+        "id": "FM-BTC-02",
+        "description": "Distracting call management interface",
+        "potentialCauses": [
+          "Complex on-screen call management controls",
+          "Insufficient audio feedback for call status",
+          "Unclear control affordances for call operations"
+        ],
+        "failureEffects": {
+          "local": "Driver must visually focus on screen to manage calls",
+          "nextLevel": "Extended glances away from road during call management",
+          "endEffect": "Increased risk of collision due to visual distraction"
+        },
+        "asilRating": "ASIL A",
+        "severityRating": 6,
+        "occurrenceRating": 4,
+        "detectionRating": 3,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Design simple, high-contrast call controls",
+          "Implement comprehensive audio feedback"
+        ],
+        "detection": [
+          "Measure visual glance time for call management",
+          "User testing with distraction metrics"
+        ],
+        "mitigations": [
+          {
+            "description": "Simplified call management with large buttons and minimal options while driving",
+            "type": "Adaptive Interface",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Voice control prioritization for call management",
+            "type": "Alternative Interface",
+            "effectiveness": "High"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-BTC-03",
+            "description": "The Bluetooth system shall provide simplified call management interface with buttons at least 15mm in size when vehicle is in motion",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BTC-01"
+          },
+          {
+            "id": "TSR-BTC-04",
+            "description": "The Bluetooth system shall provide voice commands for all critical call management functions",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BTC-03"
+          }
+        ]
+      },
+      {
+        "id": "FM-BTC-03",
+        "description": "Bluetooth stack crash affecting IVI functions",
+        "potentialCauses": [
+          "Memory leak in Bluetooth stack",
+          "Corrupted data during device communication",
+          "Resource exhaustion due to multiple connections"
+        ],
+        "failureEffects": {
+          "local": "Bluetooth connectivity fails",
+          "nextLevel": "IVI system stability affected",
+          "endEffect": "Critical vehicle information displays or controls interrupted"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Implement robust error handling in Bluetooth stack",
+          "Resource isolation for Bluetooth processes"
+        ],
+        "detection": [
+          "Bluetooth stack health monitoring",
+          "Memory usage tracking and alerts"
+        ],
+        "mitigations": [
+          {
+            "description": "Process isolation between Bluetooth and critical IVI functions",
+            "type": "Software Architecture",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Automatic Bluetooth stack restart without affecting other IVI functions",
+            "type": "Recovery Mechanism",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-BTC-05",
+            "description": "The Bluetooth system shall be isolated from safety-critical IVI processes with resource protection",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-BTC-04"
+          },
+          {
+            "id": "TSR-BTC-06",
+            "description": "The Bluetooth system shall implement automatic recovery from stack failures without impacting other IVI functions",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BTC-06"
+          }
+        ]
+      },
+      {
+        "id": "FM-BTC-04",
+        "description": "Resource contention affecting system performance",
+        "potentialCauses": [
+          "Multiple active Bluetooth connections",
+          "Large phone book synchronization",
+          "Media streaming buffer overruns"
+        ],
+        "failureEffects": {
+          "local": "IVI system becomes slow or unresponsive",
+          "nextLevel": "Critical information displays affected by lag",
+          "endEffect": "Driver distraction or delayed access to important functions"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Implement resource usage limits for Bluetooth operations",
+          "Prioritize resource allocation for critical functions"
+        ],
+        "detection": [
+          "Monitor system resource utilization",
+          "Performance profiling during Bluetooth operations"
+        ],
+        "mitigations": [
+          {
+            "description": "Resource usage throttling for Bluetooth operations",
+            "type": "Resource Management",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Background processing for non-critical Bluetooth operations",
+            "type": "Process Management",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-BTC-07",
+            "description": "The Bluetooth system shall limit CPU usage to no more than 20% of system resources",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BTC-05"
+          },
+          {
+            "id": "TSR-BTC-08",
+            "description": "The Bluetooth system shall defer non-critical operations (like phonebook sync) when system load exceeds 80%",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-BTC-05"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-BTC-01",
+      "description": "Motion-Based Feature Restriction",
+      "mechanism": "Speed-dependent Bluetooth feature limitation",
+      "diagnosticCoverage": "98%",
+      "failureModesCovered": ["FM-BTC-01", "FM-BTC-02"],
+      "implementationDetails": "System disables complex Bluetooth configuration and pairing operations when vehicle speed exceeds 5 km/h; restricts call management to simplified interface with large buttons"
+    },
+    {
+      "id": "SM-BTC-02",
+      "description": "Voice Control Priority",
+      "mechanism": "Voice command prioritization for hands-free operation",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-BTC-02"],
+      "implementationDetails": "System provides comprehensive voice command set for all Bluetooth phone operations with minimal visual confirmation required"
+    },
+    {
+      "id": "SM-BTC-03",
+      "description": "Process Isolation",
+      "mechanism": "Sandboxed execution environment for Bluetooth stack",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-BTC-03"],
+      "implementationDetails": "Bluetooth stack operates in isolated process space with dedicated memory allocation and resource limits to prevent impact on critical IVI functions"
+    },
+    {
+      "id": "SM-BTC-04",
+      "description": "Automatic Recovery System",
+      "mechanism": "Fault detection and recovery for Bluetooth stack",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-BTC-03"],
+      "implementationDetails": "System monitors Bluetooth stack health and automatically restarts components after failure detection without affecting other vehicle functions"
+    },
+    {
+      "id": "SM-BTC-05",
+      "description": "Resource Management",
+      "mechanism": "Dynamic resource allocation control",
+      "diagnosticCoverage": "92%",
+      "failureModesCovered": ["FM-BTC-04"],
+      "implementationDetails": "System enforces resource usage limits for Bluetooth operations and dynamically prioritizes critical system functions during resource contention"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-BTC-01",
+        "description": "Verify motion lock for device pairing",
+        "relatedRequirements": ["TSR-BTC-01"],
+        "testProcedure": "Attempt device pairing at various vehicle speeds and observe system behavior",
+        "acceptanceCriteria": "Full pairing functionality disabled at speeds above 5 km/h",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BTC-02",
+        "description": "Verify pairing procedure simplicity",
+        "relatedRequirements": ["TSR-BTC-02"],
+        "testProcedure": "Measure steps required for device pairing and feedback provided",
+        "acceptanceCriteria": "Pairing completed in 3 or fewer steps with clear feedback at each step",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BTC-03",
+        "description": "Verify call management interface",
+        "relatedRequirements": ["TSR-BTC-03"],
+        "testProcedure": "Assess call management interface elements while vehicle is in motion",
+        "acceptanceCriteria": "Call management buttons at least 15mm in size with simplified options",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BTC-04",
+        "description": "Verify voice command coverage",
+        "relatedRequirements": ["TSR-BTC-04"],
+        "testProcedure": "Test voice commands for all critical call management functions",
+        "acceptanceCriteria": "All critical call functions accessible via voice commands with >95% success rate",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BTC-05",
+        "description": "Verify process isolation",
+        "relatedRequirements": ["TSR-BTC-05"],
+        "testProcedure": "Force Bluetooth stack crashes and monitor impact on other IVI functions",
+        "acceptanceCriteria": "No impact on critical IVI functions during Bluetooth stack failure",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BTC-06",
+        "description": "Verify automatic recovery",
+        "relatedRequirements": ["TSR-BTC-06"],
+        "testProcedure": "Inject failures into Bluetooth stack and measure recovery behavior",
+        "acceptanceCriteria": "Automatic recovery within 5 seconds without user intervention",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BTC-07",
+        "description": "Verify resource usage limits",
+        "relatedRequirements": ["TSR-BTC-07"],
+        "testProcedure": "Monitor CPU usage during intensive Bluetooth operations",
+        "acceptanceCriteria": "Bluetooth operations limited to maximum 20% CPU utilization",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-BTC-08",
+        "description": "Verify operation deferral under load",
+        "relatedRequirements": ["TSR-BTC-08"],
+        "testProcedure": "Create high system load and observe behavior of non-critical Bluetooth operations",
+        "acceptanceCriteria": "Non-critical operations (phonebook sync, etc.) deferred when system load exceeds 80%",
+        "results": "Passed"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-BTC-01",
+        "functionalSafetyRequirements": ["FSR-BTC-01", "FSR-BTC-02", "FSR-BTC-03"],
+        "technicalSafetyRequirements": ["TSR-BTC-01", "TSR-BTC-02", "TSR-BTC-03", "TSR-BTC-04"]
+      },
+      {
+        "safetyGoalId": "SG-BTC-02",
+        "functionalSafetyRequirements": ["FSR-BTC-04", "FSR-BTC-05", "FSR-BTC-06"],
+        "technicalSafetyRequirements": ["TSR-BTC-05", "TSR-BTC-06", "TSR-BTC-07", "TSR-BTC-08"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-BTC-01",
+        "testCaseIds": ["TC-BTC-01"]
+      },
+      {
+        "requirementId": "TSR-BTC-02",
+        "testCaseIds": ["TC-BTC-02"]
+      },
+      {
+        "requirementId": "TSR-BTC-03",
+        "testCaseIds": ["TC-BTC-03"]
+      },
+      {
+        "requirementId": "TSR-BTC-04",
+        "testCaseIds": ["TC-BTC-04"]
+      },
+      {
+        "requirementId": "TSR-BTC-05",
+        "testCaseIds": ["TC-BTC-05"]
+      },
+      {
+        "requirementId": "TSR-BTC-06",
+        "testCaseIds": ["TC-BTC-06"]
+      },
+      {
+        "requirementId": "TSR-BTC-07",
+        "testCaseIds": ["TC-BTC-07"]
+      },
+      {
+        "requirementId": "TSR-BTC-08",
+        "testCaseIds": ["TC-BTC-08"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "BTC": "Bluetooth Connectivity",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "NFC": "Near Field Communication",
+    "HFP": "Hands-Free Profile"
+  },
+  "searchTerms": [
+    "bluetooth connectivity",
+    "device pairing",
+    "hands-free calling",
+    "bluetooth audio",
+    "phone integration",
+    "contact sync",
+    "bluetooth stack",
+    "wireless connection",
+    "phone book",
+    "message integration",
+    "call management",
+    "bluetooth profile",
+    "media streaming",
+    "connection failure",
+    "pairing interface",
+    "bluetooth performance",
+    "resource usage",
+    "audio streaming",
+    "driver distraction",
+    "process isolation"
+  ]
+} 

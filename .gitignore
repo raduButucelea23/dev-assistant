@@ -1,0 +1,87 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Project specific
+# pitch-deck/
+# documentation/
+# data/catalogues/IVI_Communication_Catalogue.arxml
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Database
+*.db
+*.sqlite3
+chroma_db/
+app/chroma_db/
+
+# Logs
+*.log
+logs/
+app/embeddings/log/
+
+# Local development
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+app/data/
+cache/
+app/cache/
+
+
+# Cursor
+.cursor/
+.cursorignore
+
+# Archive folder
+archive/ 
+
+# Environment files
+environment_backup.yml
+
+# Test files
+test_json_loader.py
+test/ 
+@tests/ 
+dev-assistant.code-workspace

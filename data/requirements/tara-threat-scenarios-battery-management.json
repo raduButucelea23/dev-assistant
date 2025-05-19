@@ -1,0 +1,451 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Threat Scenarios",
+    "standard": "ISO21434",
+    "version": "1.0",
+    "creationDate": "2025-09-07",
+    "status": "Draft",
+    "reviewDate": "2025-09-21",
+    "reviewers": ["Cybersecurity Team", "Battery Management Team", "Safety Team"],
+    "documentId": "TARA-TS-BMD-001",
+    "system": "Electric Powertrain System",
+    "subsystem": "Battery Management Display"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "Battery Management Display",
+      "assetType": "Function",
+      "assetDescription": "The Battery Management Display function provides real-time visualization of battery state information to the driver, including state of charge, remaining range, charging status, and battery health indicators. It interfaces with the Battery Management System (BMS) to retrieve accurate battery data and displays this information on the vehicle's instrument cluster and infotainment screens.",
+      "relatedComponents": ["Battery Management System", "Instrument Cluster", "HMI Controller", "Infotainment Display", "Charging Control Module", "EV Powertrain Control Unit"]
+    },
+    "cybersecurityProperties": [
+      {
+        "id": "CSP-BMD-01",
+        "property": "Integrity",
+        "goal": "Ensure that battery status information cannot be manipulated or falsified",
+        "relatedAssets": ["Battery Management System", "Instrument Cluster", "Infotainment Display"]
+      },
+      {
+        "id": "CSP-BMD-02",
+        "property": "Availability",
+        "goal": "Ensure that battery status information remains available to the driver",
+        "relatedAssets": ["Instrument Cluster", "Infotainment Display", "HMI Controller"]
+      },
+      {
+        "id": "CSP-BMD-03",
+        "property": "Confidentiality",
+        "goal": "Protect battery history data from unauthorized access",
+        "relatedAssets": ["Battery Management System", "HMI Controller"]
+      }
+    ],
+    "threatScenarios": [
+      {
+        "id": "TS-BMD-01",
+        "title": "Battery Status Data Manipulation",
+        "description": "An attacker manipulates the data transmitted from the BMS to the display systems, causing falsified state of charge, range estimates, or battery health indicators to be shown to the driver",
+        "attackVectors": [
+          "Direct manipulation of CAN/LIN bus messages between BMS and display systems",
+          "Compromise of the HMI controller to manipulate data before display",
+          "Exploitation of software vulnerabilities in the display application"
+        ],
+        "attackSteps": [
+          "Gain access to vehicle network (physical or remote entry point)",
+          "Identify and analyze BMS communication protocols",
+          "Inject falsified battery status messages on the network or modify legitimate messages",
+          "Avoid detection by maintaining plausible values and timing patterns"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Lack of message authentication between BMS and display components",
+            "Insufficient validation of battery parameter plausibility",
+            "Absence of multi-source confirmation for critical battery parameters"
+          ],
+          "unsafeControlActions": [
+            "Display shows higher state of charge than actual condition",
+            "Display shows longer remaining range than actual capability",
+            "Display fails to show critical battery warnings"
+          ],
+          "lossScenarios": [
+            "Driver plans trip beyond actual vehicle range capability based on falsified information",
+            "Vehicle becomes stranded in unsafe location due to unexpected battery depletion",
+            "Driver continues operation despite unsafe battery conditions"
+          ]
+        },
+        "relatedDamageScenarios": ["DA-BMD-01", "DA-BMD-04"],
+        "threatenedCybersecurityProperties": ["CSP-BMD-01"]
+      },
+      {
+        "id": "TS-BMD-02",
+        "title": "Charging Status Spoofing",
+        "description": "An attacker falsifies charging status information, causing the display to incorrectly indicate charging state (connected/disconnected), charging rate, or estimated completion time",
+        "attackVectors": [
+          "Manipulation of communication between charging system and BMS",
+          "Tampering with charging status messages on internal vehicle networks",
+          "Exploitation of charging protocol vulnerabilities"
+        ],
+        "attackSteps": [
+          "Access vehicle network during charging session",
+          "Reverse engineer charging communication protocols",
+          "Inject false charging status messages",
+          "Maintain attack to prevent automatic correction of displayed values"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Inadequate authentication of charging status sources",
+            "Insufficient correlation between detected current flow and reported charging status",
+            "Lack of charging status verification"
+          ],
+          "unsafeControlActions": [
+            "Display shows vehicle is charging when it is not connected",
+            "Display shows charging complete when battery is still charging",
+            "Display shows incorrect charging rate or time remaining"
+          ],
+          "lossScenarios": [
+            "Driver disconnects vehicle before sufficient charge is acquired due to false 'complete' status",
+            "Driver expects vehicle to be charged but finds it depleted when needed",
+            "Charging infrastructure is occupied unnecessarily due to falsified charging status"
+          ]
+        },
+        "relatedDamageScenarios": ["DA-BMD-02"],
+        "threatenedCybersecurityProperties": ["CSP-BMD-01"]
+      },
+      {
+        "id": "TS-BMD-03",
+        "title": "Battery Management Display Denial of Service",
+        "description": "An attacker disrupts the availability of the battery management display function, preventing the driver from viewing critical battery information",
+        "attackVectors": [
+          "Resource exhaustion attacks against the HMI controller",
+          "Flooding the vehicle network with high-priority messages",
+          "Exploitation of software vulnerabilities to crash display applications"
+        ],
+        "attackSteps": [
+          "Gain access to vehicle networks or systems",
+          "Identify display controller processing limitations",
+          "Generate excessive message traffic or malformed packets",
+          "Maintain attack to prevent recovery of display functionality"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Insufficient resource protection in display controllers",
+            "Lack of prioritization for critical battery information",
+            "Inadequate fault recovery mechanisms for display systems"
+          ],
+          "unsafeControlActions": [
+            "Display fails to show any battery status information",
+            "Display freezes or becomes unresponsive during critical operations",
+            "Critical battery warnings are not displayed when needed"
+          ],
+          "lossScenarios": [
+            "Driver operates vehicle without awareness of battery status",
+            "Driver is not alerted to critical battery conditions requiring attention",
+            "Vehicle continues operation despite battery conditions requiring driver intervention"
+          ]
+        },
+        "relatedDamageScenarios": ["DA-BMD-03"],
+        "threatenedCybersecurityProperties": ["CSP-BMD-02"]
+      },
+      {
+        "id": "TS-BMD-04",
+        "title": "Battery Health Data Falsification",
+        "description": "An attacker manipulates battery health indicator data to falsely show degraded or optimal battery conditions, leading to incorrect servicing decisions",
+        "attackVectors": [
+          "Tampering with battery diagnostic data stored in memory",
+          "Manipulation of communication between BMS and display during diagnostic operations",
+          "Exploitation of service tool interfaces or diagnostic protocols"
+        ],
+        "attackSteps": [
+          "Access vehicle diagnostic systems (physical or remote)",
+          "Identify battery health data storage or transmission mechanisms",
+          "Modify health parameters or inject falsified diagnostic results",
+          "Ensure modifications persist across system restarts or checks"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Inadequate protection of battery health historical data",
+            "Insufficient authentication for battery health parameter updates",
+            "Lack of correlation between real-time measurements and reported health status"
+          ],
+          "unsafeControlActions": [
+            "Display shows healthy battery despite degraded conditions requiring service",
+            "Display shows degraded battery condition when battery is healthy",
+            "Battery health trends are incorrectly represented leading to improper maintenance"
+          ],
+          "lossScenarios": [
+            "Battery is replaced unnecessarily due to falsely displayed degraded health",
+            "Battery fails prematurely due to lack of required maintenance",
+            "Vehicle range is permanently reduced due to improper battery management based on false health data"
+          ]
+        },
+        "relatedDamageScenarios": ["DA-BMD-04"],
+        "threatenedCybersecurityProperties": ["CSP-BMD-01"]
+      },
+      {
+        "id": "TS-BMD-05",
+        "title": "Battery Usage History Extraction",
+        "description": "An attacker extracts detailed battery usage and charging history data, exposing user behavior patterns and potentially sensitive location information",
+        "attackVectors": [
+          "Unauthorized access to stored battery usage data",
+          "Interception of telematics data during transmission",
+          "Exploitation of diagnostic interfaces to dump historical data"
+        ],
+        "attackSteps": [
+          "Gain access to the vehicle systems storing historical data",
+          "Locate and extract battery usage logs and charging records",
+          "Analyze data to identify patterns and sensitive information",
+          "Exfiltrate data through available communication channels"
+        ],
+        "stpaAnalysis": {
+          "controlFlaws": [
+            "Insufficient protection of stored battery history data",
+            "Lack of access controls for historical information",
+            "Unencrypted storage or transmission of usage patterns"
+          ],
+          "unsafeControlActions": [
+            "System allows unauthorized access to sensitive battery history data",
+            "System fails to limit extraction of historical charging location data",
+            "System permits bulk download of pattern-revealing usage information"
+          ],
+          "lossScenarios": [
+            "User's home location is revealed through regular charging patterns",
+            "Daily routines and travel patterns are exposed through battery usage data",
+            "Personal or business activities are revealed through correlation of charging locations and times"
+          ]
+        },
+        "relatedDamageScenarios": [],
+        "threatenedCybersecurityProperties": ["CSP-BMD-03"]
+      }
+    ],
+    "threatAssessment": [
+      {
+        "threatScenarioId": "TS-BMD-01",
+        "assessmentMethod": "CVSS Base",
+        "attackVector": "Physical | Adjacent",
+        "attackComplexity": "High",
+        "privilegesRequired": "High",
+        "userInteraction": "None",
+        "scope": "Changed",
+        "confidentialityImpact": "None",
+        "integrityImpact": "High",
+        "availabilityImpact": "None",
+        "baseScore": 6.4,
+        "baseSeverity": "Medium",
+        "feasibilityRating": "Medium",
+        "feasibilityJustification": "Requires specialized knowledge of automotive systems and access to the vehicle network. Physical access or proximity is needed initially, but attack could potentially persist. The complexity of understanding and manipulating BMS communications without triggering alerts is significant.",
+        "vulnerabilities": [
+          "Lack of cryptographic message authentication for BMS communications",
+          "Insufficient validation of received battery status values",
+          "Absence of multi-source verification for critical battery parameters"
+        ],
+        "existingControls": [
+          "Basic range plausibility checks on displayed values",
+          "Rate-of-change monitoring for battery parameters",
+          "Discrepancy detection between related battery parameters"
+        ]
+      },
+      {
+        "threatScenarioId": "TS-BMD-02",
+        "assessmentMethod": "CVSS Base",
+        "attackVector": "Physical | Adjacent",
+        "attackComplexity": "Medium",
+        "privilegesRequired": "High",
+        "userInteraction": "None",
+        "scope": "Changed",
+        "confidentialityImpact": "None",
+        "integrityImpact": "High",
+        "availabilityImpact": "None",
+        "baseScore": 7.1,
+        "baseSeverity": "High",
+        "feasibilityRating": "Medium",
+        "feasibilityJustification": "Requires access to the vehicle network during charging operations. The complexity is reduced compared to general battery status spoofing as charging protocols may be simpler and more standardized. However, maintaining the deception requires understanding of expected system behaviors.",
+        "vulnerabilities": [
+          "Lack of secure authentication between charging system and vehicle",
+          "Limited correlation checks between charging current and reported status",
+          "Insufficient protection of charging status communication channels"
+        ],
+        "existingControls": [
+          "Basic validation of charging status messages",
+          "Periodic verification of charging connection status",
+          "Timeout mechanisms for charging status updates"
+        ]
+      },
+      {
+        "threatScenarioId": "TS-BMD-03",
+        "assessmentMethod": "CVSS Base",
+        "attackVector": "Physical | Adjacent",
+        "attackComplexity": "Low",
+        "privilegesRequired": "High",
+        "userInteraction": "None",
+        "scope": "Unchanged",
+        "confidentialityImpact": "None",
+        "integrityImpact": "None",
+        "availabilityImpact": "High",
+        "baseScore": 6.5,
+        "baseSeverity": "Medium",
+        "feasibilityRating": "High",
+        "feasibilityJustification": "Denial of service attacks are generally simpler to execute than spoofing or manipulation attacks. The attack complexity is relatively low once access to the vehicle network is achieved. Flooding the network or exploiting resource limitations in display controllers requires less sophisticated knowledge than protocol manipulation.",
+        "vulnerabilities": [
+          "Insufficient resource management in HMI controllers",
+          "Lack of isolation between critical and non-critical display functions",
+          "Inadequate prioritization of battery status display components"
+        ],
+        "existingControls": [
+          "Basic network traffic filtering",
+          "Resource monitoring in display controllers",
+          "Watchdog timers for display application recovery"
+        ]
+      },
+      {
+        "threatScenarioId": "TS-BMD-04",
+        "assessmentMethod": "CVSS Base",
+        "attackVector": "Physical | Adjacent",
+        "attackComplexity": "High",
+        "privilegesRequired": "High",
+        "userInteraction": "None",
+        "scope": "Changed",
+        "confidentialityImpact": "None",
+        "integrityImpact": "High",
+        "availabilityImpact": "None",
+        "baseScore": 6.4,
+        "baseSeverity": "Medium",
+        "feasibilityRating": "Low",
+        "feasibilityJustification": "Manipulating battery health data requires deep understanding of the battery management system architecture and diagnostic protocols. Persistence of falsified health data across system checks and correlation algorithms adds significant complexity. Access to specialized diagnostic interfaces may be required.",
+        "vulnerabilities": [
+          "Insufficient protection of stored battery health parameters",
+          "Lack of cryptographic signing for battery health records",
+          "Limited verification of health parameter consistency across time"
+        ],
+        "existingControls": [
+          "Historical trend analysis for battery health parameters",
+          "Comparison with real-time measurements during diagnostics",
+          "Service technician verification procedures for major service decisions"
+        ]
+      },
+      {
+        "threatScenarioId": "TS-BMD-05",
+        "assessmentMethod": "CVSS Base",
+        "attackVector": "Physical | Adjacent",
+        "attackComplexity": "Medium",
+        "privilegesRequired": "High",
+        "userInteraction": "None",
+        "scope": "Unchanged",
+        "confidentialityImpact": "High",
+        "integrityImpact": "None",
+        "availabilityImpact": "None",
+        "baseScore": 6.5,
+        "baseSeverity": "Medium",
+        "feasibilityRating": "Medium",
+        "feasibilityJustification": "Extracting battery usage history requires access to stored data systems or diagnostic interfaces. The attack complexity is moderate as it involves identifying and accessing the relevant data stores but does not require sophisticated protocol manipulation. Primary challenge is in gaining initial access to the vehicle systems.",
+        "vulnerabilities": [
+          "Unencrypted storage of battery usage history",
+          "Excessive retention of detailed charging records",
+          "Inadequate access controls for historical data repositories"
+        ],
+        "existingControls": [
+          "Limited access to diagnostic data without authentication",
+          "Basic data aggregation for non-diagnostic purposes",
+          "Restricted external access to detailed charging records"
+        ]
+      }
+    ]
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-BMD-001",
+        "documentType": "Impact Analysis",
+        "relationship": "informedBy",
+        "linkedItems": ["DA-BMD-01", "DA-BMD-02", "DA-BMD-03", "DA-BMD-04"]
+      },
+      {
+        "documentId": "TARA-RA-BMD-001",
+        "documentType": "Risk Assessment",
+        "relationship": "informsNext",
+        "linkedItems": ["TS-BMD-01", "TS-BMD-02", "TS-BMD-03", "TS-BMD-04", "TS-BMD-05"]
+      },
+      {
+        "documentId": "BMS-ARCH-001",
+        "documentType": "Architecture Document",
+        "relationship": "informedBy",
+        "linkedItems": ["TS-BMD-01", "TS-BMD-02", "TS-BMD-04"]
+      },
+      {
+        "documentId": "HMI-SPEC-005",
+        "documentType": "HMI Specification",
+        "relationship": "informedBy",
+        "linkedItems": ["TS-BMD-03"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "8.6",
+        "description": "Threat scenario identification"
+      },
+      {
+        "standardId": "ISO21434",
+        "clause": "8.7",
+        "description": "Attack feasibility rating"
+      },
+      {
+        "standardId": "UNECE R155",
+        "clause": "Annex 5, 7.3.3",
+        "description": "Attack vectors and attack methods"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "BMS-REQ-156",
+        "description": "The BMS shall provide accurate state of charge information to the HMI system",
+        "linkedItems": ["TS-BMD-01"]
+      },
+      {
+        "requirementId": "BMS-REQ-157",
+        "description": "The BMS shall provide accurate charging status information to the HMI system",
+        "linkedItems": ["TS-BMD-02"]
+      },
+      {
+        "requirementId": "HMI-REQ-098",
+        "description": "The HMI shall display critical battery status warnings with appropriate prominence",
+        "linkedItems": ["TS-BMD-03"]
+      },
+      {
+        "requirementId": "BMS-REQ-162",
+        "description": "The BMS shall accurately report battery health metrics",
+        "linkedItems": ["TS-BMD-04"]
+      },
+      {
+        "requirementId": "SEC-REQ-041",
+        "description": "The system shall protect user-specific data from unauthorized access",
+        "linkedItems": ["TS-BMD-05"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "BMS": "Battery Management System - monitors and controls the battery system",
+    "State of Charge (SoC)": "Measure of the amount of electrical energy stored in a battery relative to its capacity",
+    "Remaining Range": "Estimated distance a vehicle can travel with the current battery charge",
+    "CVSS": "Common Vulnerability Scoring System - standardized method for rating the severity of security vulnerabilities",
+    "STPA": "Systems-Theoretic Process Analysis - hazard analysis technique for complex systems",
+    "Attack Vector": "Method or path used by an attacker to gain access to a target system",
+    "Attack Feasibility": "Assessment of how practical and realistic a threat scenario is for an attacker to execute"
+  },
+  "searchTerms": [
+    "battery status spoofing",
+    "EV charging status manipulation",
+    "battery display denial of service",
+    "battery health data falsification",
+    "CVSS automotive assessment",
+    "vehicle network attacks",
+    "EV battery usage privacy",
+    "automotive STPA cybersecurity",
+    "BMS attack vectors",
+    "battery display integrity threats",
+    "ISO21434 threat scenarios",
+    "automotive display security",
+    "electric vehicle data manipulation",
+    "charging system spoofing",
+    "battery diagnostic security"
+  ],
+  "contentSummary": "This TARA Threat Scenarios document identifies and analyzes five key threat scenarios affecting the Battery Management Display function in electric vehicles: (1) Battery Status Data Manipulation - involving falsification of critical battery parameters shown to drivers; (2) Charging Status Spoofing - where charging state information is falsified; (3) Battery Management Display Denial of Service - preventing drivers from viewing critical battery information; (4) Battery Health Data Falsification - manipulating long-term health indicators to trigger incorrect maintenance decisions; and (5) Battery Usage History Extraction - exposing potentially sensitive user behavior patterns from historical data. Each threat scenario is analyzed in depth, including attack vectors, attack steps, and STPA-based analysis of control flaws, unsafe control actions, and resulting loss scenarios. The feasibility assessment rates the scenarios from Low to High feasibility, with denial of service attacks being most feasible and battery health data manipulation being most complex. The document identifies specific vulnerabilities and existing controls for each threat scenario, providing a comprehensive foundation for subsequent risk assessment and security control definition."
+} 

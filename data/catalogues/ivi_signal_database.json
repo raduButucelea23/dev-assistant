@@ -1,0 +1,457 @@
+{
+  "database_info": {
+    "version": "1.0"
+  },
+  "signals": [
+    {
+      "name": "IVI_PowerState",
+      "description": "Broadcasts the current power state of the IVI system.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Vehicle Network"],
+      "value_description": "Enum: {OFF, STANDBY, ON, SHUTDOWN_IN_PROGRESS}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "IVI_ShutdownRequest",
+      "description": "Signal received by the IVI system to initiate a controlled shutdown.",
+      "bus_type": "CAN",
+      "source": "Vehicle Network",
+      "targets": ["IVI"],
+      "value_description": "Value: 'SHUTDOWN'",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "IVI_System_Status",
+      "description": "Transmits the general status of the IVI system.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Main Vehicle CAN bus"],
+      "value_description": "Object: {system_state: Enum {INITIALIZING, RUNNING, DEGRADED, ERROR}, error_code: Integer, app_status: Object {navigation: Enum {OFF, READY, ACTIVE}, media: Enum {OFF, READY, PLAYING, PAUSED}}}",
+      "cycle_time_ms": 200
+    },
+    {
+      "name": "IVI_Heartbeat",
+      "description": "Heartbeat signal maintained by the IVI system.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Diagnostic CAN bus"],
+      "value_description": "Integer counter (0-255) incrementing with each transmission, wrapping back to 0 after 255",
+      "cycle_time_ms": 1000
+    },
+    {
+      "name": "IVI_HMI_Status",
+      "description": "Indicates the operational status of the IVI HMI.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Vehicle Network"],
+      "value_description": "Enum: {NORMAL, LIMITED, FAILURE}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "DOOR_Status",
+      "description": "Indicates the status of vehicle doors.",
+      "bus_type": "CAN",
+      "source": "BCM",
+      "targets": ["IVI"],
+      "value_description": "Enum: {LOCKED, UNLOCKED, AJAR} for each door.",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "HVAC_Status",
+      "description": "Provides the current status of the climate control system.",
+      "bus_type": "CAN",
+      "source": "CCS",
+      "targets": ["IVI"],
+      "value_description": "Object: {mode: Enum {OFF, AUTO, HEAT, COOL, DEFROST}, temp_driver: Float (16.0-30.0°C), temp_passenger: Float (16.0-30.0°C), fan_speed: Integer (0-10), zone_states: Object {front: Boolean, rear: Boolean, floor: Boolean, defrost: Boolean}}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "BMS_ChargingStatus",
+      "description": "Provides the status of the EV battery charging process.",
+      "bus_type": "CAN",
+      "source": "BMS/EVSC",
+      "targets": ["IVI"],
+      "value_description": "Object: {state: Enum {NOT_CHARGING, CHARGING, COMPLETE, ERROR, SCHEDULED}, charge_percent: Integer (0-100), range_km: Integer (0-800), charging_rate_kW: Float (0.0-350.0), minutes_remaining: Integer (0-1440), error_code: Integer}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "CAMERA_Stream_Available",
+      "description": "Indicates if a camera stream (e.g., surround view) is ready.",
+      "bus_type": "CAN | Ethernet",
+      "source": "Camera System",
+      "targets": ["IVI"],
+      "value_description": "Value: 'READY' when stream available.",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "SENSOR_Data",
+      "description": "General signal carrying data from various vehicle sensors.",
+      "bus_type": "CAN",
+      "source": "Various Sensors",
+      "targets": ["IVI"],
+      "value_description": "Array of Objects: [{sensor_id: String, sensor_type: Enum {TEMPERATURE, PRESSURE, PROXIMITY, ULTRASONIC, CAMERA}, value: Float, unit: String, status: Enum {NORMAL, WARNING, ERROR, UNAVAILABLE}}]",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "PDC_Sensor_Data",
+      "description": "Provides distance information from Parking Distance Control sensors.",
+      "bus_type": "CAN",
+      "source": "PDC Module",
+      "targets": ["IVI"],
+      "value_description": "Object: {front_left: Integer (0-250cm), front_center: Integer (0-250cm), front_right: Integer (0-250cm), rear_left: Integer (0-250cm), rear_center: Integer (0-250cm), rear_right: Integer (0-250cm), status: Enum {ACTIVE, DEACTIVATED, ERROR}}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "DRIVE_Mode_Status",
+      "description": "Indicates the currently selected vehicle drive mode.",
+      "bus_type": "CAN",
+      "source": "ECM/PCM | EVSC",
+      "targets": ["IVI"],
+      "value_description": "Enum: {ECO, COMFORT, SPORT, INDIVIDUAL}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "DOOR_Lock_Command",
+      "description": "Command sent by the IVI system to lock/unlock doors.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["BCM"],
+      "value_description": "Enum: {LOCK_ALL, UNLOCK_ALL, LOCK_DRIVER, UNLOCK_DRIVER, LOCK_PASSENGER, UNLOCK_PASSENGER}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "WINDOW_Position_Command",
+      "description": "Command sent by the IVI system to control window positions.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["BCM"],
+      "value_description": "Object: {window_id: Enum {DRIVER_FRONT, PASSENGER_FRONT, DRIVER_REAR, PASSENGER_REAR, SUNROOF}, target_position: Integer (0-100) where 0 is fully closed and 100 is fully open}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "BMS_EnergyConsumption",
+      "description": "Provides real-time energy consumption data.",
+      "bus_type": "CAN",
+      "source": "BMS/EVSC",
+      "targets": ["IVI"],
+      "value_description": "Float (0.0-100.0 kW) representing current energy consumption rate",
+      "cycle_time_ms": 1000
+    },
+    {
+      "name": "ChargingSchedule_Request",
+      "description": "Transmits charging schedule parameters set by the user via IVI.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["BMS/EVSC"],
+      "value_description": "Parameters: {start_time, end_time, charge_limit, priority_mode}.",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "NAV_ChargingPOI",
+      "description": "Signal indicating available DC fast charging Points of Interest.",
+      "bus_type": "Internal IVI | CAN?",
+      "source": "Navigation System",
+      "targets": ["IVI HMI"],
+      "value_description": "Array of Objects: [{poi_id: String, name: String, distance_km: Float, available_connectors: Integer, power_kW: Integer, price_per_kWh: Float, provider: String, amenities: Array of Strings}]",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "BMS_RangeEstimate",
+      "description": "Provides the estimated remaining driving range.",
+      "bus_type": "CAN",
+      "source": "BMS/EVSC",
+      "targets": ["IVI"],
+      "value_description": "Object: {range_km: Integer (0-800), range_with_climate_km: Integer (0-700), range_ecological_km: Integer (0-850), range_sport_km: Integer (0-600), confidence_level: Integer (0-100)}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "HVAC_Request",
+      "description": "Command sent by the IVI system to control climate settings.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["CCS"],
+      "value_description": "Parameters: {mode, temperature, fan_speed, zone}. Requires validation and MAC (ID 0x218).",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "SeatTemp_Command",
+      "description": "Command sent by the IVI system to control seat heating/ventilation.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["BCM | Seat Module"],
+      "value_description": "Parameters: {seat_id, heat_level, vent_level}.",
+      "cycle_time_ms": null
+    },
+     {
+      "name": "HVAC_PreCondStatus",
+      "description": "Indicates the status of cabin pre-conditioning.",
+      "bus_type": "CAN",
+      "source": "CCS",
+      "targets": ["IVI"],
+      "value_description": "Enum: {OFF, SCHEDULED, ACTIVE, COMPLETE}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "WINDOW_Position_Status",
+      "description": "Indicates the current position of vehicle windows.",
+      "bus_type": "CAN",
+      "source": "BCM",
+      "targets": ["IVI"],
+      "value_description": "Range: 0% (closed) to 100% (open)",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "TRUNK_Command",
+      "description": "Command sent by the IVI system to open the trunk/liftgate.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["BCM"],
+      "value_description": "Value: 'OPEN'",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "Maintenance_Status",
+      "description": "Provides vehicle maintenance notifications.",
+      "bus_type": "CAN",
+      "source": "ECM",
+      "targets": ["IVI"],
+      "value_description": "Object: {service_due_km: Integer (0-50000), service_due_days: Integer (0-365), oil_life_percent: Integer (0-100), alerts: Array of Objects: [{component: String, severity: Enum {INFO, WARNING, CRITICAL}, message: String}]}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "SEAT_Position_Command",
+      "description": "Command sent by the IVI system to adjust seat positions.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Seat Module"],
+      "value_description": "Parameters: {seat_id, direction, movement}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "LIGHT_Control_Request",
+      "description": "Command sent by the IVI system to control exterior lights.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["BCM"],
+      "value_description": "Parameters: {light_id, state}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "DRIVE_Mode_Request",
+      "description": "Command sent by the IVI system to change the vehicle drive mode.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["ECM/PCM | EVSC"],
+      "value_description": "Selected mode value (e.g., ECO, SPORT).",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "STEERING_Angle_Status",
+      "description": "Provides the current steering wheel angle.",
+      "bus_type": "CAN",
+      "source": "Steering System",
+      "targets": ["IVI"],
+      "value_description": "Float (-720.0 to 720.0 degrees) where negative values indicate left turn, positive values indicate right turn",
+      "cycle_time_ms": null
+    },
+     {
+      "name": "PDC_Guidance_Data",
+      "description": "Provides data for overlaying parking guidance lines.",
+      "bus_type": "CAN",
+      "source": "PDC Module | Parking Assist Module",
+      "targets": ["IVI"],
+      "value_description": "Object: {guidance_mode: Enum {PERPENDICULAR, PARALLEL, ANGLED}, trajectory_points: Array of Objects: [{x: Float, y: Float, direction: Float}], confidence_level: Integer (0-100), recommended_action: Enum {FORWARD, BACKWARD, STOP, TURN_LEFT, TURN_RIGHT}}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "PARK_Assist_Status",
+      "description": "Indicates the status of the automated parking system.",
+      "bus_type": "CAN",
+      "source": "Parking Assist Module",
+      "targets": ["IVI"],
+      "value_description": "Enum: {UNAVAILABLE, SEARCHING, SPOT_FOUND, ACTIVE, COMPLETE}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "PARK_Assist_Command",
+      "description": "Command sent by the IVI system to activate parking assistance.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Parking Assist Module"],
+      "value_description": "Value: 'ACTIVATE'",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "MEDIA_Control_Command",
+      "description": "Command sent by the IVI system (often via voice) to control media playback.",
+      "bus_type": "Internal IVI",
+      "source": "Voice Recognition | HMI",
+      "targets": ["Media Player Application"],
+      "value_description": "Enum: {PLAY, PAUSE, NEXT, PREVIOUS, VOLUME_UP, VOLUME_DOWN}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "NAV_Destination_Request",
+      "description": "Command sent by the IVI system (often via voice) to set a navigation destination.",
+      "bus_type": "Internal IVI",
+      "source": "Voice Recognition | HMI",
+      "targets": ["Navigation Application"],
+      "value_description": "Object: {dest_type: Enum {ADDRESS, POI, FAVORITE, CONTACT}, dest_data: String, arrival_time: Timestamp, options: Object {avoid_tolls: Boolean, avoid_highways: Boolean, prefer_ev_routes: Boolean}}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "VOICE_Recognition_Status",
+      "description": "Indicates the current status of the voice recognition system.",
+      "bus_type": "CAN | Internal IVI?",
+      "source": "IVI",
+      "targets": ["Instrument Cluster", "IVI HMI"],
+      "value_description": "Enum: {IDLE, LISTENING, PROCESSING, EXECUTING}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "HMI_Touch_Status",
+      "description": "Indicates the status of touch input processing on the HMI.",
+      "bus_type": "Internal IVI | CAN?",
+      "source": "IVI HMI",
+      "targets": ["IVI System"],
+      "value_description": "Enum: {DETECTED, PROCESSED, REJECTED}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "Telltale_Status",
+      "description": "Provides the status of vehicle tell-tale indicators.",
+      "bus_type": "CAN",
+      "source": "Instrument Cluster | BCM",
+      "targets": ["IVI"],
+      "value_description": "Object: {door_ajar: Boolean, seatbelt: Boolean, airbag: Boolean, abs: Boolean, engine_check: Boolean, oil_pressure: Boolean, battery: Boolean, brake_system: Boolean, high_beam: Boolean, low_tire: Boolean, electronic_stability: Boolean}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "ALERT_Message",
+      "description": "Carries vehicle alert messages to be displayed on the IVI.",
+      "bus_type": "CAN",
+      "source": "Various ECUs (e.g., BCM, ECM, BMS)",
+      "targets": ["IVI"],
+      "value_description": "Parameters: {alert_id, priority, text}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "ALERT_Acknowledge",
+      "description": "Signal sent by the IVI system to acknowledge reception of critical alerts.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Originating ECU"],
+      "value_description": "Acknowledged alert_id.",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "PROFILE_UI_Settings",
+      "description": "Stores user interface preferences.",
+      "bus_type": "Internal IVI",
+      "source": "IVI HMI",
+      "targets": ["IVI User Profile Storage"],
+      "value_description": "Parameters: {theme, layout, favorites}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "VEHICLE_Status_Summary",
+      "description": "Provides a summary of key vehicle statuses.",
+      "bus_type": "CAN",
+      "source": "Various ECUs (consolidated by IVI or BCM?)",
+      "targets": ["IVI HMI"],
+      "value_description": "Parameters: {doors, windows, lights, charging}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "ADAS_Feature_Status",
+      "description": "Indicates the status and availability of ADAS features.",
+      "bus_type": "CAN",
+      "source": "ADAS Module",
+      "targets": ["IVI HMI"],
+      "value_description": "Parameters: {feature_id, status, availability}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "DIAG_Session_Request",
+      "description": "Signal used to request diagnostic sessions with the IVI system.",
+      "bus_type": "CAN | DoIP",
+      "source": "Diagnostic Tool",
+      "targets": ["IVI"],
+      "value_description": "Object: {session_type: Enum {DEFAULT, PROGRAMMING, EXTENDED, SAFETY}, security_level: Integer (0-7), timeout_s: Integer}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "IVI_SelfTest_Result",
+      "description": "Reports the results of the IVI system's startup self-test.",
+      "bus_type": "CAN | Internal IVI",
+      "source": "IVI",
+      "targets": ["Diagnostic Log | Service Interface"],
+      "value_description": "Object: {overall_result: Enum {PASS, FAIL, PARTIAL_PASS}, component_results: Array of Objects: [{component_id: String, test_result: Enum {PASS, FAIL, SKIPPED}, error_code: Integer}], timestamp: Timestamp}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "IVI_Temperature_Status",
+      "description": "Reports the internal temperature of the IVI system.",
+      "bus_type": "CAN | Internal IVI",
+      "source": "IVI Internal Sensor",
+      "targets": ["Diagnostic Log | IVI System Monitoring"],
+      "value_description": "Float (0.0-120.0°C) representing the internal system temperature",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "IVI_Memory_Status",
+      "description": "Transmits the memory usage status of the IVI system.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Diagnostic Bus"],
+      "value_description": "Parameters: {ram_usage, storage_usage, swap_usage}",
+      "cycle_time_ms": 1000
+    },
+    {
+      "name": "IVI_Performance_Metrics",
+      "description": "Transmits performance metrics of the IVI system.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Diagnostic Bus"],
+      "value_description": "Parameters: {cpu_load, gpu_load, render_time}",
+      "cycle_time_ms": 1000
+    },
+    {
+      "name": "DIAG_Command",
+      "description": "Signal received by the IVI system containing diagnostic commands.",
+      "bus_type": "CAN | DoIP",
+      "source": "Diagnostic Tool",
+      "targets": ["IVI"],
+      "value_description": "Object: {service_id: Integer (0-255), sub_function: Integer (0-255), parameters: Array of Bytes}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "DIAG_Command_Response",
+      "description": "Signal transmitted by the IVI system in response to diagnostic commands.",
+      "bus_type": "CAN | DoIP",
+      "source": "IVI",
+      "targets": ["Diagnostic Tool"],
+      "value_description": "Object: {service_id: Integer (0-255), sub_function: Integer (0-255), response_code: Enum {POSITIVE, NEGATIVE}, negative_response_code: Integer (0-255), data: Array of Bytes}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "SECURITY_Event_Log",
+      "description": "Transmits security-relevant events logged by the IVI system.",
+      "bus_type": "CAN | Internal Log",
+      "source": "IVI",
+      "targets": ["Diagnostic Log | Secure Storage"],
+      "value_description": "Object: {event_id: String, timestamp: ISO8601 String, severity: Enum {INFO, WARNING, ERROR, CRITICAL}, category: Enum {ACCESS, AUTHENTICATION, AUTHORIZATION, NETWORK, SYSTEM}, description: String, source_ip: String, user_id: String}",
+      "cycle_time_ms": null
+    },
+    {
+      "name": "IVI_Network_Status",
+      "description": "Transmits the status of network connections managed by the IVI system.",
+      "bus_type": "CAN",
+      "source": "IVI",
+      "targets": ["Diagnostic Bus"],
+      "value_description": "Parameters: {network_id, connection_status, error_count, last_error}",
+      "cycle_time_ms": 1000
+    }
+  ]
+} 

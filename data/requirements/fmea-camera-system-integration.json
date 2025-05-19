@@ -1,0 +1,539 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-04-23",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Camera System Integration",
+    "documentId": "FMEA-IVI-CSI-001",
+    "status": "Released",
+    "reviewDate": "2025-04-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Camera System Integration",
+    "description": "The Camera System Integration component of the IVI system provides interfaces for multiple vehicle cameras including rear view, surround view, and driver monitoring. It processes camera feeds, applies image enhancements, displays the video output, and provides augmented visual information to assist the driver in parking, maneuvering, and monitoring vehicle surroundings.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Ambient temperature -40°C to +85°C",
+      "Operating voltage 9-16V",
+      "Various lighting conditions from direct sunlight to night",
+      "Weather conditions affecting camera visibility"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-CSI-01",
+      "description": "The Camera System Integration shall present accurate and timely camera views to support safe vehicle maneuvering",
+      "asilRating": "ASIL B",
+      "rationale": "Inaccurate or delayed camera views could lead to collision during reversing or maneuvering",
+      "relatedHazards": ["H-CSI-01", "H-CSI-02"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-CSI-01",
+          "description": "The IVI system shall display rear view camera feed with minimal latency when reverse gear is engaged",
+          "verification": "Test and analysis",
+          "traceability": "SG-CSI-01"
+        },
+        {
+          "id": "FSR-CSI-02",
+          "description": "The IVI system shall display surround view camera feed with minimal latency when requested by driver",
+          "verification": "Test",
+          "traceability": "SG-CSI-01"
+        },
+        {
+          "id": "FSR-CSI-03",
+          "description": "The IVI system shall verify and indicate the integrity of camera views",
+          "verification": "Test and analysis",
+          "traceability": "SG-CSI-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-CSI-02",
+      "description": "The Camera System Integration shall clearly present distance and trajectory information to prevent driver misinterpretation",
+      "asilRating": "ASIL B",
+      "rationale": "Misinterpretation of camera-provided information could lead to collision during maneuvering",
+      "relatedHazards": ["H-CSI-03", "H-CSI-04"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-CSI-04",
+          "description": "The IVI system shall clearly display accurate distance markers on camera views",
+          "verification": "Test and analysis",
+          "traceability": "SG-CSI-02"
+        },
+        {
+          "id": "FSR-CSI-05",
+          "description": "The IVI system shall display accurate trajectory lines based on steering angle",
+          "verification": "Test",
+          "traceability": "SG-CSI-02"
+        },
+        {
+          "id": "FSR-CSI-06",
+          "description": "The IVI system shall provide unambiguous visual and audible warnings for detected obstacles",
+          "verification": "Test",
+          "traceability": "SG-CSI-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-CSI-01",
+      "description": "Delayed or frozen rear view camera display",
+      "operationalSituation": "Vehicle reversing in proximity to obstacles",
+      "hazardousEvent": "Driver makes maneuvering decision based on outdated visual information",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-CSI-02",
+      "description": "Degraded camera image quality",
+      "operationalSituation": "Vehicle maneuvering in low visibility conditions",
+      "hazardousEvent": "Driver unable to clearly identify obstacles or distance in camera view",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-CSI-03",
+      "description": "Inaccurate distance markers or trajectory lines",
+      "operationalSituation": "Vehicle maneuvering in tight spaces",
+      "hazardousEvent": "Driver misjudges distance to obstacles based on incorrect visual guides",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-CSI-04",
+      "description": "Failure to activate camera view automatically",
+      "operationalSituation": "Vehicle shifting to reverse",
+      "hazardousEvent": "Driver begins reversing without camera view being available",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E4",
+      "controllabilityRating": "C2"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Camera System Integration",
+      "function": "Process and display camera feeds for vehicle maneuvering assistance"
+    },
+    "failureModes": [
+      {
+        "id": "FM-CSI-01",
+        "description": "Excessive camera feed latency",
+        "potentialCauses": [
+          "Video processing bottleneck",
+          "Camera bus communication delay",
+          "Resource contention in processing unit"
+        ],
+        "failureEffects": {
+          "local": "Camera view displayed with significant delay",
+          "nextLevel": "Driver sees delayed representation of surroundings",
+          "endEffect": "Collision due to maneuvering based on outdated visual information"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Optimize video processing pipeline",
+          "Implement dedicated resources for camera processing"
+        ],
+        "detection": [
+          "Monitor end-to-end latency of camera feeds",
+          "Implement watchdog for video frame rate"
+        ],
+        "mitigations": [
+          {
+            "description": "Dedicated video processing hardware with guaranteed latency",
+            "type": "Hardware Architecture",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Frame latency monitoring with visual indicator",
+            "type": "User Feedback",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-CSI-01",
+            "description": "The Camera System shall maintain end-to-end latency of less than 100ms for rear view camera display",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-CSI-01"
+          },
+          {
+            "id": "TSR-CSI-02",
+            "description": "The Camera System shall implement latency monitoring with visual indication when latency exceeds thresholds",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-CSI-03"
+          }
+        ]
+      },
+      {
+        "id": "FM-CSI-02",
+        "description": "Camera feed freeze or interruption",
+        "potentialCauses": [
+          "Camera hardware failure",
+          "Image processing software crash",
+          "Video buffer overflow"
+        ],
+        "failureEffects": {
+          "local": "Camera image stops updating or disappears",
+          "nextLevel": "Driver loses visual feedback of surroundings",
+          "endEffect": "Collision due to lack of visual information during maneuvering"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 8,
+        "occurrenceRating": 3,
+        "detectionRating": 3,
+        "riskPriorityNumber": 72,
+        "prevention": [
+          "Implement robust error handling in video pipeline",
+          "Design watchdog for camera feed monitoring"
+        ],
+        "detection": [
+          "Monitor frame reception from cameras",
+          "Detect static image patterns indicating freeze"
+        ],
+        "mitigations": [
+          {
+            "description": "Immediate visual and audible warning on camera failure",
+            "type": "User Notification",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Automatic fallback to alternative viewing modes",
+            "type": "System Architecture",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-CSI-03",
+            "description": "The Camera System shall detect camera feed freeze within 300ms and provide clear visual warning",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-CSI-03"
+          },
+          {
+            "id": "TSR-CSI-04",
+            "description": "The Camera System shall implement automatic recovery mechanism for camera feed interruptions",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-CSI-01"
+          }
+        ]
+      },
+      {
+        "id": "FM-CSI-03",
+        "description": "Incorrect distance markers or trajectory lines",
+        "potentialCauses": [
+          "Camera calibration error",
+          "Steering angle sensor error",
+          "Algorithm error in trajectory calculation"
+        ],
+        "failureEffects": {
+          "local": "Visual guides do not accurately represent distances or trajectory",
+          "nextLevel": "Driver misjudges clearance or path during maneuvering",
+          "endEffect": "Collision due to incorrect visual guidance"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 5,
+        "riskPriorityNumber": 105,
+        "prevention": [
+          "Implement robust camera calibration procedures",
+          "Use redundant sensors for trajectory calculation"
+        ],
+        "detection": [
+          "Periodic verification of distance marker accuracy",
+          "Cross-validation of steering angle data"
+        ],
+        "mitigations": [
+          {
+            "description": "Self-calibration and verification routines for camera systems",
+            "type": "System Verification",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Clear indication of calibration status and confidence",
+            "type": "User Feedback",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-CSI-05",
+            "description": "The Camera System shall validate camera calibration at system startup and after detected impacts",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-CSI-04"
+          },
+          {
+            "id": "TSR-CSI-06",
+            "description": "The Camera System shall verify steering angle sensor data before displaying trajectory lines",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-CSI-05"
+          }
+        ]
+      },
+      {
+        "id": "FM-CSI-04",
+        "description": "Failure to activate camera view automatically",
+        "potentialCauses": [
+          "Gear position signal error",
+          "Camera activation logic failure",
+          "System initialization delay"
+        ],
+        "failureEffects": {
+          "local": "Camera view not displayed when expected",
+          "nextLevel": "Driver begins maneuvering without visual assistance",
+          "endEffect": "Collision due to lack of rear visibility during maneuver"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Implement redundant gear position detection",
+          "Design camera activation with fail-operational priority"
+        ],
+        "detection": [
+          "Monitor camera activation timing and success",
+          "Verify expected camera state against vehicle state"
+        ],
+        "mitigations": [
+          {
+            "description": "Clear audible warning if camera fails to activate in reverse",
+            "type": "User Notification",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Pre-emptive camera initialization on approaching stop",
+            "type": "System Design",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-CSI-07",
+            "description": "The Camera System shall activate rear view camera within 500ms of reverse gear engagement",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-CSI-01"
+          },
+          {
+            "id": "TSR-CSI-08",
+            "description": "The Camera System shall provide audible warning if camera view fails to activate within 1 second of reverse gear engagement",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-CSI-03"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-CSI-01",
+      "description": "Video Pipeline Latency Monitoring",
+      "mechanism": "End-to-end latency measurement and threshold enforcement",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-CSI-01"],
+      "implementationDetails": "System continuously measures time from camera capture to display rendering and provides visual indication when latency exceeds 150ms"
+    },
+    {
+      "id": "SM-CSI-02",
+      "description": "Camera Feed Watchdog",
+      "mechanism": "Frame reception and static image detection",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-CSI-02"],
+      "implementationDetails": "System monitors frame reception rate and pixel change patterns to detect frozen or failed camera feeds within 300ms"
+    },
+    {
+      "id": "SM-CSI-03",
+      "description": "Camera Calibration Verification",
+      "mechanism": "Pattern-based self-calibration validation",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-CSI-03"],
+      "implementationDetails": "System performs geometric validation of camera calibration using known vehicle reference points and indicates when calibration confidence is low"
+    },
+    {
+      "id": "SM-CSI-04",
+      "description": "Trajectory Calculation Validation",
+      "mechanism": "Multi-source data validation for trajectory",
+      "diagnosticCoverage": "88%",
+      "failureModesCovered": ["FM-CSI-03"],
+      "implementationDetails": "System validates steering angle data against wheel speed differential and vehicle dynamics model before calculating trajectory lines"
+    },
+    {
+      "id": "SM-CSI-05",
+      "description": "Camera Activation Monitoring",
+      "mechanism": "Camera state verification against vehicle state",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-CSI-04"],
+      "implementationDetails": "System verifies camera activation state against expected state based on gear position and vehicle speed with fault notification"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-CSI-01",
+        "description": "Verify camera display latency",
+        "relatedRequirements": ["TSR-CSI-01"],
+        "testProcedure": "Measure end-to-end latency from physical event to display using high-speed camera",
+        "acceptanceCriteria": "End-to-end latency less than 100ms for rear view camera in 95% of measurements",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-CSI-02",
+        "description": "Verify latency monitoring indication",
+        "relatedRequirements": ["TSR-CSI-02"],
+        "testProcedure": "Artificially induce processing delay and observe system response",
+        "acceptanceCriteria": "Visual latency indication appears when latency exceeds defined threshold",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-CSI-03",
+        "description": "Verify camera freeze detection",
+        "relatedRequirements": ["TSR-CSI-03"],
+        "testProcedure": "Simulate camera feed freeze and measure detection time",
+        "acceptanceCriteria": "Freeze detected and warning displayed within 300ms",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-CSI-04",
+        "description": "Verify camera recovery mechanism",
+        "relatedRequirements": ["TSR-CSI-04"],
+        "testProcedure": "Force camera communication interruption and measure recovery behavior",
+        "acceptanceCriteria": "System automatically recovers camera feed or provides clear failure indication",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-CSI-05",
+        "description": "Verify camera calibration validation",
+        "relatedRequirements": ["TSR-CSI-05"],
+        "testProcedure": "Simulate camera misalignment and observe system response",
+        "acceptanceCriteria": "System detects calibration issues and provides appropriate indication",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-CSI-06",
+        "description": "Verify trajectory calculation",
+        "relatedRequirements": ["TSR-CSI-06"],
+        "testProcedure": "Compare displayed trajectory lines with actual vehicle path at various steering angles",
+        "acceptanceCriteria": "Trajectory lines match actual path within ±10% across steering range",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-CSI-07",
+        "description": "Verify camera activation timing",
+        "relatedRequirements": ["TSR-CSI-07"],
+        "testProcedure": "Measure delay between reverse gear engagement and camera display activation",
+        "acceptanceCriteria": "Camera view displayed within 500ms of reverse gear engagement in 99% of tests",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-CSI-08",
+        "description": "Verify failure notification",
+        "relatedRequirements": ["TSR-CSI-08"],
+        "testProcedure": "Prevent camera activation and observe system response",
+        "acceptanceCriteria": "Audible warning provided within 1 second if camera fails to activate in reverse",
+        "results": "Passed"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-CSI-01",
+        "functionalSafetyRequirements": ["FSR-CSI-01", "FSR-CSI-02", "FSR-CSI-03"],
+        "technicalSafetyRequirements": ["TSR-CSI-01", "TSR-CSI-02", "TSR-CSI-03", "TSR-CSI-04", "TSR-CSI-07", "TSR-CSI-08"]
+      },
+      {
+        "safetyGoalId": "SG-CSI-02",
+        "functionalSafetyRequirements": ["FSR-CSI-04", "FSR-CSI-05", "FSR-CSI-06"],
+        "technicalSafetyRequirements": ["TSR-CSI-05", "TSR-CSI-06"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-CSI-01",
+        "testCaseIds": ["TC-CSI-01"]
+      },
+      {
+        "requirementId": "TSR-CSI-02",
+        "testCaseIds": ["TC-CSI-02"]
+      },
+      {
+        "requirementId": "TSR-CSI-03",
+        "testCaseIds": ["TC-CSI-03"]
+      },
+      {
+        "requirementId": "TSR-CSI-04",
+        "testCaseIds": ["TC-CSI-04"]
+      },
+      {
+        "requirementId": "TSR-CSI-05",
+        "testCaseIds": ["TC-CSI-05"]
+      },
+      {
+        "requirementId": "TSR-CSI-06",
+        "testCaseIds": ["TC-CSI-06"]
+      },
+      {
+        "requirementId": "TSR-CSI-07",
+        "testCaseIds": ["TC-CSI-07"]
+      },
+      {
+        "requirementId": "TSR-CSI-08",
+        "testCaseIds": ["TC-CSI-08"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "CSI": "Camera System Integration",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "ADAS": "Advanced Driver Assistance Systems",
+    "RVC": "Rear View Camera"
+  },
+  "searchTerms": [
+    "camera system",
+    "rear view camera",
+    "surround view",
+    "camera integration",
+    "parking assistance",
+    "camera calibration",
+    "trajectory lines",
+    "distance markers",
+    "video latency",
+    "camera feed",
+    "reverse camera",
+    "camera activation",
+    "parking guidance",
+    "camera image",
+    "video processing",
+    "camera quality",
+    "camera failure",
+    "visual guidance",
+    "rear visibility",
+    "camera visualization"
+  ]
+} 

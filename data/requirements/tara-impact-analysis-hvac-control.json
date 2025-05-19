@@ -1,0 +1,240 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Impact Analysis",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-05-01",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "reviewers": ["Cybersecurity Team", "Safety Engineering"],
+    "documentId": "TARA-IA-HVAC-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "HVAC Control Interface"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "HVAC Control Interface",
+      "assetType": "Function",
+      "assetDescription": "Control cabin climate through IVI system",
+      "assetLocation": "Vehicle Interior",
+      "relatedComponents": ["IVI System", "CAN Bus", "HVAC Electronic Control Unit (ECU)"],
+      "functionalDescription": "Allows the driver or passenger to control cabin temperature, fan speed, and airflow direction through the IVI touchscreen interface or voice commands, and displays climate status"
+    },
+    "cybersecurityProperty": {
+      "property": "Integrity",
+      "description": "Ensures that HVAC control commands cannot be maliciously modified or spoofed",
+      "rationale": "Prevents unauthorized entities from sending falsified HVAC commands that could compromise occupant comfort and driver attention"
+    },
+    "damageScenarios": [
+      {
+        "id": "DA-HVAC-01",
+        "summary": "Unintended extreme heating causing driver distraction",
+        "detailedDescription": "An unauthorized command causes the vehicle's HVAC system to suddenly produce extreme heat while the vehicle is in motion, creating a significant driver distraction that could affect safe vehicle operation",
+        "trigger": "Reception of unauthorized extreme temperature command",
+        "affectedStakeholders": ["Vehicle occupants", "Road users"],
+        "potentialConsequences": [
+          "Driver distraction due to sudden extreme temperature",
+          "Reduced driver attention to road conditions",
+          "Occupant discomfort affecting driver performance",
+          "Potential control issues due to reactive movement",
+          "Increased risk of accident or collision"
+        ],
+        "impactAssessment": {
+          "method": "SAHARA",
+          "ratings": {
+            "S": {
+              "value": 2,
+              "description": "Moderate injury possible",
+              "justification": "Driver distraction due to extreme temperature could contribute to accident with moderate injury potential"
+            },
+            "F": {
+              "value": 1,
+              "description": "Minor financial impact",
+              "justification": "Possible vehicle damage from accident caused by distraction"
+            },
+            "O": {
+              "value": 2,
+              "description": "Moderate operational impact",
+              "justification": "Temporary loss of proper climate control functionality"
+            },
+            "P": {
+              "value": 0,
+              "description": "No privacy impact",
+              "justification": "HVAC control operations do not involve personal data"
+            }
+          },
+          "overallImpactRating": "Moderate",
+          "impactJustification": "The primary concern is safety impact due to driver distraction if extreme temperature conditions suddenly occur"
+        }
+      },
+      {
+        "id": "DA-HVAC-02",
+        "summary": "Loss of windshield defogger functionality in critical conditions",
+        "detailedDescription": "A malicious actor compromises the CAN bus communication between the IVI and HVAC ECU, causing loss of defogger/defrost functionality in cold/humid weather conditions, resulting in windshield fogging and reduced visibility",
+        "trigger": "Blocked or corrupted defogger activation commands",
+        "affectedStakeholders": ["Vehicle occupants", "Road users"],
+        "potentialConsequences": [
+          "Reduced visibility due to windshield fogging",
+          "Inability to clear windshield effectively",
+          "Driver difficulty seeing road conditions",
+          "Potentially unsafe driving conditions",
+          "Increased accident risk in adverse weather"
+        ],
+        "impactAssessment": {
+          "method": "SAHARA",
+          "ratings": {
+            "S": {
+              "value": 2,
+              "description": "Moderate injury possible",
+              "justification": "Reduced visibility in adverse conditions could lead to accidents with moderate injury potential"
+            },
+            "F": {
+              "value": 1,
+              "description": "Minor financial impact",
+              "justification": "Potential vehicle damage from visibility-related accident"
+            },
+            "O": {
+              "value": 3,
+              "description": "Significant operational impact",
+              "justification": "Complete loss of safety-critical defogging function"
+            },
+            "P": {
+              "value": 0,
+              "description": "No privacy impact",
+              "justification": "Defogger operations do not involve personal data"
+            }
+          },
+          "overallImpactRating": "High",
+          "impactJustification": "The primary concern is safety impact due to reduced visibility in critical driving conditions"
+        }
+      },
+      {
+        "id": "DA-HVAC-03",
+        "summary": "HVAC system rapid oscillation causing driver distraction",
+        "detailedDescription": "A malicious actor compromises the CAN bus communication between the IVI and HVAC ECU, causing the climate system to rapidly oscillate between extreme temperature settings or fan speeds, creating distracting noise and temperature changes",
+        "trigger": "Injection of rapidly changing HVAC commands",
+        "affectedStakeholders": ["Vehicle occupants", "Road users"],
+        "potentialConsequences": [
+          "Driver distraction due to rapid temperature changes",
+          "Discomfort from inconsistent cabin climate",
+          "Audible distraction from fan speed fluctuations",
+          "Reduced driver attention to road conditions",
+          "Potentially unsafe driving due to distraction"
+        ],
+        "impactAssessment": {
+          "method": "SAHARA",
+          "ratings": {
+            "S": {
+              "value": 2,
+              "description": "Moderate injury possible",
+              "justification": "Driver distraction from erratic HVAC behavior could contribute to accidents with moderate injury potential"
+            },
+            "F": {
+              "value": 1,
+              "description": "Minor financial impact",
+              "justification": "Potential vehicle damage from distraction-related accident"
+            },
+            "O": {
+              "value": 2,
+              "description": "Moderate operational impact",
+              "justification": "Compromised normal operation of climate control system"
+            },
+            "P": {
+              "value": 0,
+              "description": "No privacy impact",
+              "justification": "HVAC control operations do not involve personal data"
+            }
+          },
+          "overallImpactRating": "Moderate",
+          "impactJustification": "The primary concern is safety impact due to driver distraction from erratic HVAC system behavior"
+        }
+      }
+    ]
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-TS-HVAC-001",
+        "documentType": "Threat Scenarios",
+        "relationship": "extends",
+        "linkedItems": ["TS-HVAC-01", "TS-HVAC-02", "TS-HVAC-03"]
+      },
+      {
+        "documentId": "TARA-RA-HVAC-001",
+        "documentType": "Risk Assessment",
+        "relationship": "informs",
+        "linkedItems": ["RA-HVAC-01", "RA-HVAC-02", "RA-HVAC-03"]
+      },
+      {
+        "documentId": "FMEA-IVI-HVAC-001",
+        "documentType": "FMEA",
+        "relationship": "complements",
+        "linkedItems": ["SG-HVAC-01", "SG-HVAC-02", "FM-HVAC-01", "FM-HVAC-02", "FM-HVAC-03"]
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "FSR-HVAC-01",
+        "description": "The IVI system shall limit HVAC temperature requests to feasible operating ranges",
+        "source": "Functional Safety Requirements"
+      },
+      {
+        "requirementId": "FSR-HVAC-02",
+        "description": "The IVI system shall validate user input for HVAC controls before sending commands to the HVAC ECU",
+        "source": "Functional Safety Requirements"
+      },
+      {
+        "requirementId": "FSR-HVAC-04",
+        "description": "The IVI system shall authenticate all HVAC control messages using message authentication code",
+        "source": "Functional Safety Requirements"
+      },
+      {
+        "requirementId": "FR-CLI-003",
+        "description": "The IVI system shall implement message authentication for all TEMP_Control_Command messages using vehicle-specific keys",
+        "source": "System Specification"
+      },
+      {
+        "requirementId": "FR-CLI-005",
+        "description": "The IVI system shall transmit the DEFOG_Command signal with value \"ACTIVATE\" when the defog icon is tapped on the touchscreen",
+        "source": "System Specification"
+      },
+      {
+        "requirementId": "FR-CLI-008",
+        "description": "The IVI system shall display the current temperature setting and fan speed status based on the HVAC_Status signal values",
+        "source": "System Specification"
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "HVAC": "Heating, Ventilation, and Air Conditioning",
+    "CAN": "Controller Area Network",
+    "SAHARA": "Safety and security Hazard Analysis and Risk Assessment",
+    "IVI": "In-Vehicle Infotainment",
+    "ECU": "Electronic Control Unit",
+    "MAC": "Message Authentication Code"
+  },
+  "searchTerms": [
+    "HVAC control",
+    "climate control", 
+    "temperature setting",
+    "cabin temperature",
+    "defogger",
+    "driver distraction",
+    "CAN bus security",
+    "vehicle safety",
+    "occupant comfort",
+    "authentication",
+    "HVAC command",
+    "impact analysis",
+    "security property",
+    "integrity",
+    "damage scenario",
+    "windshield fogging",
+    "visibility",
+    "message authentication code",
+    "unauthorized command"
+  ],
+  "contentSummary": "Asset: Function: Control cabin climate through IVI system. Cyber‑security property: Integrity. Damage scenarios: DA-HVAC-01 - Unintended extreme heating causing driver distraction. DA-HVAC-02 - Loss of windshield defogger functionality in critical conditions. DA-HVAC-03 - HVAC system rapid oscillation causing driver distraction. Impact ratings → S:2 F:1 O:2-3 P:0."
+} 

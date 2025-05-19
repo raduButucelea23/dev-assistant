@@ -1,0 +1,429 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-05-01",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "HVAC Control Interface",
+    "documentId": "FMEA-IVI-HVAC-001",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "HVAC Control Interface Module",
+    "description": "The HVAC control interface in the IVI system allows users to adjust cabin temperature, fan speed, and airflow direction through touch interface or voice commands. It communicates with the HVAC ECU via CAN bus to execute the requested functions.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Ambient temperature -40°C to +85°C",
+      "Operating voltage 9-16V"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-HVAC-01",
+      "description": "The HVAC system shall not cause unintended extreme temperature conditions that could distract the driver or cause discomfort to occupants",
+      "asilRating": "ASIL B",
+      "rationale": "Extreme temperature conditions could distract the driver and indirectly contribute to loss of vehicle control",
+      "relatedHazards": ["H-HVAC-01", "H-HVAC-03"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-HVAC-01",
+          "description": "The IVI system shall limit HVAC temperature requests to feasible operating ranges",
+          "verification": "Test and analysis",
+          "traceability": "SG-HVAC-01"
+        },
+        {
+          "id": "FSR-HVAC-02",
+          "description": "The IVI system shall validate user input for HVAC controls before sending commands to the HVAC ECU",
+          "verification": "Test",
+          "traceability": "SG-HVAC-01"
+        },
+        {
+          "id": "FSR-HVAC-03",
+          "description": "The IVI system shall detect and reject invalid HVAC control requests",
+          "verification": "Test",
+          "traceability": "SG-HVAC-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-HVAC-02",
+      "description": "The HVAC control system shall maintain integrity of communication between IVI and HVAC ECU",
+      "asilRating": "ASIL B",
+      "rationale": "Compromised communication could lead to unauthorized commands or loss of control functionality",
+      "relatedHazards": ["H-HVAC-01", "H-HVAC-02"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-HVAC-04",
+          "description": "The IVI system shall authenticate all HVAC control messages using message authentication code",
+          "verification": "Test and analysis",
+          "traceability": "SG-HVAC-02"
+        },
+        {
+          "id": "FSR-HVAC-05",
+          "description": "The IVI system shall limit the rate of HVAC control commands to prevent rapid fluctuations",
+          "verification": "Test",
+          "traceability": "SG-HVAC-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-HVAC-01",
+      "description": "Unintended extreme heating causing driver distraction",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Driver becomes distracted due to sudden extreme temperature",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-HVAC-02",
+      "description": "Unauthorized control of HVAC through compromised IVI system",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Driver distraction due to unexplained HVAC behavior",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E2",
+      "controllabilityRating": "C2"
+    },
+    {
+      "id": "H-HVAC-03",
+      "description": "Loss of HVAC control causing windshield fogging",
+      "operationalSituation": "Driving in humid/cold conditions",
+      "hazardousEvent": "Reduced visibility due to windshield fogging",
+      "asilRating": "ASIL B",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C2"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "HVAC Control Touch Interface",
+      "function": "Allow user to adjust cabin temperature through IVI touchscreen"
+    },
+    "failureModes": [
+      {
+        "id": "FM-HVAC-01",
+        "description": "HVAC temperature control becomes unresponsive on touch interface",
+        "potentialCauses": [
+          "Software deadlock in touch input handling",
+          "CAN communication failure between IVI and HVAC ECU",
+          "Touch screen hardware failure"
+        ],
+        "failureEffects": {
+          "local": "User unable to adjust temperature via touch interface",
+          "nextLevel": "Driver may be distracted trying to interact with non-responsive controls",
+          "endEffect": "Potential driver distraction causing unsafe driving condition"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Implement watchdog timer for touch input handling",
+          "Use input validation and timeout mechanisms"
+        ],
+        "detection": [
+          "Implement input response monitoring",
+          "Add periodic touch controller self-test"
+        ],
+        "mitigations": [
+          {
+            "description": "Provide redundant physical HVAC controls",
+            "type": "Hardware Redundancy",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Implement voice control fallback for HVAC functions",
+            "type": "Alternative Interface",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-HVAC-01",
+            "description": "The IVI system shall detect touch interface non-responsiveness within 500ms",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-HVAC-03"
+          },
+          {
+            "id": "TSR-HVAC-02",
+            "description": "The IVI system shall notify the user when temperature control commands cannot be sent to the HVAC ECU",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-HVAC-01"
+          }
+        ]
+      },
+      {
+        "id": "FM-HVAC-02",
+        "description": "Unauthorized HVAC commands injected through compromised CAN bus",
+        "potentialCauses": [
+          "Missing or insufficient message authentication",
+          "Vulnerability in CAN bus implementation",
+          "Malicious device connected to diagnostic port"
+        ],
+        "failureEffects": {
+          "local": "HVAC system receives and executes unauthorized commands",
+          "nextLevel": "Unexpected temperature or fan speed changes",
+          "endEffect": "Driver distraction or discomfort, increased security vulnerability"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 6,
+        "occurrenceRating": 2,
+        "detectionRating": 5,
+        "riskPriorityNumber": 60,
+        "prevention": [
+          "Implement message authentication code (HMAC-SHA256) for all HVAC commands",
+          "Enforce input validation before command execution"
+        ],
+        "detection": [
+          "Implement command pattern monitoring for anomaly detection",
+          "Add CAN message authentication verification"
+        ],
+        "mitigations": [
+          {
+            "description": "Implement rate limiting for HVAC commands",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Add plausibility checks for temperature commands",
+            "type": "Software Control",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-HVAC-03",
+            "description": "The IVI system shall implement HMAC-SHA256 message authentication for all HVAC control messages on CAN ID 0x218",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-HVAC-04"
+          },
+          {
+            "id": "TSR-HVAC-04",
+            "description": "The IVI system shall limit the rate of HVAC temperature change commands to prevent rapid fluctuations",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-HVAC-05"
+          }
+        ]
+      },
+      {
+        "id": "FM-HVAC-03",
+        "description": "HVAC command validation failure",
+        "potentialCauses": [
+          "Software defect in validation algorithm",
+          "Missing range checks for temperature values",
+          "Incorrect configuration of valid parameter ranges"
+        ],
+        "failureEffects": {
+          "local": "Invalid temperature or fan speed commands sent to HVAC ECU",
+          "nextLevel": "Potential extreme temperature settings or rapid fluctuations",
+          "endEffect": "Driver distraction or discomfort affecting vehicle control"
+        },
+        "asilRating": "ASIL B",
+        "severityRating": 5,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 60,
+        "prevention": [
+          "Implement redundant validation checks",
+          "Define strict range limits for all HVAC parameters"
+        ],
+        "detection": [
+          "Add runtime verification of validation process",
+          "Implement command logging and auditing"
+        ],
+        "mitigations": [
+          {
+            "description": "Secondary validation at HVAC ECU level",
+            "type": "Redundant Validation",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Graceful degradation to safe defaults",
+            "type": "Fail-Safe Behavior",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-HVAC-05",
+            "description": "The IVI system shall validate all HVAC control values against defined ranges before transmission",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-HVAC-02"
+          },
+          {
+            "id": "TSR-HVAC-06",
+            "description": "The IVI system shall implement redundant validation for temperature values (16°C to 30°C)",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-HVAC-01"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-HVAC-01",
+      "description": "HVAC Control Monitoring",
+      "mechanism": "Software watchdog monitors HVAC control responsiveness",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-HVAC-01"],
+      "implementationDetails": "Software checks if HVAC control UI responds to user input within 500ms; if not, system attempts recovery and notifies user"
+    },
+    {
+      "id": "SM-HVAC-02",
+      "description": "CAN Communication Monitoring",
+      "mechanism": "CAN bus communication monitoring between IVI and HVAC ECU",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-HVAC-01"],
+      "implementationDetails": "System monitors CAN message acknowledgements and timeout; implements retry strategy and notification mechanism"
+    },
+    {
+      "id": "SM-HVAC-03",
+      "description": "Message Authentication",
+      "mechanism": "HMAC-SHA256 for HVAC control messages",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-HVAC-02"],
+      "implementationDetails": "All HVAC control messages on CAN ID 0x218 are authenticated using vehicle-specific keys and HMAC-SHA256"
+    },
+    {
+      "id": "SM-HVAC-04",
+      "description": "Command Rate Limiting",
+      "mechanism": "Frequency monitoring of HVAC commands",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-HVAC-02", "FM-HVAC-03"],
+      "implementationDetails": "System monitors and limits the frequency of HVAC control commands to prevent rapid fluctuations that could cause driver distraction"
+    },
+    {
+      "id": "SM-HVAC-05",
+      "description": "Input Validation",
+      "mechanism": "Range checking for temperature values",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-HVAC-03"],
+      "implementationDetails": "System validates all temperature inputs against defined ranges (16°C to 30°C) before sending commands to HVAC ECU"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-HVAC-01",
+        "description": "Verify HVAC touch control responsiveness",
+        "relatedRequirements": ["TSR-HVAC-01"],
+        "testProcedure": "Simulate touch inputs to HVAC controls and measure response time",
+        "acceptanceCriteria": "Response time ≤ 300ms for 95% of inputs",
+        "results": "Pending"
+      },
+      {
+        "id": "TC-HVAC-02",
+        "description": "Verify HVAC control redundancy",
+        "relatedRequirements": ["TSR-HVAC-02"],
+        "testProcedure": "Disable touch interface and verify alternate control methods are available",
+        "acceptanceCriteria": "All HVAC functions accessible through alternate means",
+        "results": "Pending"
+      },
+      {
+        "id": "TC-HVAC-03",
+        "description": "Verify message authentication mechanism",
+        "relatedRequirements": ["TSR-HVAC-03"],
+        "testProcedure": "Attempt to inject HVAC commands with invalid authentication code",
+        "acceptanceCriteria": "All commands with invalid authentication are rejected",
+        "results": "Pending"
+      },
+      {
+        "id": "TC-HVAC-04",
+        "description": "Verify command rate limiting",
+        "relatedRequirements": ["TSR-HVAC-04"],
+        "testProcedure": "Send rapid succession of temperature change commands",
+        "acceptanceCriteria": "Commands exceeding defined rate limits are throttled",
+        "results": "Pending"
+      },
+      {
+        "id": "TC-HVAC-05",
+        "description": "Verify temperature range validation",
+        "relatedRequirements": ["TSR-HVAC-05", "TSR-HVAC-06"],
+        "testProcedure": "Attempt to set temperature outside valid range (below 16°C and above 30°C)",
+        "acceptanceCriteria": "Commands with out-of-range values are rejected or capped",
+        "results": "Pending"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-HVAC-01",
+        "functionalSafetyRequirements": ["FSR-HVAC-01", "FSR-HVAC-02", "FSR-HVAC-03"],
+        "technicalSafetyRequirements": ["TSR-HVAC-01", "TSR-HVAC-02", "TSR-HVAC-05", "TSR-HVAC-06"]
+      },
+      {
+        "safetyGoalId": "SG-HVAC-02",
+        "functionalSafetyRequirements": ["FSR-HVAC-04", "FSR-HVAC-05"],
+        "technicalSafetyRequirements": ["TSR-HVAC-03", "TSR-HVAC-04"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-HVAC-01",
+        "testCaseIds": ["TC-HVAC-01"]
+      },
+      {
+        "requirementId": "TSR-HVAC-02",
+        "testCaseIds": ["TC-HVAC-02"]
+      },
+      {
+        "requirementId": "TSR-HVAC-03",
+        "testCaseIds": ["TC-HVAC-03"]
+      },
+      {
+        "requirementId": "TSR-HVAC-04",
+        "testCaseIds": ["TC-HVAC-04"]
+      },
+      {
+        "requirementId": "TSR-HVAC-05",
+        "testCaseIds": ["TC-HVAC-05"]
+      },
+      {
+        "requirementId": "TSR-HVAC-06",
+        "testCaseIds": ["TC-HVAC-05"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "HVAC": "Heating, Ventilation, and Air Conditioning",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "ECU": "Electronic Control Unit",
+    "CAN": "Controller Area Network",
+    "HMAC": "Hash-based Message Authentication Code"
+  },
+  "searchTerms": [
+    "HVAC failure",
+    "temperature control",
+    "touch interface",
+    "IVI HVAC",
+    "cabin temperature",
+    "climate control",
+    "ASIL B",
+    "safety requirements",
+    "driver distraction",
+    "windshield fogging",
+    "message authentication",
+    "CAN bus security",
+    "command validation",
+    "temperature range"
+  ]
+} 

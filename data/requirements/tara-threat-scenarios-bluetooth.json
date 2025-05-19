@@ -1,0 +1,522 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Threat Scenarios",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-07-15",
+    "status": "Draft",
+    "reviewDate": "2025-07-30",
+    "reviewers": ["Cybersecurity Team", "Connectivity Team", "Product Security"],
+    "documentId": "TARA-TS-BT-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Bluetooth Connectivity"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "Bluetooth Connectivity",
+      "assetType": "Function",
+      "assetDescription": "Enables wireless device pairing and communication for phone calls, audio streaming, and data exchange with the vehicle's infotainment system",
+      "relatedComponents": ["Bluetooth Controller", "Audio System", "IVI System", "Contact Database"]
+    },
+    "cybersecurityProperties": {
+      "confidentiality": {
+        "description": "Protection of sensitive information exchanged over Bluetooth including personal contacts, call audio, and authentication data",
+        "goals": [
+          "Protect the confidentiality of personal data synchronized from paired devices",
+          "Ensure call audio streams are not interceptable by unauthorized parties",
+          "Secure pairing credentials and authentication tokens against exposure"
+        ]
+      },
+      "integrity": {
+        "description": "Protection against unauthorized modification of Bluetooth communications and pairing data",
+        "goals": [
+          "Prevent tampering with authentication and pairing processes",
+          "Ensure Bluetooth control commands cannot be spoofed or modified",
+          "Maintain integrity of synchronized contact data"
+        ]
+      },
+      "availability": {
+        "description": "Ensuring reliable access to Bluetooth functionality when needed",
+        "goals": [
+          "Protect against denial of service attacks targeting Bluetooth subsystem",
+          "Ensure graceful degradation in case of interference",
+          "Maintain connectivity during legitimate use cases"
+        ]
+      }
+    },
+    "threatScenarios": [
+      {
+        "id": "TS-BT-01",
+        "title": "Bluetooth Pairing Exploitation",
+        "description": "An attacker exploits vulnerabilities in the Bluetooth pairing process to gain unauthorized access to the vehicle's Bluetooth system",
+        "threatType": "Spoofing",
+        "attackVectors": [
+          {
+            "vectorName": "PIN Code Brute Force",
+            "description": "Systematically testing all possible PIN combinations to bypass authentication during pairing",
+            "complexity": "Medium",
+            "prerequisites": [
+              "Physical proximity to the vehicle during pairing",
+              "Knowledge of Bluetooth device discovery timing",
+              "Specialized hardware to automate PIN attempts"
+            ]
+          },
+          {
+            "vectorName": "Just Works Pairing Exploitation",
+            "description": "Exploiting vulnerabilities in the 'Just Works' pairing mode that doesn't require PIN verification",
+            "complexity": "Low",
+            "prerequisites": [
+              "Target vehicle uses 'Just Works' pairing for convenience",
+              "Physical proximity to the vehicle during pairing",
+              "Basic Bluetooth sniffing equipment"
+            ]
+          },
+          {
+            "vectorName": "MITM During Pairing",
+            "description": "Intercepting and potentially modifying communications during the pairing process",
+            "complexity": "High",
+            "prerequisites": [
+              "Sophisticated Bluetooth sniffing hardware",
+              "Knowledge of Bluetooth pairing protocols",
+              "Physical proximity during initial pairing"
+            ]
+          }
+        ],
+        "attackSteps": [
+          "Attacker places equipment in proximity to the vehicle",
+          "Vehicle owner initiates Bluetooth pairing process",
+          "Attacker intercepts pairing process or exploits 'Just Works' vulnerability",
+          "Attacker completes unauthorized pairing with vehicle",
+          "Vehicle system recognizes attacker's device as authorized",
+          "Attacker gains access to vehicle Bluetooth functions and data"
+        ],
+        "stpaAnalysis": {
+          "ucas": [
+            {
+              "id": "UCA-BT-01",
+              "description": "Vehicle accepts pairing request without sufficient user verification"
+            },
+            {
+              "id": "UCA-BT-02",
+              "description": "Vehicle uses weak Bluetooth pairing mechanisms (e.g., 'Just Works') for convenience"
+            },
+            {
+              "id": "UCA-BT-03",
+              "description": "Vehicle doesn't limit number of pairing attempts within a time window"
+            }
+          ],
+          "controlFlaws": [
+            {
+              "id": "CF-BT-01",
+              "description": "Insufficient input validation during pairing process",
+              "relatedUCAs": ["UCA-BT-01"]
+            },
+            {
+              "id": "CF-BT-02",
+              "description": "Weak default settings prioritizing convenience over security",
+              "relatedUCAs": ["UCA-BT-02"]
+            },
+            {
+              "id": "CF-BT-03",
+              "description": "Missing rate limiting for authentication attempts",
+              "relatedUCAs": ["UCA-BT-03"]
+            }
+          ]
+        },
+        "threatAssessment": {
+          "method": "CVSS Base",
+          "attackVector": "Physical",
+          "attackComplexity": "Low",
+          "privilegesRequired": "None",
+          "userInteraction": "Required",
+          "scope": "Changed",
+          "confidentialityImpact": "High",
+          "integrityImpact": "Low",
+          "availabilityImpact": "Low",
+          "baseScore": 6.8,
+          "baseSeverity": "Medium",
+          "feasibilityRating": "Medium",
+          "feasibilityJustification": "While requiring physical proximity, the attack can be performed with publicly available tools and moderate technical knowledge, especially if 'Just Works' pairing is enabled"
+        },
+        "relatedDamageScenarios": ["DA-BT-01"],
+        "vulnerabilities": [
+          {
+            "id": "VULN-BT-01",
+            "title": "Weak Bluetooth Pairing Mode",
+            "description": "Use of 'Just Works' pairing that doesn't require user verification",
+            "cweId": "CWE-308",
+            "cweTitle": "Use of Single-factor Authentication"
+          },
+          {
+            "id": "VULN-BT-02",
+            "title": "No Pairing Attempt Rate Limiting",
+            "description": "System doesn't limit number of pairing attempts, enabling brute force attacks",
+            "cweId": "CWE-307",
+            "cweTitle": "Improper Restriction of Excessive Authentication Attempts"
+          },
+          {
+            "id": "VULN-BT-03",
+            "title": "Insufficient User Verification",
+            "description": "Pairing process lacks strong verification between vehicle and user's intent",
+            "cweId": "CWE-287",
+            "cweTitle": "Improper Authentication"
+          }
+        ],
+        "existingControls": [
+          {
+            "id": "CTRL-BT-01",
+            "title": "Bluetooth Standard Encryption",
+            "description": "Base level encryption provided by Bluetooth standard protocols",
+            "effectiveness": "Low",
+            "justification": "Basic protocol security can be bypassed especially during initial pairing phase"
+          },
+          {
+            "id": "CTRL-BT-02",
+            "title": "PIN Display During Pairing",
+            "description": "System displays PIN on vehicle infotainment screen for user verification",
+            "effectiveness": "Medium",
+            "justification": "Provides some security but subject to user error or visibility to attackers nearby"
+          }
+        ],
+        "relatedCybersecurityGoals": ["CSG-BT-01"]
+      },
+      {
+        "id": "TS-BT-02",
+        "title": "Bluetooth Communication Eavesdropping",
+        "description": "An attacker intercepts and decrypts Bluetooth communications between the vehicle and paired devices to access sensitive information",
+        "threatType": "Information Disclosure",
+        "attackVectors": [
+          {
+            "vectorName": "Bluetooth Sniffing",
+            "description": "Passive monitoring of Bluetooth communications using specialized equipment",
+            "complexity": "Medium",
+            "prerequisites": [
+              "Commercial or custom Bluetooth sniffing hardware",
+              "Physical proximity to the vehicle during communications",
+              "Software for analyzing captured Bluetooth packets"
+            ]
+          },
+          {
+            "vectorName": "Bluetooth Protocol Downgrade",
+            "description": "Forcing the Bluetooth connection to use older, less secure protocol versions or cipher suites",
+            "complexity": "High",
+            "prerequisites": [
+              "Advanced knowledge of Bluetooth protocol negotiation",
+              "Specialized equipment to interfere with protocol handshakes",
+              "Physical proximity during connection establishment"
+            ]
+          }
+        ],
+        "attackSteps": [
+          "Attacker positions within range of the vehicle's Bluetooth communications",
+          "Attacker activates Bluetooth sniffing equipment with appropriate frequency scanning",
+          "Vehicle owner connects legitimate device and begins communication",
+          "Attacker captures encrypted Bluetooth packets during transmission",
+          "Attacker attempts to decrypt captured communications using known vulnerabilities",
+          "Attacker extracts sensitive information from decrypted communications"
+        ],
+        "stpaAnalysis": {
+          "ucas": [
+            {
+              "id": "UCA-BT-04",
+              "description": "Vehicle transmits sensitive data over Bluetooth without sufficient encryption"
+            },
+            {
+              "id": "UCA-BT-05",
+              "description": "Vehicle accepts connection with weak encryption parameters during negotiation"
+            }
+          ],
+          "controlFlaws": [
+            {
+              "id": "CF-BT-04",
+              "description": "Insufficient encryption strength for sensitive data transmission",
+              "relatedUCAs": ["UCA-BT-04"]
+            },
+            {
+              "id": "CF-BT-05",
+              "description": "Vulnerable to protocol downgrade attacks during connection negotiation",
+              "relatedUCAs": ["UCA-BT-05"]
+            }
+          ]
+        },
+        "threatAssessment": {
+          "method": "CVSS Base",
+          "attackVector": "Physical",
+          "attackComplexity": "High",
+          "privilegesRequired": "None",
+          "userInteraction": "None",
+          "scope": "Unchanged",
+          "confidentialityImpact": "High",
+          "integrityImpact": "None",
+          "availabilityImpact": "None",
+          "baseScore": 5.9,
+          "baseSeverity": "Medium",
+          "feasibilityRating": "Medium",
+          "feasibilityJustification": "While requiring specialized equipment and knowledge, the passive nature of this attack makes it difficult to detect, and commercial tools exist that can facilitate the attack"
+        },
+        "relatedDamageScenarios": ["DA-BT-02"],
+        "vulnerabilities": [
+          {
+            "id": "VULN-BT-04",
+            "title": "Insufficient Bluetooth Encryption",
+            "description": "System uses minimum required encryption strength rather than strongest available options",
+            "cweId": "CWE-326",
+            "cweTitle": "Inadequate Encryption Strength"
+          },
+          {
+            "id": "VULN-BT-05",
+            "title": "Protocol Downgrade Vulnerability",
+            "description": "System will fall back to less secure protocols for backward compatibility",
+            "cweId": "CWE-757",
+            "cweTitle": "Selection of Less-Secure Algorithm During Negotiation"
+          }
+        ],
+        "existingControls": [
+          {
+            "id": "CTRL-BT-03",
+            "title": "Bluetooth Standard Encryption",
+            "description": "Encryption provided by Bluetooth standard protocols",
+            "effectiveness": "Medium",
+            "justification": "Provides base level protection but may have implementation weaknesses"
+          },
+          {
+            "id": "CTRL-BT-04",
+            "title": "Address Randomization",
+            "description": "Use of random MAC addresses to prevent tracking",
+            "effectiveness": "Medium",
+            "justification": "Helps prevent tracking but doesn't prevent direct eavesdropping"
+          }
+        ],
+        "relatedCybersecurityGoals": ["CSG-BT-02"]
+      },
+      {
+        "id": "TS-BT-03",
+        "title": "Bluetooth Denial of Service Attack",
+        "description": "An attacker deliberately disrupts the vehicle's Bluetooth connectivity by creating interference or exploiting protocol vulnerabilities",
+        "threatType": "Denial of Service",
+        "attackVectors": [
+          {
+            "vectorName": "RF Jamming",
+            "description": "Generating radio frequency noise in the 2.4GHz band to disrupt Bluetooth signals",
+            "complexity": "Low",
+            "prerequisites": [
+              "Basic RF jamming equipment",
+              "Physical proximity to the vehicle",
+              "No specialized knowledge required"
+            ]
+          },
+          {
+            "vectorName": "Bluetooth Protocol Exploitation",
+            "description": "Sending malformed packets to disrupt the Bluetooth stack",
+            "complexity": "Medium",
+            "prerequisites": [
+              "Knowledge of Bluetooth protocol vulnerabilities",
+              "Software or hardware capable of generating custom Bluetooth packets",
+              "Physical proximity to the vehicle"
+            ]
+          },
+          {
+            "vectorName": "Connection Flooding",
+            "description": "Overwhelming the Bluetooth controller with connection requests",
+            "complexity": "Medium",
+            "prerequisites": [
+              "Multiple Bluetooth transmitters or a device capable of spoofing multiple devices",
+              "Software to automate connection requests",
+              "Physical proximity to the vehicle"
+            ]
+          }
+        ],
+        "attackSteps": [
+          "Attacker positions within range of the vehicle's Bluetooth system",
+          "For jamming: Attacker activates RF interference equipment targeting 2.4GHz",
+          "For protocol exploitation: Attacker sends specifically crafted malformed packets",
+          "For connection flooding: Attacker floods the system with connection requests",
+          "Vehicle's Bluetooth system becomes unresponsive or disconnects existing connections",
+          "Legitimate user unable to use Bluetooth functionality"
+        ],
+        "stpaAnalysis": {
+          "ucas": [
+            {
+              "id": "UCA-BT-06",
+              "description": "Bluetooth system fails to implement adaptive frequency hopping effectively"
+            },
+            {
+              "id": "UCA-BT-07",
+              "description": "System doesn't limit the rate of connection requests from unknown devices"
+            },
+            {
+              "id": "UCA-BT-08",
+              "description": "System crashes or freezes when receiving malformed Bluetooth packets"
+            }
+          ],
+          "controlFlaws": [
+            {
+              "id": "CF-BT-06",
+              "description": "Insufficient RF resilience mechanisms",
+              "relatedUCAs": ["UCA-BT-06"]
+            },
+            {
+              "id": "CF-BT-07",
+              "description": "Missing rate limiting for connection requests",
+              "relatedUCAs": ["UCA-BT-07"]
+            },
+            {
+              "id": "CF-BT-08",
+              "description": "Improper input validation for Bluetooth packets",
+              "relatedUCAs": ["UCA-BT-08"]
+            }
+          ]
+        },
+        "threatAssessment": {
+          "method": "CVSS Base",
+          "attackVector": "Physical",
+          "attackComplexity": "Low",
+          "privilegesRequired": "None",
+          "userInteraction": "None",
+          "scope": "Unchanged",
+          "confidentialityImpact": "None",
+          "integrityImpact": "None",
+          "availabilityImpact": "High",
+          "baseScore": 6.5,
+          "baseSeverity": "Medium",
+          "feasibilityRating": "High",
+          "feasibilityJustification": "RF jamming is straightforward with inexpensive equipment, and even protocol-based attacks require only moderate knowledge with tools available online"
+        },
+        "relatedDamageScenarios": ["DA-BT-03"],
+        "vulnerabilities": [
+          {
+            "id": "VULN-BT-06",
+            "title": "RF Interference Susceptibility",
+            "description": "Bluetooth system lacks robust protections against deliberate RF interference",
+            "cweId": "CWE-400",
+            "cweTitle": "Uncontrolled Resource Consumption"
+          },
+          {
+            "id": "VULN-BT-07",
+            "title": "Connection Request Handling",
+            "description": "System doesn't limit rate of connection requests, enabling flooding attacks",
+            "cweId": "CWE-770",
+            "cweTitle": "Allocation of Resources Without Limits or Throttling"
+          },
+          {
+            "id": "VULN-BT-08",
+            "title": "Packet Processing Robustness",
+            "description": "Bluetooth stack may crash when processing malformed packets",
+            "cweId": "CWE-20",
+            "cweTitle": "Improper Input Validation"
+          }
+        ],
+        "existingControls": [
+          {
+            "id": "CTRL-BT-05",
+            "title": "Basic Frequency Hopping",
+            "description": "Standard Bluetooth frequency hopping to mitigate interference",
+            "effectiveness": "Low",
+            "justification": "Can help with unintentional interference but insufficient against deliberate jamming"
+          },
+          {
+            "id": "CTRL-BT-06",
+            "title": "Connection Timeout",
+            "description": "System times out incomplete connection attempts",
+            "effectiveness": "Low",
+            "justification": "Provides basic protection but can be overwhelmed by high volume of requests"
+          }
+        ],
+        "relatedCybersecurityGoals": ["CSG-BT-03"]
+      }
+    ]
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-BT-001",
+        "documentType": "Impact Analysis",
+        "relationship": "informedBy",
+        "linkedItems": ["DA-BT-01", "DA-BT-02", "DA-BT-03"]
+      },
+      {
+        "documentId": "TARA-RA-BT-001",
+        "documentType": "Risk Assessment",
+        "relationship": "informsNext",
+        "linkedItems": ["RISK-BT-01", "RISK-BT-02", "RISK-BT-03"]
+      },
+      {
+        "documentId": "SYS-ARCH-IVI-001",
+        "documentType": "System Architecture",
+        "relationship": "informedBy",
+        "linkedItems": ["Bluetooth Module", "Connectivity Module"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "8.5",
+        "description": "Identification of threat scenarios"
+      },
+      {
+        "standardId": "Bluetooth SIG Security",
+        "clause": "4.2",
+        "description": "Bluetooth security architecture requirements"
+      },
+      {
+        "standardId": "ETSI TS 103 645",
+        "clause": "5.1-5.3",
+        "description": "Consumer IoT security provisions"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "SEC-BT-01",
+        "description": "The Bluetooth system shall implement secure pairing mechanisms with minimum PIN length of 6 digits",
+        "threatScenario": "TS-BT-01"
+      },
+      {
+        "requirementId": "SEC-BT-02",
+        "description": "The Bluetooth system shall use AES-128 minimum encryption for all communications",
+        "threatScenario": "TS-BT-02"
+      },
+      {
+        "requirementId": "SEC-BT-03",
+        "description": "The Bluetooth system shall implement rate limiting for connection attempts",
+        "threatScenario": "TS-BT-03"
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "Threat Scenario": "Detailed description of how a threat agent could exploit a vulnerability",
+    "CVSS": "Common Vulnerability Scoring System",
+    "CWE": "Common Weakness Enumeration",
+    "BT": "Bluetooth",
+    "IVI": "In-Vehicle Infotainment",
+    "STPA": "Systems-Theoretic Process Analysis",
+    "UCA": "Unsafe Control Action",
+    "RF": "Radio Frequency",
+    "MITM": "Man-in-the-Middle attack",
+    "PIN": "Personal Identification Number",
+    "Just Works": "A Bluetooth pairing method that doesn't require PIN verification"
+  },
+  "searchTerms": [
+    "bluetooth security",
+    "vehicle bluetooth",
+    "wireless vulnerability",
+    "bluetooth pairing",
+    "man in the middle",
+    "bluetooth sniffing",
+    "wireless jamming",
+    "bluetooth denial of service",
+    "connection flooding",
+    "eavesdropping",
+    "protocol exploitation",
+    "bluetooth vulnerability",
+    "frequency hopping",
+    "pin brute force",
+    "wireless communication",
+    "threat scenario",
+    "attack vector",
+    "CVSS scoring",
+    "bluetooth attack"
+  ],
+  "contentSummary": "This document identifies and analyzes three key threat scenarios targeting the vehicle's Bluetooth Connectivity system: Bluetooth Pairing Exploitation (leveraging vulnerabilities in the pairing process), Bluetooth Communication Eavesdropping (intercepting and decrypting communications), and Bluetooth Denial of Service Attack (disrupting connectivity through various methods). Each scenario is analyzed in depth, including multiple attack vectors, detailed attack steps, STPA control flaw analysis, threat assessment using CVSS methodology, identified vulnerabilities with CWE references, and evaluation of existing controls. The findings indicate medium to high feasibility for these attacks, with significant impacts on privacy and system availability. The document establishes the foundation for subsequent risk assessment and countermeasure development."
+} 

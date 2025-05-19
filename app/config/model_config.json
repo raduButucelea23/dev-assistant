@@ -1,0 +1,45 @@
+{
+  "_comment_1": "MODEL CONFIGURATION",
+  "_comment_2": "This file defines the default models for Auto-Dev Assistant",
+  "_comment_3": "Changes here will apply to all users without requiring environment variables",
+  "provider": "openai",
+  "_provider_options": [
+    "huggingface",
+    "openai"
+  ],
+  "default_configs": {
+    "huggingface": {
+      "embedding_model": "BAAI/bge-large-en-v1.5",
+      "llm_model": "meta-llama/Llama-3.3-70B-Instruct"
+    },
+    "openai": {
+      "embedding_model": "text-embedding-3-large",
+      "llm_model": "gpt-4o-mini"
+    }
+  },
+  "_embedding_model_options": {
+    "huggingface": [
+      "BAAI/bge-large-en-v1.5",
+      "Alibaba-NLP/gte-large-en-v1.5"
+    ],
+    "openai": [
+      "text-embedding-3-large"
+    ]
+  },
+  "_llm_model_options": {
+    "huggingface": [
+      "meta-llama/Llama-3.3-70B-Instruct",
+      "mistralai/Mistral-7B-Instruct-v0.3",
+      "tiiuae/falcon-40b-instruct"
+    ],
+    "openai": [
+      "gpt-4o-mini"
+    ]
+  },
+  "_note": "To use OpenAI models, just change the 'provider' value to 'openai'",
+  "_example_usage": "To override specific models, you can add explicit embedding_model and llm_model fields",
+  "embedding_provider": "openai",
+  "embedding_model": "text-embedding-3-large",
+  "llm_provider": "openai",
+  "llm_model": "gpt-4o-mini"
+}

@@ -1,0 +1,523 @@
+{
+  "metadata": {
+    "documentType": "FMEA",
+    "standard": "ISO26262",
+    "version": "1.0",
+    "creationDate": "2025-04-23",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Media Playback System",
+    "documentId": "FMEA-IVI-MPS-001",
+    "status": "Released",
+    "reviewDate": "2025-04-15",
+    "approver": "Safety Engineering Team"
+  },
+  "systemDescription": {
+    "name": "Media Playback System",
+    "description": "The Media Playback System in the IVI allows users to play audio from various sources including Bluetooth streaming, USB media, and online streaming services. It controls audio playback, manages playlists, and provides user interface for media selection and control through touch interface or voice commands.",
+    "operatingConditions": [
+      "Vehicle ON or ACC mode",
+      "Ambient temperature -40°C to +85°C",
+      "Operating voltage 9-16V"
+    ]
+  },
+  "safetyGoals": [
+    {
+      "id": "SG-MPS-01",
+      "description": "The Media Playback System shall not produce sudden extreme volume changes that could startle the driver and lead to loss of vehicle control",
+      "asilRating": "ASIL A",
+      "rationale": "Sudden extreme audio volume could startle the driver and potentially lead to momentary distraction or loss of vehicle control",
+      "relatedHazards": ["H-MPS-01", "H-MPS-03"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-MPS-01",
+          "description": "The IVI system shall limit the rate of volume change to prevent sudden extreme volume changes",
+          "verification": "Test and analysis",
+          "traceability": "SG-MPS-01"
+        },
+        {
+          "id": "FSR-MPS-02",
+          "description": "The IVI system shall validate volume level requests before applying them to the audio output",
+          "verification": "Test",
+          "traceability": "SG-MPS-01"
+        },
+        {
+          "id": "FSR-MPS-03",
+          "description": "The IVI system shall maintain consistent audio levels across different media sources",
+          "verification": "Test",
+          "traceability": "SG-MPS-01"
+        }
+      ]
+    },
+    {
+      "id": "SG-MPS-02",
+      "description": "The Media Playback System shall maintain audio output integrity and prevent unintended distracting content",
+      "asilRating": "ASIL A",
+      "rationale": "Corrupted audio or unexpected content could distract the driver and contribute to unsafe driving conditions",
+      "relatedHazards": ["H-MPS-02", "H-MPS-04"],
+      "decomposedRequirements": [
+        {
+          "id": "FSR-MPS-04",
+          "description": "The IVI system shall implement error detection for corrupted audio data",
+          "verification": "Test and analysis",
+          "traceability": "SG-MPS-02"
+        },
+        {
+          "id": "FSR-MPS-05",
+          "description": "The IVI system shall provide graceful degradation in case of media playback failures",
+          "verification": "Test",
+          "traceability": "SG-MPS-02"
+        }
+      ]
+    }
+  ],
+  "hazardAnalysis": [
+    {
+      "id": "H-MPS-01",
+      "description": "Sudden extreme volume increase causing driver startle",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Driver becomes startled and momentarily loses focus due to sudden extreme volume",
+      "asilRating": "ASIL A",
+      "severityRating": "S2",
+      "exposureRating": "E3",
+      "controllabilityRating": "C3"
+    },
+    {
+      "id": "H-MPS-02",
+      "description": "Audio system hanging or freezing during playback",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Driver distraction due to attempts to restart or fix the system",
+      "asilRating": "ASIL A",
+      "severityRating": "S1",
+      "exposureRating": "E4",
+      "controllabilityRating": "C3"
+    },
+    {
+      "id": "H-MPS-03",
+      "description": "Media playback interface becomes unresponsive",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Driver distraction while attempting to control media",
+      "asilRating": "ASIL A",
+      "severityRating": "S1",
+      "exposureRating": "E4",
+      "controllabilityRating": "C3"
+    },
+    {
+      "id": "H-MPS-04",
+      "description": "Corrupted audio causing distorted sound or noise",
+      "operationalSituation": "Vehicle in motion",
+      "hazardousEvent": "Driver distraction due to unexpected audio output",
+      "asilRating": "ASIL A",
+      "severityRating": "S1",
+      "exposureRating": "E3",
+      "controllabilityRating": "C3"
+    }
+  ],
+  "fmeaAnalysis": {
+    "item": {
+      "name": "Media Playback System",
+      "function": "Play audio content from various sources with user control"
+    },
+    "failureModes": [
+      {
+        "id": "FM-MPS-01",
+        "description": "Volume control system failure causing sudden extreme volume",
+        "potentialCauses": [
+          "Software bug in volume control module",
+          "Memory corruption affecting volume parameters",
+          "Communication error between audio amplifier and IVI"
+        ],
+        "failureEffects": {
+          "local": "Audio suddenly plays at maximum or minimum volume",
+          "nextLevel": "Driver startled by unexpected volume change",
+          "endEffect": "Momentary loss of focus potentially leading to unsafe driving condition"
+        },
+        "asilRating": "ASIL A",
+        "severityRating": 7,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 84,
+        "prevention": [
+          "Implement volume change rate limiting",
+          "Add boundary checks for volume parameters"
+        ],
+        "detection": [
+          "Monitor volume change rate",
+          "Implement audio level monitoring"
+        ],
+        "mitigations": [
+          {
+            "description": "Volume change rate limiting to prevent sudden changes",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Audio output level monitoring with fallback to safe level",
+            "type": "Monitoring System",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-MPS-01",
+            "description": "The IVI system shall limit volume change rate to no more than 10% per 100ms",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-MPS-01"
+          },
+          {
+            "id": "TSR-MPS-02",
+            "description": "The IVI system shall implement boundary checks to prevent volume exceeding predefined maximum levels",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-MPS-02"
+          }
+        ]
+      },
+      {
+        "id": "FM-MPS-02",
+        "description": "Media playback system crash or hang",
+        "potentialCauses": [
+          "Memory leak in media player application",
+          "Corrupted media file causing player exception",
+          "Resource starvation due to competing processes"
+        ],
+        "failureEffects": {
+          "local": "Media playback stops or freezes",
+          "nextLevel": "User repeatedly attempts to interact with unresponsive system",
+          "endEffect": "Driver distraction potentially leading to unsafe driving condition"
+        },
+        "asilRating": "ASIL A",
+        "severityRating": 5,
+        "occurrenceRating": 4,
+        "detectionRating": 3,
+        "riskPriorityNumber": 60,
+        "prevention": [
+          "Implement resource management for media player",
+          "Add media file validation before playback"
+        ],
+        "detection": [
+          "Media player application watchdog",
+          "System responsiveness monitoring"
+        ],
+        "mitigations": [
+          {
+            "description": "Implement application watchdog timer with automatic recovery",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Resource isolation for media player process",
+            "type": "Software Architecture",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-MPS-03",
+            "description": "The IVI system shall implement a watchdog timer that detects media player hangs within 2 seconds",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-MPS-05"
+          },
+          {
+            "id": "TSR-MPS-04",
+            "description": "The IVI system shall implement automatic recovery for media player application failures",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-MPS-05"
+          }
+        ]
+      },
+      {
+        "id": "FM-MPS-03",
+        "description": "Unresponsive media control interface",
+        "potentialCauses": [
+          "Touch screen input processing error",
+          "UI thread blockage or deadlock",
+          "Resource exhaustion affecting UI responsiveness"
+        ],
+        "failureEffects": {
+          "local": "User unable to control media playback",
+          "nextLevel": "User repeatedly attempts to interact with unresponsive controls",
+          "endEffect": "Driver distraction potentially leading to unsafe driving condition"
+        },
+        "asilRating": "ASIL A",
+        "severityRating": 5,
+        "occurrenceRating": 3,
+        "detectionRating": 4,
+        "riskPriorityNumber": 60,
+        "prevention": [
+          "Implement UI thread monitoring",
+          "Resource management for UI components"
+        ],
+        "detection": [
+          "Touch input response time monitoring",
+          "UI thread watchdog"
+        ],
+        "mitigations": [
+          {
+            "description": "Provide redundant control methods (steering wheel, voice)",
+            "type": "Alternative Interface",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Implement UI responsiveness monitoring with recovery",
+            "type": "Monitoring System",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-MPS-05",
+            "description": "The IVI system shall monitor UI thread responsiveness and recover from blockages",
+            "type": "Technical Safety Requirement",
+            "verification": "Test and Code Review",
+            "parentRequirement": "FSR-MPS-05"
+          },
+          {
+            "id": "TSR-MPS-06",
+            "description": "The IVI system shall provide alternative control methods that remain functional if touch interface fails",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-MPS-05"
+          }
+        ]
+      },
+      {
+        "id": "FM-MPS-04",
+        "description": "Audio corruption during playback",
+        "potentialCauses": [
+          "Corrupted media file or streaming data",
+          "Buffer overflow in audio processing",
+          "Hardware issues with audio amplifier"
+        ],
+        "failureEffects": {
+          "local": "Distorted or noisy audio output",
+          "nextLevel": "User distraction due to unexpected sounds",
+          "endEffect": "Driver momentarily startled or distracted leading to unsafe driving condition"
+        },
+        "asilRating": "ASIL A",
+        "severityRating": 4,
+        "occurrenceRating": 3,
+        "detectionRating": 5,
+        "riskPriorityNumber": 60,
+        "prevention": [
+          "Implement media file integrity validation",
+          "Add audio buffer integrity checks"
+        ],
+        "detection": [
+          "Audio output monitoring for anomalies",
+          "Error detection in audio stream"
+        ],
+        "mitigations": [
+          {
+            "description": "Graceful handling of corrupted audio with automatic muting",
+            "type": "Software Control",
+            "effectiveness": "High"
+          },
+          {
+            "description": "Audio stream integrity validation",
+            "type": "Data Validation",
+            "effectiveness": "Medium"
+          }
+        ],
+        "safetyRequirements": [
+          {
+            "id": "TSR-MPS-07",
+            "description": "The IVI system shall implement error detection for audio data corruption",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-MPS-04"
+          },
+          {
+            "id": "TSR-MPS-08",
+            "description": "The IVI system shall automatically mute audio output when corruption is detected",
+            "type": "Technical Safety Requirement",
+            "verification": "Test",
+            "parentRequirement": "FSR-MPS-04"
+          }
+        ]
+      }
+    ]
+  },
+  "safetyMechanisms": [
+    {
+      "id": "SM-MPS-01",
+      "description": "Volume Change Rate Limiting",
+      "mechanism": "Software algorithm limits volume change rate",
+      "diagnosticCoverage": "95%",
+      "failureModesCovered": ["FM-MPS-01"],
+      "implementationDetails": "Software limits volume changes to no more than 10% per 100ms regardless of input source"
+    },
+    {
+      "id": "SM-MPS-02",
+      "description": "Media Player Watchdog",
+      "mechanism": "Software watchdog monitors media player application responsiveness",
+      "diagnosticCoverage": "90%",
+      "failureModesCovered": ["FM-MPS-02"],
+      "implementationDetails": "Watchdog timer monitors media player heartbeat signals; resets player if no response in 2 seconds"
+    },
+    {
+      "id": "SM-MPS-03",
+      "description": "UI Responsiveness Monitoring",
+      "mechanism": "Monitoring system for UI thread and touch response",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-MPS-03"],
+      "implementationDetails": "System monitors UI thread execution and touch input response times; triggers recovery if unresponsive for 1 second"
+    },
+    {
+      "id": "SM-MPS-04",
+      "description": "Alternative Control Methods",
+      "mechanism": "Redundant control interfaces for critical functions",
+      "diagnosticCoverage": "80%",
+      "failureModesCovered": ["FM-MPS-03"],
+      "implementationDetails": "Critical media control functions available via steering wheel controls and voice commands independent of touch interface"
+    },
+    {
+      "id": "SM-MPS-05",
+      "description": "Audio Stream Validation",
+      "mechanism": "Real-time validation of audio data integrity",
+      "diagnosticCoverage": "85%",
+      "failureModesCovered": ["FM-MPS-04"],
+      "implementationDetails": "System monitors audio stream for corruption markers and implements error correction or graceful degradation"
+    }
+  ],
+  "verificationValidation": {
+    "testCases": [
+      {
+        "id": "TC-MPS-01",
+        "description": "Verify volume change rate limiting",
+        "relatedRequirements": ["TSR-MPS-01"],
+        "testProcedure": "Attempt rapid volume change through various interfaces and measure actual change rate",
+        "acceptanceCriteria": "Volume changes limited to 10% per 100ms regardless of input method",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-MPS-02",
+        "description": "Verify maximum volume limit enforcement",
+        "relatedRequirements": ["TSR-MPS-02"],
+        "testProcedure": "Attempt to exceed maximum volume through various methods",
+        "acceptanceCriteria": "Volume cannot exceed predefined maximum regardless of input method",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-MPS-03",
+        "description": "Verify media player crash recovery",
+        "relatedRequirements": ["TSR-MPS-03", "TSR-MPS-04"],
+        "testProcedure": "Force media player application crash and observe recovery behavior",
+        "acceptanceCriteria": "System detects crash and recovers media playback within 5 seconds",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-MPS-04",
+        "description": "Verify UI thread monitoring and recovery",
+        "relatedRequirements": ["TSR-MPS-05"],
+        "testProcedure": "Simulate UI thread blockage and observe system response",
+        "acceptanceCriteria": "System detects UI thread blockage and recovers within 3 seconds",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-MPS-05",
+        "description": "Verify alternative control methods",
+        "relatedRequirements": ["TSR-MPS-06"],
+        "testProcedure": "Disable touch interface and attempt media control through alternative methods",
+        "acceptanceCriteria": "All critical media functions accessible through steering wheel controls and voice commands",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-MPS-06",
+        "description": "Verify audio corruption detection",
+        "relatedRequirements": ["TSR-MPS-07"],
+        "testProcedure": "Inject corrupted audio data into playback stream and observe detection",
+        "acceptanceCriteria": "System detects audio corruption within 500ms with 95% accuracy",
+        "results": "Passed"
+      },
+      {
+        "id": "TC-MPS-07",
+        "description": "Verify audio corruption handling",
+        "relatedRequirements": ["TSR-MPS-08"],
+        "testProcedure": "Inject corrupted audio data and observe system response",
+        "acceptanceCriteria": "System automatically mutes or corrects corrupted audio within 1 second",
+        "results": "Passed"
+      }
+    ]
+  },
+  "traceabilityMatrix": {
+    "safetyGoalToRequirements": [
+      {
+        "safetyGoalId": "SG-MPS-01",
+        "functionalSafetyRequirements": ["FSR-MPS-01", "FSR-MPS-02", "FSR-MPS-03"],
+        "technicalSafetyRequirements": ["TSR-MPS-01", "TSR-MPS-02"]
+      },
+      {
+        "safetyGoalId": "SG-MPS-02",
+        "functionalSafetyRequirements": ["FSR-MPS-04", "FSR-MPS-05"],
+        "technicalSafetyRequirements": ["TSR-MPS-03", "TSR-MPS-04", "TSR-MPS-05", "TSR-MPS-06", "TSR-MPS-07", "TSR-MPS-08"]
+      }
+    ],
+    "requirementsToTests": [
+      {
+        "requirementId": "TSR-MPS-01",
+        "testCaseIds": ["TC-MPS-01"]
+      },
+      {
+        "requirementId": "TSR-MPS-02",
+        "testCaseIds": ["TC-MPS-02"]
+      },
+      {
+        "requirementId": "TSR-MPS-03",
+        "testCaseIds": ["TC-MPS-03"]
+      },
+      {
+        "requirementId": "TSR-MPS-04",
+        "testCaseIds": ["TC-MPS-03"]
+      },
+      {
+        "requirementId": "TSR-MPS-05",
+        "testCaseIds": ["TC-MPS-04"]
+      },
+      {
+        "requirementId": "TSR-MPS-06",
+        "testCaseIds": ["TC-MPS-05"]
+      },
+      {
+        "requirementId": "TSR-MPS-07",
+        "testCaseIds": ["TC-MPS-06"]
+      },
+      {
+        "requirementId": "TSR-MPS-08",
+        "testCaseIds": ["TC-MPS-07"]
+      }
+    ]
+  },
+  "keyTerms": {
+    "MPS": "Media Playback System",
+    "IVI": "In-Vehicle Infotainment",
+    "ASIL": "Automotive Safety Integrity Level",
+    "FMEA": "Failure Mode and Effects Analysis",
+    "UI": "User Interface",
+    "ECU": "Electronic Control Unit"
+  },
+  "searchTerms": [
+    "media playback",
+    "audio system",
+    "volume control",
+    "media player",
+    "audio streaming",
+    "file playback",
+    "IVI media",
+    "audio corruption",
+    "media interface",
+    "touch control",
+    "voice control",
+    "audio quality",
+    "media crash",
+    "player responsiveness",
+    "entertainment system",
+    "user distraction",
+    "audio output",
+    "media control",
+    "UI responsiveness",
+    "system recovery"
+  ]
+} 

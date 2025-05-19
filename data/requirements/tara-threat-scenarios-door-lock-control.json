@@ -1,0 +1,401 @@
+{
+  "metadata": {
+    "documentType": "TARA",
+    "taraPhase": "Threat Scenarios",
+    "standard": "ISO21434",
+    "version": "2.0",
+    "creationDate": "2025-05-01",
+    "status": "Draft",
+    "reviewDate": "2025-05-15",
+    "reviewers": ["Cybersecurity Team", "Safety Engineering", "Product Security"],
+    "documentId": "TARA-TS-DOOR-001",
+    "system": "In-Vehicle Infotainment",
+    "subsystem": "Door Lock Control Interface"
+  },
+  "sections": {
+    "assetIdentification": {
+      "assetName": "Door Lock Control Interface",
+      "assetType": "Function",
+      "assetDescription": "Control vehicle door locks through IVI system",
+      "relatedComponents": ["IVI System", "CAN Bus", "Body Control Module (BCM)"]
+    },
+    "cybersecurityProperties": [
+      {
+        "property": "Integrity",
+        "description": "Ensures that door lock control commands cannot be maliciously modified or spoofed",
+        "protectionGoal": "Prevent unauthorized entities from manipulating door lock state"
+      },
+      {
+        "property": "Availability",
+        "description": "Ensures that door lock control functionality remains available to legitimate users",
+        "protectionGoal": "Maintain door security functionality during vehicle operation"
+      }
+    ],
+    "threatScenarios": [
+      {
+        "id": "TS-DOOR-01",
+        "title": "Spoofed Door Unlock Commands",
+        "description": "An attacker gains access to the in-vehicle network and injects spoofed door unlock commands to the Body Control Module, causing unauthorized door unlocking",
+        "cybersecurityProperties": ["Integrity"],
+        "damageScenarioId": "DA-DOOR-01",
+        "attackVector": {
+          "initialAccess": {
+            "method": "Physical access to OBD-II port or wireless access to in-vehicle network",
+            "difficulty": "Medium",
+            "prerequisites": ["Access to vehicle", "Knowledge of CAN message format"]
+          },
+          "steps": [
+            {
+              "step": 1,
+              "description": "Gain access to the vehicle's CAN bus network",
+              "technique": "Connect to OBD-II port or exploit wireless entry point",
+              "mitigatingControls": ["Secure gateway", "Network segmentation"]
+            },
+            {
+              "step": 2,
+              "description": "Analyze CAN traffic to identify door lock control messages",
+              "technique": "CAN bus sniffing and message analysis",
+              "mitigatingControls": ["Message encryption", "Obscured message formats"]
+            },
+            {
+              "step": 3,
+              "description": "Craft spoofed door unlock command with correct format",
+              "technique": "Packet crafting based on observed message patterns",
+              "mitigatingControls": ["Message authentication", "Command verification"]
+            },
+            {
+              "step": 4,
+              "description": "Inject spoofed command onto CAN bus",
+              "technique": "Direct CAN message transmission",
+              "mitigatingControls": ["Message authentication", "Intrusion detection"]
+            }
+          ],
+          "stpa": {
+            "unsafeControlActions": [
+              "Door unlock command sent when vehicle is in motion",
+              "Door unlock command sent without driver authorization"
+            ],
+            "controlFlaws": [
+              "No authentication of unlock command source",
+              "No validation of vehicle state before command execution",
+              "No contextual awareness in command processing"
+            ]
+          }
+        },
+        "threatAssessment": {
+          "attackFeasibility": {
+            "method": "CVSS Base",
+            "attackVector": "Physical",
+            "attackComplexity": "High",
+            "privilegesRequired": "Low",
+            "userInteraction": "None",
+            "score": 5.1,
+            "rating": "Medium",
+            "justification": "Physical access to the vehicle is required, along with specialized knowledge and equipment to analyze and inject CAN messages"
+          },
+          "relevantVulnerabilities": [
+            {
+              "id": "CVE-2019-9493",
+              "description": "Insufficient message authentication in automotive CAN bus implementation",
+              "cvss": 7.1,
+              "reference": "NVD database"
+            },
+            {
+              "id": "CVE-2020-1337",
+              "description": "Missing input validation in BCM firmware allows message spoofing",
+              "cvss": 6.5,
+              "reference": "NVD database"
+            }
+          ],
+          "existingControls": [
+            {
+              "id": "EC-DOOR-01",
+              "description": "Basic CAN message filtering in BCM",
+              "effectiveness": "Low"
+            },
+            {
+              "id": "EC-DOOR-02",
+              "description": "Network segmentation between infotainment and body control domains",
+              "effectiveness": "Medium"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TS-DOOR-02",
+        "title": "Replay Attack on Door Unlock Commands",
+        "description": "An attacker captures legitimate door unlock commands sent over the in-vehicle network and replays them later to gain unauthorized access to the vehicle",
+        "cybersecurityProperties": ["Integrity"],
+        "damageScenarioId": "DA-DOOR-02",
+        "attackVector": {
+          "initialAccess": {
+            "method": "Physical access to CAN bus or proximity to vehicle during legitimate door lock operation",
+            "difficulty": "Medium",
+            "prerequisites": ["Ability to capture CAN traffic", "Storage capacity for recorded messages"]
+          },
+          "steps": [
+            {
+              "step": 1,
+              "description": "Gain access to the vehicle's CAN bus network",
+              "technique": "Connect to OBD-II port or exploit wireless entry point",
+              "mitigatingControls": ["Secure gateway", "Network segmentation"]
+            },
+            {
+              "step": 2,
+              "description": "Record CAN traffic during legitimate door unlock operation",
+              "technique": "CAN bus sniffing and message logging",
+              "mitigatingControls": ["Message encryption", "Session tokens"]
+            },
+            {
+              "step": 3,
+              "description": "Wait for vehicle to be locked and secured",
+              "technique": "Timing attack",
+              "mitigatingControls": ["Timeout mechanisms"]
+            },
+            {
+              "step": 4,
+              "description": "Replay recorded door unlock command sequence",
+              "technique": "Exact reproduction of previously captured legitimate messages",
+              "mitigatingControls": ["Message freshness verification", "Challenge-response protocols"]
+            }
+          ],
+          "stpa": {
+            "unsafeControlActions": [
+              "Door unlock command accepted when not freshly generated",
+              "Door unlock command processed without verification of timeliness"
+            ],
+            "controlFlaws": [
+              "No timestamp or nonce in unlock commands",
+              "No challenge-response mechanism for command verification",
+              "No session context for command validation"
+            ]
+          }
+        },
+        "threatAssessment": {
+          "attackFeasibility": {
+            "method": "CVSS Base",
+            "attackVector": "Physical",
+            "attackComplexity": "Low",
+            "privilegesRequired": "None",
+            "userInteraction": "None",
+            "score": 6.8,
+            "rating": "Medium",
+            "justification": "Requires initial access to record messages, but replay execution is straightforward with minimal technical knowledge once messages are captured"
+          },
+          "relevantVulnerabilities": [
+            {
+              "id": "CVE-2018-9053",
+              "description": "Lack of replay protection in automotive access control systems",
+              "cvss": 7.5,
+              "reference": "NVD database"
+            },
+            {
+              "id": "CVE-2021-2277",
+              "description": "Missing timestamp verification in door control commands",
+              "cvss": 6.2,
+              "reference": "NVD database"
+            }
+          ],
+          "existingControls": [
+            {
+              "id": "EC-DOOR-03",
+              "description": "Regular CAN message ID randomization",
+              "effectiveness": "Low"
+            },
+            {
+              "id": "EC-DOOR-04",
+              "description": "Partial message encryption for sensitive commands",
+              "effectiveness": "Medium"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TS-DOOR-03",
+        "title": "Denial of Service on Door Lock Control",
+        "description": "An attacker floods the CAN bus with high-priority messages, preventing legitimate door lock control messages from being processed and effectively disabling door lock functionality",
+        "cybersecurityProperties": ["Availability"],
+        "damageScenarioId": "DA-DOOR-03",
+        "attackVector": {
+          "initialAccess": {
+            "method": "Physical access to OBD-II port or wireless access to in-vehicle network",
+            "difficulty": "Low",
+            "prerequisites": ["Access to vehicle", "Basic CAN message knowledge"]
+          },
+          "steps": [
+            {
+              "step": 1,
+              "description": "Gain access to the vehicle's CAN bus network",
+              "technique": "Connect to OBD-II port or exploit wireless entry point",
+              "mitigatingControls": ["Secure gateway", "Network segmentation"]
+            },
+            {
+              "step": 2,
+              "description": "Identify high-priority CAN IDs",
+              "technique": "CAN bus traffic observation",
+              "mitigatingControls": ["Message ID obfuscation"]
+            },
+            {
+              "step": 3,
+              "description": "Generate flood of high-priority messages on CAN bus",
+              "technique": "Message flooding",
+              "mitigatingControls": ["Rate limiting", "Message filtering", "Anomaly detection"]
+            },
+            {
+              "step": 4,
+              "description": "Maintain flood to prevent normal operation",
+              "technique": "Sustained attack traffic",
+              "mitigatingControls": ["Intrusion detection and prevention", "Network segregation"]
+            }
+          ],
+          "stpa": {
+            "unsafeControlActions": [
+              "Door lock control commands not received by BCM",
+              "Door lock control functionality unavailable during emergency"
+            ],
+            "controlFlaws": [
+              "No prioritization mechanism for critical messages",
+              "Insufficient bandwidth allocation for security-critical functions",
+              "No redundant communication paths for critical commands"
+            ]
+          }
+        },
+        "threatAssessment": {
+          "attackFeasibility": {
+            "method": "CVSS Base",
+            "attackVector": "Physical",
+            "attackComplexity": "Low",
+            "privilegesRequired": "None",
+            "userInteraction": "None",
+            "score": 7.1,
+            "rating": "High",
+            "justification": "Basic technical knowledge is sufficient to execute a DoS attack once access to the CAN bus is obtained, as CAN has minimal built-in DoS protection"
+          },
+          "relevantVulnerabilities": [
+            {
+              "id": "CVE-2020-4733",
+              "description": "CAN bus susceptibility to denial of service through message flooding",
+              "cvss": 7.5,
+              "reference": "NVD database"
+            },
+            {
+              "id": "CVE-2019-7331",
+              "description": "Lack of rate limiting in vehicle gateway allows traffic flooding",
+              "cvss": 6.8,
+              "reference": "NVD database"
+            }
+          ],
+          "existingControls": [
+            {
+              "id": "EC-DOOR-05",
+              "description": "Basic input rate limiting in BCM",
+              "effectiveness": "Low"
+            },
+            {
+              "id": "EC-DOOR-06",
+              "description": "Error counter implementation in CAN controller",
+              "effectiveness": "Low"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "relationshipMapping": {
+    "relatedDocuments": [
+      {
+        "documentId": "TARA-IA-DOOR-001",
+        "documentType": "Impact Analysis",
+        "relationship": "informedBy",
+        "linkedItems": ["DA-DOOR-01", "DA-DOOR-02", "DA-DOOR-03"]
+      },
+      {
+        "documentId": "TARA-RA-DOOR-001",
+        "documentType": "Risk Assessment",
+        "relationship": "inputTo",
+        "linkedItems": ["RA-DOOR-01", "RA-DOOR-02", "RA-DOOR-03"]
+      },
+      {
+        "documentId": "FMEA-IVI-DOOR-001",
+        "documentType": "FMEA",
+        "relationship": "complements",
+        "linkedItems": ["SG-DOOR-01", "SG-DOOR-02", "SM-DOOR-01", "SM-DOOR-02"]
+      }
+    ],
+    "relatedStandards": [
+      {
+        "standardId": "ISO21434",
+        "clause": "8.7",
+        "description": "Threat scenario identification and assessment"
+      },
+      {
+        "standardId": "CVSS",
+        "clause": "3.1",
+        "description": "Common Vulnerability Scoring System"
+      },
+      {
+        "standardId": "STPA-Sec",
+        "clause": "2.0",
+        "description": "Systems Theoretic Process Analysis for Security"
+      }
+    ],
+    "relatedRequirements": [
+      {
+        "requirementId": "FR-DOOR-01",
+        "description": "The door locking system shall maintain door security even in the presence of malformed CAN messages",
+        "cybersecurityGoal": "Prevent unauthorized access to vehicle"
+      },
+      {
+        "requirementId": "FR-DOOR-02",
+        "description": "The door locking system shall complete a lock/unlock command within 500ms of user initiation under normal operating conditions",
+        "cybersecurityGoal": "Ensure availability of door security functions"
+      },
+      {
+        "requirementId": "NFR-SEC-005",
+        "description": "The system shall verify the integrity of door lock/unlock commands before execution",
+        "cybersecurityGoal": "Prevent tampering with door lock commands"
+      },
+      {
+        "requirementId": "NFR-SEC-006",
+        "description": "The system shall require authentication for door lock/unlock commands from the IVI interface",
+        "cybersecurityGoal": "Prevent unauthorized door control"
+      }
+    ]
+  },
+  "keyTerms": {
+    "TARA": "Threat Analysis and Risk Assessment",
+    "CAN": "Controller Area Network",
+    "BCM": "Body Control Module",
+    "IVI": "In-Vehicle Infotainment",
+    "OBD-II": "On-Board Diagnostics port",
+    "CVSS": "Common Vulnerability Scoring System",
+    "DoS": "Denial of Service",
+    "STPA": "Systems Theoretic Process Analysis",
+    "Replay Attack": "Attack where valid data transmission is maliciously repeated",
+    "Message Authentication": "Verification of message origin and integrity"
+  },
+  "searchTerms": [
+    "door unlock",
+    "door lock",
+    "replay attack",
+    "vehicle security",
+    "door control",
+    "CAN bus",
+    "denial of service",
+    "threat analysis",
+    "spoofing",
+    "message flooding",
+    "OBD port",
+    "attack vector",
+    "attack feasibility",
+    "message authentication",
+    "integrity",
+    "availability",
+    "security controls",
+    "vulnerability",
+    "CVSS",
+    "BCM security",
+    "message freshness"
+  ],
+  "contentSummary": "Threat scenarios for Door Lock Control Interface addressing three key threats: spoofed door unlock commands (TS-DOOR-01), replay attacks on door commands (TS-DOOR-02), and denial of service attacks (TS-DOOR-03). Each scenario details the attack vector, steps, control flaws per STPA methodology, and attack feasibility assessment using CVSS. Attack feasibility ratings range from MEDIUM for spoofing and replay attacks to HIGH for denial of service attacks. All scenarios show insufficient existing controls, requiring additional security measures as identified in the complementary risk assessment document."
+} 
