@@ -4,11 +4,14 @@ services:
   auto-dev:
     build: .
     volumes:
-      - .:/app
+      - ./app:/app/app
       - ./data:/app/data
       - ./input-data:/app/input-data
+      - ./.env:/app/.env
     ports:
       - "8502:8501"  # Streamlit UI port (external:internal)
     environment:
       - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
     restart: unless-stopped 

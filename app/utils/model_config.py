@@ -17,28 +17,16 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Constants for model selection
-EMBEDDING_PROVIDERS = {
-    "openai": {
-        "display_name": "OpenAI",
-        "models": ["text-embedding-3-large"]
-    },
-    "huggingface": {
-        "display_name": "HuggingFace (Local)",
-        "models": ["BAAI/bge-large-en-v1.5", "Alibaba-NLP/gte-large-en-v1.5"]
-    }
-}
-
-LLM_PROVIDERS = {
-    "openai": {
-        "display_name": "OpenAI",
-        "models": ["gpt-4o-mini"]
-    },
-    "huggingface": {
-        "display_name": "HuggingFace (API)",
-        "models": ["meta-llama/Llama-3.3-70B-Instruct", "mistralai/Mistral-7B-Instruct-v0.3", "tiiuae/falcon-40b-instruct"]
-    }
-}
+# Import the generation parameters configuration
+from app.utils.generation_config import (
+    get_config_manager, 
+    get_model_config as get_model_config_v2,
+    get_available_models as get_available_models_v2,
+    get_available_providers as get_available_providers_v2,
+    save_config_to_file as save_config_to_file_v2,
+    EMBEDDING_PROVIDERS,
+    LLM_PROVIDERS
+)
 
 # Path to configuration file
 CONFIG_FILE_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "model_config.json")
