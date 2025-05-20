@@ -4,6 +4,7 @@ import shutil
 import time
 import logging
 import subprocess
+import json
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union
 
@@ -53,6 +54,9 @@ from app.api.huggingface_client import get_huggingface_client
 
 # Import model configuration utility
 from app.utils.model_config import get_model_config, EMBEDDING_PROVIDERS, LLM_PROVIDERS
+
+# Import the generation parameters configuration
+from app.utils.generation_config import get_config_manager, get_generation_params
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -835,15 +839,16 @@ if user_question:
                         answer = "❌ OpenAI API key not found. Please provide your API key."
                 
                 if api_key:
-                    # Model parameters for OpenAI
+                    # Get model parameters from the configuration manager
                     model_params = {
                         'model': llm_model,
-                        'temperature': 0.3,
-                        'max_tokens': 4000,
-                        'top_p': 0.85,
-                        'frequency_penalty': 0.5,
-                        'presence_penalty': 0.1
                     }
+                    
+                    # Add generation parameters from the new configuration manager
+                    openai_params = get_generation_params("openai")
+                    for key, value in openai_params.items():
+                        if value is not None:  # Only add non-None values
+                            model_params[key] = value
                     
                     # Call OpenAI API
                     logger.info(f"Calling OpenAI API with model: {llm_model}")
@@ -871,9 +876,6 @@ if user_question:
                     # Model parameters for HuggingFace
                     model_params = {
                         'model': llm_model,
-                        'temperature': 0.3,
-                        'max_tokens': 4000,
-                        'top_p': 0.85,
                     }
                     
                     # Call HuggingFace API

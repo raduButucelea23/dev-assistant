@@ -6,6 +6,9 @@ import logging
 from dataclasses import dataclass
 from dotenv import load_dotenv
 
+# Import the generation parameters configuration
+from app.utils.generation_config import get_config_manager, get_generation_params
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -54,6 +57,22 @@ class HuggingFaceClient:
             
         self.base_url = base_url
         self.chat = self.ChatCompletions(self)
+        
+        # Get the configuration manager
+        self.config_manager = get_config_manager()
+    
+    def _load_config(self) -> Dict:
+        """Load model configuration from the config file."""
+        config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+                                   "config", "model_config.json")
+        try:
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    return json.load(f)
+        except Exception as e:
+            logger.warning(f"Could not load config file: {str(e)}")
+        
+        return {}
     
     class ChatCompletions:
         """Nested class to mimic OpenAI's chat completions interface."""
@@ -65,12 +84,12 @@ class HuggingFaceClient:
         def create(
             self, 
             messages: List[Dict[str, str]], 
-            model: str = "meta-llama/Llama-3.3-70B-Instruct",
-            temperature: float = 0.3,
-            max_tokens: int = 2000,
-            top_p: float = 0.85,
-            frequency_penalty: float = 0.0,
-            presence_penalty: float = 0.0,
+            model: str = None,
+            temperature: float = None,
+            max_tokens: int = None,
+            top_p: float = None,
+            frequency_penalty: float = None,
+            presence_penalty: float = None,
             stop: Optional[Union[str, List[str]]] = None,
             timeout: int = 120,
             **kwargs
@@ -92,9 +111,17 @@ class HuggingFaceClient:
             Returns:
                 ChatCompletion object with response
             """
-            # Validate model and use default if not specified
-            if not model:
-                model = "meta-llama/Llama-3.3-70B-Instruct"
+            # Get the current LLM model if not specified
+            if model is None:
+                model = self.client.config_manager.get_llm_model()
+            
+            # Get generation parameters from the configuration manager
+            params = get_generation_params("huggingface")
+            
+            # Use provided parameters or those from config
+            temperature = temperature if temperature is not None else params.get("temperature", 0.3)
+            max_tokens = max_tokens if max_tokens is not None else params.get("max_tokens", 4000)
+            top_p = top_p if top_p is not None else params.get("top_p", 0.85)
             
             # Prepare headers with API token
             headers = {
