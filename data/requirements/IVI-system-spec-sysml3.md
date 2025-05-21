@@ -1,3 +1,5 @@
+# DISCLAIMER: This data has been generated synthetically and does not bear any relationship to any auto manufacturer or part supplier.
+
 # In-Vehicle Infotainment System (IVI)
 # SYS-ML3 Specification Document
 

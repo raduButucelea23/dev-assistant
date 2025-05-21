@@ -1,0 +1,949 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- DISCLAIMER: This data has been generated synthetically and does not bear any relationship to any auto manufacturer or part supplier. -->
+<!-- edited with enhancements for proper ODX diagnostic structure -->
+<ODX xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" MODEL-VERSION="2.2.0" xsi:noNamespaceSchemaLocation="odx.xsd">
+	<COMPARAM-SPEC ID="CPS_ISO_15765_3_on_ISO_15765_2">
+		<SHORT-NAME>ISO_15765_3_on_ISO_15765_2</SHORT-NAME>
+		<LONG-NAME>ISO_15765_3_on_ISO_15765_2</LONG-NAME>
+		<DESC>
+			<p>ISO UDS On Can</p>
+		</DESC>
+		<ADMIN-DATA>
+			<LANGUAGE>en-UK</LANGUAGE>
+		</ADMIN-DATA>
+		<PROT-STACKS>
+			<PROT-STACK ID="PS_ISO_15765_3_on_ISO_15765_2_on_ISO_11898_2_DWCAN">
+				<SHORT-NAME>PS_ISO_15765_3_on_ISO_15765_2_on_ISO_11898_2_DWCAN</SHORT-NAME>
+				<LONG-NAME>ISO_15765_3 on ISO_15765_2 on ISO_11898_2_DWCAN</LONG-NAME>
+				<DESC>
+					<p>protocol ISO_15765_3_on_ISO_15765_2, on physical layer ISO_11898_2_DWCAN</p>
+				</DESC>
+				<PDU-PROTOCOL-TYPE>ISO_15765_3_on_ISO_15765_2</PDU-PROTOCOL-TYPE>
+				<PHYSICAL-LINK-TYPE>ISO_11898_2_DWCAN</PHYSICAL-LINK-TYPE>
+				<COMPARAM-SUBSET-REFS>
+					<!-- APP -->
+					<COMPARAM-SUBSET-REF DOCTYPE="COMPARAM-SUBSET" DOCREF="ISO_15765_3" ID-REF="ISO_15765_3"/>
+					<!-- TRANS -->
+					<COMPARAM-SUBSET-REF DOCTYPE="COMPARAM-SUBSET" DOCREF="ISO_15765_2" ID-REF="ISO_15765_2"/>
+					<!-- PHYS -->
+					<COMPARAM-SUBSET-REF DOCTYPE="COMPARAM-SUBSET" DOCREF="ISO_11898_2_DWCAN" ID-REF="ISO_11898_2_DWCAN"/>
+				</COMPARAM-SUBSET-REFS>
+			</PROT-STACK>
+			<PROT-STACK ID="PS_ISO_15765_3_on_ISO_15765_2_on_ISO_11898_3_DWFTCAN">
+				<SHORT-NAME>PS_ISO_15765_3_on_ISO_15765_2_on_ISO_11898_3_DWFTCAN</SHORT-NAME>
+				<LONG-NAME>ISO_15765_3 on ISO_15765_2 on ISO_11898_3_DWFTCAN</LONG-NAME>
+				<DESC>
+					<p>protocol ISO_15765_3_on_ISO_15765_2, on physical layer ISO_11898_3_DWFTCAN</p>
+				</DESC>
+				<PDU-PROTOCOL-TYPE>ISO_15765_3_on_ISO_15765_2</PDU-PROTOCOL-TYPE>
+				<PHYSICAL-LINK-TYPE>ISO_11898_3_DWFTCAN</PHYSICAL-LINK-TYPE>
+				<COMPARAM-SUBSET-REFS>
+					<!-- APP -->
+					<COMPARAM-SUBSET-REF DOCTYPE="COMPARAM-SUBSET" DOCREF="ISO_15765_3" ID-REF="ISO_15765_3"/>
+					<!-- TRANS -->
+					<COMPARAM-SUBSET-REF DOCTYPE="COMPARAM-SUBSET" DOCREF="ISO_15765_2" ID-REF="ISO_15765_2"/>
+					<!-- PHYS -->
+					<COMPARAM-SUBSET-REF DOCTYPE="COMPARAM-SUBSET" DOCREF="ISO_11898_3_DWFTCAN" ID-REF="ISO_11898_3_DWFTCAN"/>
+				</COMPARAM-SUBSET-REFS>
+			</PROT-STACK>
+		</PROT-STACKS>
+	</COMPARAM-SPEC>
+	
+	<!-- Added proper diagnostic layer container -->
+	<DIAG-LAYER-CONTAINER>
+		<SHORT-NAME>IVI_DIAGNOSTICS</SHORT-NAME>
+		<LONG-NAME>In-Vehicle Infotainment System Diagnostics</LONG-NAME>
+		<DESC>
+			<p>Diagnostic definitions for the In-Vehicle Infotainment (IVI) System</p>
+		</DESC>
+		
+		<!-- Base variants section -->
+		<BASE-VARIANTS>
+			<BASE-VARIANT ID="BV_IVI_SYSTEM">
+				<SHORT-NAME>IVI_SYSTEM</SHORT-NAME>
+				<LONG-NAME>In-Vehicle Infotainment System</LONG-NAME>
+				<DESC>
+					<p>Base diagnostic definition for the IVI system</p>
+				</DESC>
+				
+				<!-- Diagnostic communication parameters -->
+				<DIAG-COMMS>
+					<DIAG-COMM ID="DC_IVI_MAIN">
+						<SHORT-NAME>IVI_MAIN_COMM</SHORT-NAME>
+						<LONG-NAME>IVI Main Communication Parameters</LONG-NAME>
+						<DESC>
+							<p>Communication parameters for IVI diagnostic communication</p>
+						</DESC>
+						<PHYSICAL-VEHICLE-LINK-REF ID-REF="PS_ISO_15765_3_on_ISO_15765_2_on_ISO_11898_2_DWCAN"/>
+						<DIAG-ADDRESS>0x760</DIAG-ADDRESS>
+						<FUNCTIONAL-GROUP-ADDRESS>0x7DF</FUNCTIONAL-GROUP-ADDRESS>
+						<RESP-ADDRESS>0x768</RESP-ADDRESS>
+						<P2-MAX>50</P2-MAX>
+						<P2-STAR-MAX>5000</P2-STAR-MAX>
+					</DIAG-COMM>
+				</DIAG-COMMS>
+				
+				<!-- UDS services section -->
+				<DIAG-SERVICES>
+					<DIAG-SERVICE ID="DS_READ_DTC_INFO">
+						<SHORT-NAME>READ_DTC_INFO</SHORT-NAME>
+						<LONG-NAME>Read DTC Information</LONG-NAME>
+						<DESC>
+							<p>Service for reading DTC information (UDS Service 0x19)</p>
+						</DESC>
+						<SEMANTIC>READ-DTC-INFORMATION</SEMANTIC>
+						<AUDIENCE>DEVELOPMENT</AUDIENCE>
+						<REQUEST ID="REQ_READ_DTC_INFO">
+							<PARAM-REF ID-REF="PP_SI"/>
+							<PARAM-REF ID-REF="PP_READ_DTC_SUBFUNCTION"/>
+						</REQUEST>
+						<POS-RESPONSE ID="RESP_READ_DTC_INFO_POS">
+							<PARAM-REF ID-REF="PP_SI_PLUS40"/>
+							<PARAM-REF ID-REF="PP_READ_DTC_SUBFUNCTION"/>
+							<PARAM-REF ID-REF="PP_DTC_STATUS_AVAILABILITY_MASK"/>
+							<PARAM-REF ID-REF="PP_DTC_FORMAT_IDENTIFIER"/>
+							<PARAM-REF ID-REF="PP_DTC_COUNT"/>
+							<PARAM-REF ID-REF="PP_DTC_AND_STATUS_RECORD"/>
+						</POS-RESPONSE>
+						<NEG-RESPONSE ID="RESP_READ_DTC_INFO_NEG">
+							<PARAM-REF ID-REF="PP_NR_SI"/>
+							<PARAM-REF ID-REF="PP_SI"/>
+							<PARAM-REF ID-REF="PP_NEG_RESPONSE_CODE"/>
+						</NEG-RESPONSE>
+					</DIAG-SERVICE>
+					
+					<DIAG-SERVICE ID="DS_CLEAR_DTC">
+						<SHORT-NAME>CLEAR_DTC</SHORT-NAME>
+						<LONG-NAME>Clear Diagnostic Information</LONG-NAME>
+						<DESC>
+							<p>Service for clearing DTCs (UDS Service 0x14)</p>
+						</DESC>
+						<SEMANTIC>CLEAR-DIAGNOSTIC-INFORMATION</SEMANTIC>
+						<AUDIENCE>DEVELOPMENT</AUDIENCE>
+						<REQUEST ID="REQ_CLEAR_DTC">
+							<PARAM-REF ID-REF="PP_SI"/>
+							<PARAM-REF ID-REF="PP_DTC_GROUP"/>
+						</REQUEST>
+						<POS-RESPONSE ID="RESP_CLEAR_DTC_POS">
+							<PARAM-REF ID-REF="PP_SI_PLUS40"/>
+						</POS-RESPONSE>
+						<NEG-RESPONSE ID="RESP_CLEAR_DTC_NEG">
+							<PARAM-REF ID-REF="PP_NR_SI"/>
+							<PARAM-REF ID-REF="PP_SI"/>
+							<PARAM-REF ID-REF="PP_NEG_RESPONSE_CODE"/>
+						</NEG-RESPONSE>
+					</DIAG-SERVICE>
+				</DIAG-SERVICES>
+				
+				<!-- Parameters for services -->
+				<PARAMETERS>
+					<PARAMETER ID="PP_SI">
+						<SHORT-NAME>SI</SHORT-NAME>
+						<LONG-NAME>Service Identifier</LONG-NAME>
+						<BYTE-POSITION>0</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT8"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_SI_PLUS40">
+						<SHORT-NAME>SI_PLUS40</SHORT-NAME>
+						<LONG-NAME>Service Identifier + 0x40</LONG-NAME>
+						<BYTE-POSITION>0</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT8"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_NR_SI">
+						<SHORT-NAME>NR_SI</SHORT-NAME>
+						<LONG-NAME>Negative Response Service Identifier</LONG-NAME>
+						<BYTE-POSITION>0</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT8_7F"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_NEG_RESPONSE_CODE">
+						<SHORT-NAME>NEGATIVE_RESPONSE_CODE</SHORT-NAME>
+						<LONG-NAME>Negative Response Code</LONG-NAME>
+						<BYTE-POSITION>2</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT8"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_READ_DTC_SUBFUNCTION">
+						<SHORT-NAME>READ_DTC_SUBFUNCTION</SHORT-NAME>
+						<LONG-NAME>Read DTC Information Subfunction</LONG-NAME>
+						<BYTE-POSITION>1</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT8"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_DTC_STATUS_AVAILABILITY_MASK">
+						<SHORT-NAME>DTC_STATUS_AVAILABILITY_MASK</SHORT-NAME>
+						<LONG-NAME>DTC Status Availability Mask</LONG-NAME>
+						<BYTE-POSITION>2</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT8"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_DTC_FORMAT_IDENTIFIER">
+						<SHORT-NAME>DTC_FORMAT_IDENTIFIER</SHORT-NAME>
+						<LONG-NAME>DTC Format Identifier</LONG-NAME>
+						<BYTE-POSITION>3</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT8"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_DTC_COUNT">
+						<SHORT-NAME>DTC_COUNT</SHORT-NAME>
+						<LONG-NAME>DTC Count</LONG-NAME>
+						<BYTE-POSITION>4</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT16"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_DTC_AND_STATUS_RECORD">
+						<SHORT-NAME>DTC_AND_STATUS_RECORD</SHORT-NAME>
+						<LONG-NAME>DTC and Status Record</LONG-NAME>
+						<BYTE-POSITION>5</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_DTC_WITH_STATUS"/>
+					</PARAMETER>
+					<PARAMETER ID="PP_DTC_GROUP">
+						<SHORT-NAME>DTC_GROUP</SHORT-NAME>
+						<LONG-NAME>DTC Group</LONG-NAME>
+						<BYTE-POSITION>1</BYTE-POSITION>
+						<DOP-REF ID-REF="DOP_UINT24"/>
+					</PARAMETER>
+				</PARAMETERS>
+				
+				<!-- Data object props -->
+				<DATA-OBJECT-PROPS>
+					<DATA-OBJECT-PROP ID="DOP_UINT8">
+						<SHORT-NAME>UINT8</SHORT-NAME>
+						<LONG-NAME>Unsigned Integer 8 Bit</LONG-NAME>
+						<COMPU-METHOD>
+							<CATEGORY>IDENTICAL</CATEGORY>
+						</COMPU-METHOD>
+						<DIAG-CODED-TYPE BASE-DATA-TYPE="A_UINT8" xsi:type="STANDARD-LENGTH-TYPE"/>
+						<PHYSICAL-TYPE BASE-DATA-TYPE="A_UINT32" xsi:type="STANDARD-LENGTH-TYPE"/>
+					</DATA-OBJECT-PROP>
+					<DATA-OBJECT-PROP ID="DOP_UINT8_7F">
+						<SHORT-NAME>UINT8_7F</SHORT-NAME>
+						<LONG-NAME>Unsigned Integer 8 Bit (0x7F)</LONG-NAME>
+						<COMPU-METHOD>
+							<CATEGORY>IDENTICAL</CATEGORY>
+							<COMPU-INTERNAL-TO-PHYS>
+								<COMPU-SCALES>
+									<COMPU-SCALE>
+										<LOWER-LIMIT>0x7F</LOWER-LIMIT>
+										<UPPER-LIMIT>0x7F</UPPER-LIMIT>
+										<COMPU-CONST>
+											<V>0x7F</V>
+										</COMPU-CONST>
+									</COMPU-SCALE>
+								</COMPU-SCALES>
+							</COMPU-INTERNAL-TO-PHYS>
+						</COMPU-METHOD>
+						<DIAG-CODED-TYPE BASE-DATA-TYPE="A_UINT8" xsi:type="STANDARD-LENGTH-TYPE"/>
+						<PHYSICAL-TYPE BASE-DATA-TYPE="A_UINT32" xsi:type="STANDARD-LENGTH-TYPE"/>
+					</DATA-OBJECT-PROP>
+					<DATA-OBJECT-PROP ID="DOP_UINT16">
+						<SHORT-NAME>UINT16</SHORT-NAME>
+						<LONG-NAME>Unsigned Integer 16 Bit</LONG-NAME>
+						<COMPU-METHOD>
+							<CATEGORY>IDENTICAL</CATEGORY>
+						</COMPU-METHOD>
+						<DIAG-CODED-TYPE BASE-DATA-TYPE="A_UINT16" xsi:type="STANDARD-LENGTH-TYPE"/>
+						<PHYSICAL-TYPE BASE-DATA-TYPE="A_UINT32" xsi:type="STANDARD-LENGTH-TYPE"/>
+					</DATA-OBJECT-PROP>
+					<DATA-OBJECT-PROP ID="DOP_UINT24">
+						<SHORT-NAME>UINT24</SHORT-NAME>
+						<LONG-NAME>Unsigned Integer 24 Bit</LONG-NAME>
+						<COMPU-METHOD>
+							<CATEGORY>IDENTICAL</CATEGORY>
+						</COMPU-METHOD>
+						<DIAG-CODED-TYPE BASE-DATA-TYPE="A_UINT24" xsi:type="STANDARD-LENGTH-TYPE"/>
+						<PHYSICAL-TYPE BASE-DATA-TYPE="A_UINT32" xsi:type="STANDARD-LENGTH-TYPE"/>
+					</DATA-OBJECT-PROP>
+					<DATA-OBJECT-PROP ID="DOP_DTC_WITH_STATUS">
+						<SHORT-NAME>DTC_WITH_STATUS</SHORT-NAME>
+						<LONG-NAME>DTC with Status Byte</LONG-NAME>
+						<COMPU-METHOD>
+							<CATEGORY>IDENTICAL</CATEGORY>
+						</COMPU-METHOD>
+						<DIAG-CODED-TYPE xsi:type="LEADING-LENGTH-INFO-TYPE">
+							<BASE-DATA-TYPE>A_BYTEFIELD</BASE-DATA-TYPE>
+							<TERMINATION>NONE</TERMINATION>
+						</DIAG-CODED-TYPE>
+						<PHYSICAL-TYPE BASE-DATA-TYPE="A_BYTEFIELD" xsi:type="STANDARD-LENGTH-TYPE"/>
+					</DATA-OBJECT-PROP>
+				</DATA-OBJECT-PROPS>
+				
+				<!-- Properly structured DTC section -->
+				<DTC-DOPS>
+					<DTC-DOP ID="DTCDOP_IVI_SYSTEM">
+						<SHORT-NAME>IVI_SYSTEM_DTCS</SHORT-NAME>
+						<LONG-NAME>In-Vehicle Infotainment System DTCs</LONG-NAME>
+						<DESC>
+							<p>DTCs specific to the IVI system</p>
+						</DESC>
+						<DTCS>
+							<!-- Generic ECU DTCs -->
+							<DTC ID="DTC_P1000">
+								<SHORT-NAME>P1000</SHORT-NAME>
+								<DESC>
+									<p>Critical internal malfunction detected.</p>
+								</DESC>
+								<TROUBLE-CODE>P1000</TROUBLE-CODE>
+								<DISPLAY-NAME>ECU System Fault</DISPLAY-NAME>
+								<DTC-LEVEL>HIGH</DTC-LEVEL>
+								<FAILURE-TYPE>ELECTRICAL</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>true</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<ADDITIONAL-DTCS>
+									<DTC-REF ID-REF="DTC_P1000"/>
+								</ADDITIONAL-DTCS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Flash memory failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>RAM corruption</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Storage device failure</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x14</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<!-- IVI-Specific DTCs -->
+							<DTC ID="DTC_B2000">
+								<SHORT-NAME>B2000</SHORT-NAME>
+								<DESC>
+									<p>Issue with mobile connectivity hardware.</p>
+								</DESC>
+								<TROUBLE-CODE>B2000</TROUBLE-CODE>
+								<DISPLAY-NAME>Connectivity Module Error</DISPLAY-NAME>
+								<DTC-LEVEL>MEDIUM</DTC-LEVEL>
+								<FAILURE-TYPE>ELECTRICAL</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>false</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Cellular modem hardware failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>SIM card error</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Antenna connection issue</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x20</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2001">
+								<SHORT-NAME>B2001</SHORT-NAME>
+								<DESC>
+									<p>Touchscreen/display not responding.</p>
+								</DESC>
+								<TROUBLE-CODE>B2001</TROUBLE-CODE>
+								<DISPLAY-NAME>Display Panel Malfunction</DISPLAY-NAME>
+								<DTC-LEVEL>HIGH</DTC-LEVEL>
+								<FAILURE-TYPE>ELECTRICAL</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>true</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>LCD controller failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Touch controller malfunction</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Display cable disconnection</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Display power supply issue</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x21</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2002">
+								<SHORT-NAME>B2002</SHORT-NAME>
+								<DESC>
+									<p>Bluetooth module not initializing.</p>
+								</DESC>
+								<TROUBLE-CODE>B2002</TROUBLE-CODE>
+								<DISPLAY-NAME>Bluetooth Failure</DISPLAY-NAME>
+								<DTC-LEVEL>MEDIUM</DTC-LEVEL>
+								<FAILURE-TYPE>ELECTRICAL</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>false</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Bluetooth hardware failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Bluetooth stack initialization error</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Bluetooth antenna disconnection</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x22</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2003">
+								<SHORT-NAME>B2003</SHORT-NAME>
+								<DESC>
+									<p>Wi-Fi module not detected.</p>
+								</DESC>
+								<TROUBLE-CODE>B2003</TROUBLE-CODE>
+								<DISPLAY-NAME>Wi-Fi Not Available</DISPLAY-NAME>
+								<DTC-LEVEL>LOW</DTC-LEVEL>
+								<FAILURE-TYPE>ELECTRICAL</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>false</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Wi-Fi hardware failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Wi-Fi driver initialization error</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Wi-Fi antenna disconnection</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x23</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2004">
+								<SHORT-NAME>B2004</SHORT-NAME>
+								<DESC>
+									<p>GPS signal unavailable.</p>
+								</DESC>
+								<TROUBLE-CODE>B2004</TROUBLE-CODE>
+								<DISPLAY-NAME>GPS Signal Lost</DISPLAY-NAME>
+								<DTC-LEVEL>LOW</DTC-LEVEL>
+								<FAILURE-TYPE>ELECTRICAL</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>false</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>GPS receiver hardware failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>GPS antenna disconnection</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>GPS software initialization error</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x24</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2005">
+								<SHORT-NAME>B2005</SHORT-NAME>
+								<DESC>
+									<p>Speakers not functioning.</p>
+								</DESC>
+								<TROUBLE-CODE>B2005</TROUBLE-CODE>
+								<DISPLAY-NAME>Audio Output Error</DISPLAY-NAME>
+								<DTC-LEVEL>MEDIUM</DTC-LEVEL>
+								<FAILURE-TYPE>ELECTRICAL</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>true</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Audio amplifier failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Speaker connection issue</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Audio DSP initialization error</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x25</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2006">
+								<SHORT-NAME>B2006</SHORT-NAME>
+								<DESC>
+									<p>Microphone input not detected.</p>
+								</DESC>
+								<TROUBLE-CODE>B2006</TROUBLE-CODE>
+								<DISPLAY-NAME>Microphone Fault</DISPLAY-NAME>
+								<DTC-LEVEL>MEDIUM</DTC-LEVEL>
+								<FAILURE-TYPE>ELECTRICAL</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>false</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Microphone hardware failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Microphone connection issue</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Audio input circuit failure</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x26</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2007">
+								<SHORT-NAME>B2007</SHORT-NAME>
+								<DESC>
+									<p>Voice command system failed.</p>
+								</DESC>
+								<TROUBLE-CODE>B2007</TROUBLE-CODE>
+								<DISPLAY-NAME>Voice Recognition Error</DISPLAY-NAME>
+								<DTC-LEVEL>LOW</DTC-LEVEL>
+								<FAILURE-TYPE>SOFTWARE</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>false</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Voice recognition software error</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Voice recognition database corruption</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Insufficient system resources</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x27</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2008">
+								<SHORT-NAME>B2008</SHORT-NAME>
+								<DESC>
+									<p>Update process did not complete.</p>
+								</DESC>
+								<TROUBLE-CODE>B2008</TROUBLE-CODE>
+								<DISPLAY-NAME>Software Update Failed</DISPLAY-NAME>
+								<DTC-LEVEL>HIGH</DTC-LEVEL>
+								<FAILURE-TYPE>SOFTWARE</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>true</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Update package corruption</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Insufficient storage space</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Power interruption during update</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Version compatibility issue</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x28</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+							
+							<DTC ID="DTC_B2009">
+								<SHORT-NAME>B2009</SHORT-NAME>
+								<DESC>
+									<p>System failed to boot correctly.</p>
+								</DESC>
+								<TROUBLE-CODE>B2009</TROUBLE-CODE>
+								<DISPLAY-NAME>System Boot Error</DISPLAY-NAME>
+								<DTC-LEVEL>HIGH</DTC-LEVEL>
+								<FAILURE-TYPE>SOFTWARE</FAILURE-TYPE>
+								<DTC-SUPPORTS>
+									<SNAPSHOT-DATA-CAPTURED>true</SNAPSHOT-DATA-CAPTURED>
+									<AGING-COUNTER>true</AGING-COUNTER>
+									<PENDING-DTC>true</PENDING-DTC>
+									<CONFIRMED-DTC>true</CONFIRMED-DTC>
+									<PERMANENT-DTC>true</PERMANENT-DTC>
+								</DTC-SUPPORTS>
+								<ADDITIONAL-DTCS>
+									<DTC-REF ID-REF="DTC_P1000"/>
+									<DTC-REF ID-REF="DTC_B2008"/>
+								</ADDITIONAL-DTCS>
+								<POSSIBLE-CAUSES>
+									<POSSIBLE-CAUSE>Operating system corruption</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Critical service initialization failure</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>Bootloader error</POSSIBLE-CAUSE>
+									<POSSIBLE-CAUSE>File system corruption</POSSIBLE-CAUSE>
+								</POSSIBLE-CAUSES>
+								<DTC-CUSTOMERS>
+									<DTC-CUSTOMER>
+										<CUSTOMER-ID>MFG</CUSTOMER-ID>
+										<CUSTOMER-DTC-CODE>0x29</CUSTOMER-DTC-CODE>
+									</DTC-CUSTOMER>
+								</DTC-CUSTOMERS>
+							</DTC>
+						</DTCS>
+					</DTC-DOP>
+				</DTC-DOPS>
+				
+				<!-- Adding snapshot/freeze frame data definitions -->
+				<DATA-DICTIONARY-SPEC>
+					<SHORT-NAME>IVI_DATA_DICTIONARY</SHORT-NAME>
+					<LONG-NAME>In-Vehicle Infotainment Data Dictionary</LONG-NAME>
+					<DATA-DICTIONARY-PROPS>
+						<DATA-DICTIONARY-PROP ID="DDP_CPU_LOAD">
+							<SHORT-NAME>CPU_LOAD</SHORT-NAME>
+							<LONG-NAME>CPU Load Percentage</LONG-NAME>
+							<DESC>
+								<p>Current CPU utilization percentage</p>
+							</DESC>
+							<COMPU-METHOD>
+								<CATEGORY>LINEAR</CATEGORY>
+								<COMPU-INTERNAL-TO-PHYS>
+									<COMPU-SCALES>
+										<COMPU-SCALE>
+											<COMPU-RATIONAL-COEFFS>
+												<NUMERATOR>
+													<V>0</V>
+													<V>0.392156862745098</V>
+												</NUMERATOR>
+												<DENOMINATOR>
+													<V>1</V>
+												</DENOMINATOR>
+											</COMPU-RATIONAL-COEFFS>
+										</COMPU-SCALE>
+									</COMPU-SCALES>
+								</COMPU-INTERNAL-TO-PHYS>
+							</COMPU-METHOD>
+							<DIAG-CODED-TYPE BASE-DATA-TYPE="A_UINT8" xsi:type="STANDARD-LENGTH-TYPE"/>
+							<PHYSICAL-TYPE BASE-DATA-TYPE="A_FLOAT32" xsi:type="STANDARD-LENGTH-TYPE"/>
+							<UNIT-REF ID-REF="UNT_PERCENT"/>
+						</DATA-DICTIONARY-PROP>
+						
+						<DATA-DICTIONARY-PROP ID="DDP_MEMORY_USAGE">
+							<SHORT-NAME>MEMORY_USAGE</SHORT-NAME>
+							<LONG-NAME>Memory Usage Percentage</LONG-NAME>
+							<DESC>
+								<p>Current RAM utilization percentage</p>
+							</DESC>
+							<COMPU-METHOD>
+								<CATEGORY>LINEAR</CATEGORY>
+								<COMPU-INTERNAL-TO-PHYS>
+									<COMPU-SCALES>
+										<COMPU-SCALE>
+											<COMPU-RATIONAL-COEFFS>
+												<NUMERATOR>
+													<V>0</V>
+													<V>0.392156862745098</V>
+												</NUMERATOR>
+												<DENOMINATOR>
+													<V>1</V>
+												</DENOMINATOR>
+											</COMPU-RATIONAL-COEFFS>
+										</COMPU-SCALE>
+									</COMPU-SCALES>
+								</COMPU-INTERNAL-TO-PHYS>
+							</COMPU-METHOD>
+							<DIAG-CODED-TYPE BASE-DATA-TYPE="A_UINT8" xsi:type="STANDARD-LENGTH-TYPE"/>
+							<PHYSICAL-TYPE BASE-DATA-TYPE="A_FLOAT32" xsi:type="STANDARD-LENGTH-TYPE"/>
+							<UNIT-REF ID-REF="UNT_PERCENT"/>
+						</DATA-DICTIONARY-PROP>
+						
+						<DATA-DICTIONARY-PROP ID="DDP_SYSTEM_VOLTAGE">
+							<SHORT-NAME>SYSTEM_VOLTAGE</SHORT-NAME>
+							<LONG-NAME>System Voltage</LONG-NAME>
+							<DESC>
+								<p>Current system input voltage</p>
+							</DESC>
+							<COMPU-METHOD>
+								<CATEGORY>LINEAR</CATEGORY>
+								<COMPU-INTERNAL-TO-PHYS>
+									<COMPU-SCALES>
+										<COMPU-SCALE>
+											<COMPU-RATIONAL-COEFFS>
+												<NUMERATOR>
+													<V>0</V>
+													<V>0.0625</V>
+												</NUMERATOR>
+												<DENOMINATOR>
+													<V>1</V>
+												</DENOMINATOR>
+											</COMPU-RATIONAL-COEFFS>
+										</COMPU-SCALE>
+									</COMPU-SCALES>
+								</COMPU-INTERNAL-TO-PHYS>
+							</COMPU-METHOD>
+							<DIAG-CODED-TYPE BASE-DATA-TYPE="A_UINT8" xsi:type="STANDARD-LENGTH-TYPE"/>
+							<PHYSICAL-TYPE BASE-DATA-TYPE="A_FLOAT32" xsi:type="STANDARD-LENGTH-TYPE"/>
+							<UNIT-REF ID-REF="UNT_VOLTS"/>
+						</DATA-DICTIONARY-PROP>
+						
+						<DATA-DICTIONARY-PROP ID="DDP_SYSTEM_TEMP">
+							<SHORT-NAME>SYSTEM_TEMP</SHORT-NAME>
+							<LONG-NAME>System Temperature</LONG-NAME>
+							<DESC>
+								<p>Current system temperature</p>
+							</DESC>
+							<COMPU-METHOD>
+								<CATEGORY>LINEAR</CATEGORY>
+								<COMPU-INTERNAL-TO-PHYS>
+									<COMPU-SCALES>
+										<COMPU-SCALE>
+											<COMPU-RATIONAL-COEFFS>
+												<NUMERATOR>
+													<V>-40</V>
+													<V>0.5</V>
+												</NUMERATOR>
+												<DENOMINATOR>
+													<V>1</V>
+												</DENOMINATOR>
+											</COMPU-RATIONAL-COEFFS>
+										</COMPU-SCALE>
+									</COMPU-SCALES>
+								</COMPU-INTERNAL-TO-PHYS>
+							</COMPU-METHOD>
+							<DIAG-CODED-TYPE BASE-DATA-TYPE="A_UINT8" xsi:type="STANDARD-LENGTH-TYPE"/>
+							<PHYSICAL-TYPE BASE-DATA-TYPE="A_FLOAT32" xsi:type="STANDARD-LENGTH-TYPE"/>
+							<UNIT-REF ID-REF="UNT_DEGC"/>
+						</DATA-DICTIONARY-PROP>
+					</DATA-DICTIONARY-PROPS>
+					
+					<!-- Unit definitions -->
+					<UNITS>
+						<UNIT ID="UNT_PERCENT">
+							<SHORT-NAME>PERCENT</SHORT-NAME>
+							<LONG-NAME>Percent</LONG-NAME>
+							<DISPLAY-NAME>%</DISPLAY-NAME>
+							<FACTOR-SI-TO-UNIT>1</FACTOR-SI-TO-UNIT>
+							<OFFSET-SI-TO-UNIT>-273.15</OFFSET-SI-TO-UNIT>
+							<PHYSICAL-DIMENSION-REF ID-REF="DIM_TEMPERATURE"/>
+						</UNIT>
+						<UNIT ID="UNT_VOLTS">
+							<SHORT-NAME>VOLTS</SHORT-NAME>
+							<LONG-NAME>Volts</LONG-NAME>
+							<DISPLAY-NAME>V</DISPLAY-NAME>
+							<FACTOR-SI-TO-UNIT>1</FACTOR-SI-TO-UNIT>
+							<OFFSET-SI-TO-UNIT>0</OFFSET-SI-TO-UNIT>
+							<PHYSICAL-DIMENSION-REF ID-REF="DIM_VOLTAGE"/>
+						</UNIT>
+						<UNIT ID="UNT_DEGC">
+							<SHORT-NAME>CELSIUS</SHORT-NAME>
+							<LONG-NAME>Degrees Celsius</LONG-NAME>
+							<DISPLAY-NAME>°C</DISPLAY-NAME>
+							<FACTOR-SI-TO-UNIT>1</FACTOR-SI-TO-UNIT>
+							<OFFSET-SI-TO-UNIT>0</OFFSET-SI-TO-UNIT>
+							<PHYSICAL-DIMENSION-REF ID-REF="DIM_TEMPERATURE"/>
+						</UNIT>
+					</UNITS>
+					
+					<!-- Physical dimensions -->
+					<PHYSICAL-DIMENSIONS>
+						<PHYSICAL-DIMENSION ID="DIM_RATIO">
+							<SHORT-NAME>RATIO</SHORT-NAME>
+							<LONG-NAME>Ratio</LONG-NAME>
+							<DESC>
+								<p>Dimensionless quantity</p>
+							</DESC>
+						</PHYSICAL-DIMENSION>
+						<PHYSICAL-DIMENSION ID="DIM_VOLTAGE">
+							<SHORT-NAME>VOLTAGE</SHORT-NAME>
+							<LONG-NAME>Voltage</LONG-NAME>
+							<DESC>
+								<p>Electric potential</p>
+							</DESC>
+							<LENGTH-EXP>2</LENGTH-EXP>
+							<MASS-EXP>1</MASS-EXP>
+							<TIME-EXP>-3</TIME-EXP>
+							<CURRENT-EXP>-1</CURRENT-EXP>
+						</PHYSICAL-DIMENSION>
+						<PHYSICAL-DIMENSION ID="DIM_TEMPERATURE">
+							<SHORT-NAME>TEMPERATURE</SHORT-NAME>
+							<LONG-NAME>Temperature</LONG-NAME>
+							<DESC>
+								<p>Temperature</p>
+							</DESC>
+							<TEMPERATURE-EXP>1</TEMPERATURE-EXP>
+						</PHYSICAL-DIMENSION>
+					</PHYSICAL-DIMENSIONS>
+				</DATA-DICTIONARY-SPEC>
+				
+				<!-- Environmental data definitions -->
+				<ENV-DATA-DESCS>
+					<ENV-DATA-DESC ID="EDD_SYSTEM_STATE">
+						<SHORT-NAME>SYSTEM_STATE</SHORT-NAME>
+						<LONG-NAME>System State Information</LONG-NAME>
+						<DESC>
+							<p>Environmental data captured with DTCs</p>
+						</DESC>
+						<ENV-DATAS>
+							<ENV-DATA ID="ED_CPU_LOAD">
+								<SHORT-NAME>CPU_LOAD</SHORT-NAME>
+								<LONG-NAME>CPU Load Percentage</LONG-NAME>
+								<DESC>
+									<p>Current CPU utilization percentage</p>
+								</DESC>
+								<DATA-DICTIONARY-PROP-REF ID-REF="DDP_CPU_LOAD"/>
+							</ENV-DATA>
+							<ENV-DATA ID="ED_MEMORY_USAGE">
+								<SHORT-NAME>MEMORY_USAGE</SHORT-NAME>
+								<LONG-NAME>Memory Usage Percentage</LONG-NAME>
+								<DESC>
+									<p>Current RAM utilization percentage</p>
+								</DESC>
+								<DATA-DICTIONARY-PROP-REF ID-REF="DDP_MEMORY_USAGE"/>
+							</ENV-DATA>
+							<ENV-DATA ID="ED_SYSTEM_VOLTAGE">
+								<SHORT-NAME>SYSTEM_VOLTAGE</SHORT-NAME>
+								<LONG-NAME>System Voltage</LONG-NAME>
+								<DESC>
+									<p>Current system input voltage</p>
+								</DESC>
+								<DATA-DICTIONARY-PROP-REF ID-REF="DDP_SYSTEM_VOLTAGE"/>
+							</ENV-DATA>
+							<ENV-DATA ID="ED_SYSTEM_TEMP">
+								<SHORT-NAME>SYSTEM_TEMP</SHORT-NAME>
+								<LONG-NAME>System Temperature</LONG-NAME>
+								<DESC>
+									<p>Current system temperature</p>
+								</DESC>
+								<DATA-DICTIONARY-PROP-REF ID-REF="DDP_SYSTEM_TEMP"/>
+							</ENV-DATA>
+						</ENV-DATAS>
+					</ENV-DATA-DESC>
+				</ENV-DATA-DESCS>
+				
+				<!-- Snapshot data definitions -->
+				<SNAPSHOT-DATA-DESCS>
+					<SNAPSHOT-DATA-DESC ID="SDD_COMMON">
+						<SHORT-NAME>COMMON_SNAPSHOT</SHORT-NAME>
+						<LONG-NAME>Common Snapshot Data</LONG-NAME>
+						<DESC>
+							<p>Common snapshot data recorded for all DTCs</p>
+						</DESC>
+						<SNAPSHOT-DATAS>
+							<SNAPSHOT-DATA ID="SD_CPU_LOAD">
+								<SHORT-NAME>CPU_LOAD</SHORT-NAME>
+								<LONG-NAME>CPU Load at Fault</LONG-NAME>
+								<DATA-DICTIONARY-PROP-REF ID-REF="DDP_CPU_LOAD"/>
+							</SNAPSHOT-DATA>
+							<SNAPSHOT-DATA ID="SD_MEMORY_USAGE">
+								<SHORT-NAME>MEMORY_USAGE</SHORT-NAME>
+								<LONG-NAME>Memory Usage at Fault</LONG-NAME>
+								<DATA-DICTIONARY-PROP-REF ID-REF="DDP_MEMORY_USAGE"/>
+							</SNAPSHOT-DATA>
+							<SNAPSHOT-DATA ID="SD_SYSTEM_VOLTAGE">
+								<SHORT-NAME>SYSTEM_VOLTAGE</SHORT-NAME>
+								<LONG-NAME>System Voltage at Fault</LONG-NAME>
+								<DATA-DICTIONARY-PROP-REF ID-REF="DDP_SYSTEM_VOLTAGE"/>
+							</SNAPSHOT-DATA>
+							<SNAPSHOT-DATA ID="SD_SYSTEM_TEMP">
+								<SHORT-NAME>SYSTEM_TEMP</SHORT-NAME>
+								<LONG-NAME>System Temperature at Fault</LONG-NAME>
+								<DATA-DICTIONARY-PROP-REF ID-REF="DDP_SYSTEM_TEMP"/>
+							</SNAPSHOT-DATA>
+						</SNAPSHOT-DATAS>
+					</SNAPSHOT-DATA-DESC>
+				</SNAPSHOT-DATA-DESCS>
+				
+				<!-- ECU Diagnostic Session definitions -->
+				<DIAG-COMMS>
+					<DIAG-COMM ID="DC_DEFAULT_SESSION">
+						<SHORT-NAME>DEFAULT_SESSION</SHORT-NAME>
+						<LONG-NAME>Default Diagnostic Session</LONG-NAME>
+						<DESC>
+							<p>Default diagnostic session (UDS 0x01)</p>
+						</DESC>
+						<AUDIENCE>DEVELOPMENT</AUDIENCE>
+						<DIAG-SERVICE-REFS>
+							<DIAG-SERVICE-REF ID-REF="DS_READ_DTC_INFO"/>
+						</DIAG-SERVICE-REFS>
+					</DIAG-COMM>
+					<DIAG-COMM ID="DC_PROGRAMMING_SESSION">
+						<SHORT-NAME>PROGRAMMING_SESSION</SHORT-NAME>
+						<LONG-NAME>Programming Session</LONG-NAME>
+						<DESC>
+							<p>Programming session (UDS 0x02)</p>
+						</DESC>
+						<AUDIENCE>DEVELOPMENT</AUDIENCE>
+						<DIAG-SERVICE-REFS>
+							<DIAG-SERVICE-REF ID-REF="DS_READ_DTC_INFO"/>
+							<DIAG-SERVICE-REF ID-REF="DS_CLEAR_DTC"/>
+						</DIAG-SERVICE-REFS>
+					</DIAG-COMM>
+					<DIAG-COMM ID="DC_EXTENDED_SESSION">
+						<SHORT-NAME>EXTENDED_SESSION</SHORT-NAME>
+						<LONG-NAME>Extended Diagnostic Session</LONG-NAME>
+						<DESC>
+							<p>Extended diagnostic session (UDS 0x03)</p>
+						</DESC>
+						<AUDIENCE>DEVELOPMENT</AUDIENCE>
+						<DIAG-SERVICE-REFS>
+							<DIAG-SERVICE-REF ID-REF="DS_READ_DTC_INFO"/>
+							<DIAG-SERVICE-REF ID-REF="DS_CLEAR_DTC"/>
+						</DIAG-SERVICE-REFS>
+					</DIAG-COMM>
+				</DIAG-COMMS>
+			</BASE-VARIANT>
+		</BASE-VARIANTS>
+		
+		<!-- ECU variants section -->
+		<ECU-VARIANTS>
+			<ECU-VARIANT ID="EV_IVI_SYSTEM_PREMIUM">
+				<SHORT-NAME>IVI_SYSTEM_PREMIUM</SHORT-NAME>
+				<LONG-NAME>In-Vehicle Infotainment System Premium Variant</LONG-NAME>
+				<DESC>
+					<p>Premium variant of the IVI system with enhanced features</p>
+				</DESC>
+				<BASE-VARIANT-REF ID-REF="BV_IVI_SYSTEM"/>
+				<PROTOCOLS>
+					<PROTOCOL ID="PROT_IVI_UDS">
+						<SHORT-NAME>IVI_UDS</SHORT-NAME>
+						<LONG-NAME>IVI UDS Protocol</LONG-NAME>
+						<DESC>
+							<p>UDS diagnostic protocol for IVI system</p>
+						</DESC>
+						<PROT-STACK-SNREF DOCREF="CPS_ISO_15765_3_on_ISO_15765_2" SHORT-NAME="PS_ISO_15765_3_on_ISO_15765_2_on_ISO_11898_2_DWCAN"/>
+					</PROTOCOL>
+				</PROTOCOLS>
+			</ECU-VARIANT>
+			
+			<ECU-VARIANT ID="EV_IVI_SYSTEM_STANDARD">
+				<SHORT-NAME>IVI_SYSTEM_STANDARD</SHORT-NAME>
+				<LONG-NAME>In-Vehicle Infotainment System Standard Variant</LONG-NAME>
+				<DESC>
+					<p>Standard variant of the IVI system with basic features</p>
+				</DESC>
+				<BASE-VARIANT-REF ID-REF="BV_IVI_SYSTEM"/>
+				<PROTOCOLS>
+					<PROTOCOL ID="PROT_IVI_UDS_STD">
+						<SHORT-NAME>IVI_UDS_STD</SHORT-NAME>
+						<LONG-NAME>IVI UDS Protocol Standard</LONG-NAME>
+						<DESC>
+							<p>UDS diagnostic protocol for standard IVI system</p>
+						</DESC>
+						<PROT-STACK-SNREF DOCREF="CPS_ISO_15765_3_on_ISO_15765_2" SHORT-NAME="PS_ISO_15765_3_on_ISO_15765_2_on_ISO_11898_2_DWCAN"/>
+					</PROTOCOL>
+				</PROTOCOLS>
+			</ECU-VARIANT>
+		</ECU-VARIANTS>
+	</DIAG-LAYER-CONTAINER>
+</ODX>
