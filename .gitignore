@@ -85,3 +85,6 @@ test_json_loader.py
 test/ 
 @tests/ 
 dev-assistant.code-workspace
+
+
+data/standards/
