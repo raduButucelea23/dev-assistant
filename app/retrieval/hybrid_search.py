@@ -1,7 +1,47 @@
 import streamlit as st
 import traceback
+import os
+import json
+import datetime
+import time
+from pathlib import Path
 from app.retrieval.query_preprocessing import extract_technical_terms
 
+def create_log_directory():
+    """Create a timestamped log directory for the current retrieval session."""
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    log_dir = Path("app/embeddings/log/runtime") / timestamp
+    os.makedirs(log_dir, exist_ok=True)
+    return log_dir
+
+def log_documents(log_dir, filename, documents, metadata=None):
+    """Save document contents and metadata to a JSON file."""
+    doc_data = []
+    
+    for i, doc in enumerate(documents):
+        # Extract document data
+        doc_info = {
+            "index": i,
+            "content": doc.page_content,
+            "metadata": doc.metadata
+        }
+        doc_data.append(doc_info)
+    
+    # Add any additional metadata
+    log_data = {
+        "timestamp": datetime.datetime.now().isoformat(),
+        "count": len(documents),
+        "metadata": metadata or {},
+        "documents": doc_data
+    }
+    
+    # Save to file
+    log_path = log_dir / f"{filename}.json"
+    with open(log_path, "w") as f:
+        json.dump(log_data, f, indent=2)
+    
+    print(f"DEBUG: Logged {len(documents)} documents to {log_path}")
+    return log_path
 
 def hybrid_search(db, processed_query, original_query, k=20):
     """Perform hybrid search combining keyword filtering with vector similarity.
@@ -12,6 +52,20 @@ def hybrid_search(db, processed_query, original_query, k=20):
     3. Combining results for a more comprehensive set of relevant documents
     4. Applying domain filtering if specified in the session state
     """
+    # Create log directory for this retrieval session
+    log_dir = create_log_directory()
+    
+    # Log the initial query
+    query_log = {
+        "original_query": original_query,
+        "processed_query": processed_query,
+        "k": k,
+        "start_time": time.time()
+    }
+    
+    with open(log_dir / "query.json", "w") as f:
+        json.dump(query_log, f, indent=2)
+    
     print(f"DEBUG: hybrid_search started. Original query: '{original_query}', Processed query: '{processed_query}', k={k}")
     metadata_results = []
     
@@ -23,6 +77,13 @@ def hybrid_search(db, processed_query, original_query, k=20):
     print("DEBUG: Starting metadata filtering step.")
     technical_terms = extract_technical_terms(original_query)
     print(f"DEBUG: Extracted technical terms: {technical_terms}")
+    
+    # Log technical terms
+    with open(log_dir / "technical_terms.json", "w") as f:
+        json.dump({
+            "terms": technical_terms,
+            "query": original_query
+        }, f, indent=2)
     
     if technical_terms:
         for term in technical_terms:
@@ -58,16 +119,42 @@ def hybrid_search(db, processed_query, original_query, k=20):
                         filter=final_filter_dict
                     )
                     print(f"DEBUG: Filtered search returned {len(filtered_docs)} docs for filter {current_filter}")
+                    
+                    # Log the results from this specific filter
+                    if filtered_docs:
+                        filter_log_name = f"metadata_filter_{term}_{field}"
+                        log_documents(log_dir, filter_log_name, filtered_docs, {
+                            "filter": str(current_filter),
+                            "term": term,
+                            "field": field
+                        })
+                    
                     metadata_results.extend(filtered_docs)
                 except Exception as filter_err:
                     # If a particular filter fails, log and continue
                     print(f"DEBUG: Error during metadata filtered search for {current_filter}: {str(filter_err)}")
                     print(f"DEBUG: Traceback: {traceback.format_exc()}")
+                    
+                    # Log the error
+                    with open(log_dir / f"error_metadata_filter_{term}_{field}.json", "w") as f:
+                        json.dump({
+                            "error": str(filter_err),
+                            "traceback": traceback.format_exc(),
+                            "filter": str(current_filter)
+                        }, f, indent=2)
+                    
                     continue
     else:
         print("DEBUG: No technical terms found for metadata filtering.")
     
     print(f"DEBUG: Metadata filtering step finished. Found {len(metadata_results)} potential results.")
+    
+    # Log all metadata results
+    if metadata_results:
+        log_documents(log_dir, "metadata_results_all", metadata_results, {
+            "count": len(metadata_results),
+            "technical_terms": technical_terms
+        })
 
     # Step 2: Always perform a standard semantic search as well
     print("DEBUG: Starting standard semantic search step.")
@@ -84,19 +171,49 @@ def hybrid_search(db, processed_query, original_query, k=20):
         )
         print(f"DEBUG: Standard semantic search returned {len(standard_results)} results.")
         
+        # Log standard semantic search results
+        log_documents(log_dir, "standard_semantic_results", standard_results, {
+            "filter": str(semantic_filter),
+            "count": len(standard_results)
+        })
+        
     except Exception as e:
         # If domain filtering fails, log and fall back to unfiltered search
         print(f"DEBUG: Error during standard semantic search (possibly domain filter): {str(e)}")
         print(f"DEBUG: Traceback: {traceback.format_exc()}")
         st.warning(f"Domain filtering error: {str(e)}. Falling back to unfiltered search.")
+        
+        # Log the error
+        with open(log_dir / "error_standard_search.json", "w") as f:
+            json.dump({
+                "error": str(e),
+                "traceback": traceback.format_exc(),
+                "filter": str(semantic_filter)
+            }, f, indent=2)
+        
         try:
             print("DEBUG: Falling back to unfiltered semantic search.")
             standard_results = db.similarity_search(processed_query, k=k, filter=None)
             print(f"DEBUG: Unfiltered fallback search returned {len(standard_results)} results.")
+            
+            # Log fallback search results
+            log_documents(log_dir, "fallback_semantic_results", standard_results, {
+                "fallback_reason": str(e),
+                "count": len(standard_results)
+            })
+            
         except Exception as fallback_e:
             print(f"DEBUG: Error during unfiltered fallback search: {str(fallback_e)}")
             print(f"DEBUG: Traceback: {traceback.format_exc()}")
             st.error(f"❌ Critical search error: {fallback_e}")
+            
+            # Log the fallback error
+            with open(log_dir / "error_fallback_search.json", "w") as f:
+                json.dump({
+                    "error": str(fallback_e),
+                    "traceback": traceback.format_exc()
+                }, f, indent=2)
+                
             standard_results = []
     
     print("DEBUG: Starting combination and deduplication.")
@@ -127,4 +244,22 @@ def hybrid_search(db, processed_query, original_query, k=20):
     # Return the combined results, limited to k
     final_results = combined_results[:k]
     print(f"DEBUG: Returning final {len(final_results)} results after limiting to k={k}.")
+    
+    # Log the final combined results
+    log_documents(log_dir, "final_combined_results", final_results, {
+        "metadata_results_count": len(metadata_results),
+        "standard_results_count": len(standard_results),
+        "combined_count": len(combined_results),
+        "final_count": len(final_results),
+        "k_limit": k
+    })
+    
+    # Log timing information
+    with open(log_dir / "timing.json", "w") as f:
+        json.dump({
+            "start_time": query_log["start_time"],
+            "end_time": time.time(),
+            "duration": time.time() - query_log["start_time"]
+        }, f, indent=2)
+    
     return final_results
