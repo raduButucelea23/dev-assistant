@@ -29,6 +29,7 @@ class GenerationParams(TypedDict, total=False):
     top_p: float
     frequency_penalty: Optional[float]
     presence_penalty: Optional[float]
+    stream: Optional[bool]
     
 
 class ModelConfig(TypedDict, total=False):
@@ -86,7 +87,8 @@ DEFAULT_GENERATION_PARAMS = {
         "max_tokens": 4000,
         "top_p": 0.85,
         "frequency_penalty": 0.5,
-        "presence_penalty": 0.1
+        "presence_penalty": 0.1,
+        "stream": True
     }
 }
 
@@ -124,6 +126,7 @@ class ModelGenerationParams:
     top_p: float = 0.85
     frequency_penalty: Optional[float] = None
     presence_penalty: Optional[float] = None
+    stream: Optional[bool] = None
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'ModelGenerationParams':
