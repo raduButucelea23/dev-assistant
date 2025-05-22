@@ -5,7 +5,7 @@ import sys
 import subprocess
 from typing import List, Dict, Any, Optional, Tuple
 from langchain_core.documents.base import Document
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_community.vectorstores.utils import filter_complex_metadata
 import chromadb
