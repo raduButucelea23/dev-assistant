@@ -24,6 +24,18 @@ RUN echo "conda activate auto-dev" >> ~/.bashrc
 COPY app/ /app/app/
 COPY *.py /app/
 
+# Create data directories for CI test documents
+RUN mkdir -p /app/data/catalogues /app/data/requirements
+
+# Copy specific test documents for CI validation (from real data)
+COPY data/catalogues/IVI_Diagnostic_Catalogue.odx-c /app/data/catalogues/
+COPY data/catalogues/ivi_signal_database.json /app/data/catalogues/
+COPY data/requirements/fmea-battery-management-display.json /app/data/requirements/
+COPY data/requirements/IVI-system-spec-sysml3.md /app/data/requirements/
+COPY data/requirements/tara-impact-analysis-battery-management.json /app/data/requirements/
+COPY data/requirements/tara-risk-assessment-battery-management.json /app/data/requirements/
+COPY data/requirements/tara-threat-scenarios-battery-management.json /app/data/requirements/
+
 # Create entrypoint script to ensure conda environment is activated
 RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     echo 'source ~/.bashrc' >> /app/entrypoint.sh && \
