@@ -2,21 +2,28 @@ FROM continuumio/miniconda3:latest
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y build-essential gcc
+# Install build dependencies and clean up in single layer
+RUN apt-get update && apt-get install -y build-essential gcc curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy environment file
 COPY environment.yml /app/
 
-# Create conda environment from the file
-RUN conda env create -f environment.yml
+# Create conda environment and clean up in single layer to reduce image size
+RUN conda env create -f environment.yml && \
+    conda clean -afy && \
+    find /opt/conda/ -follow -type f -name '*.a' -delete && \
+    find /opt/conda/ -follow -type f -name '*.pyc' -delete
 
 # Set up shell to use conda environment by default
 SHELL ["/bin/bash", "--login", "-c"]
 RUN echo "conda activate auto-dev" >> ~/.bashrc
 
-# Copy application code
-COPY . /app/
+# Copy application code (excluding large files)
+COPY app/ /app/app/
+COPY .env /app/.env
+COPY *.py /app/
 
 # Create entrypoint script to ensure conda environment is activated
 RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
