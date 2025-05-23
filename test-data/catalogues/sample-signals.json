@@ -1,0 +1,35 @@
+{
+  "signal_database": {
+    "name": "Sample Automotive Signals",
+    "version": "1.0",
+    "signals": [
+      {
+        "signal_id": "ENGINE_RPM",
+        "description": "Engine revolutions per minute",
+        "unit": "rpm",
+        "min_value": 0,
+        "max_value": 8000,
+        "data_type": "uint16",
+        "update_rate": "100ms"
+      },
+      {
+        "signal_id": "VEHICLE_SPEED",
+        "description": "Current vehicle speed",
+        "unit": "km/h",
+        "min_value": 0,
+        "max_value": 300,
+        "data_type": "uint16",
+        "update_rate": "50ms"
+      },
+      {
+        "signal_id": "FUEL_LEVEL",
+        "description": "Fuel tank level percentage",
+        "unit": "%",
+        "min_value": 0,
+        "max_value": 100,
+        "data_type": "uint8",
+        "update_rate": "1s"
+      }
+    ]
+  }
+} 

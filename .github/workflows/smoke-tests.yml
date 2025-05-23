@@ -77,7 +77,7 @@ jobs:
         logs=$(docker compose logs auto-dev 2>&1)
         
         # Check for successful database initialization
-        if echo "$logs" | grep -q "Processed.*documents\|text chunks"; then
+        if echo "$logs" | grep -q "Successfully created Chroma database"; then
           echo "✅ Database initialization successful"
         else
           echo "❌ Database initialization may have failed"
