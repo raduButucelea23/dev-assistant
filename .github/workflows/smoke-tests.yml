@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ main, develop ]
   push:
-    branches: [ main, feature/streaming-true ]
+    branches: [ main, feature/streaming-true ]  # Temporary for testing
 
 jobs:
   smoke-tests:
@@ -31,25 +31,25 @@ jobs:
       uses: docker/setup-buildx-action@v3
     
     - name: Build Docker image
-      run: docker-compose build
+      run: docker compose build
     
     - name: Start application
       run: |
-        docker-compose up -d
+        docker compose up -d
         echo "Waiting for application to start..."
         sleep 30
     
     - name: Wait for services to be ready
       run: |
         echo "Waiting for all services to be healthy..."
-        timeout 60 bash -c 'until [ "$(docker-compose ps --services --filter "status=running" | wc -l)" -eq "$(docker-compose ps --services | wc -l)" ]; do sleep 2; done'
+        timeout 60 bash -c 'until [ "$(docker compose ps --services --filter "status=running" | wc -l)" -eq "$(docker compose ps --services | wc -l)" ]; do sleep 2; done'
     
     - name: Check application health
       run: |
         # Wait for the application to be responsive - try multiple health check endpoints
         timeout 60 bash -c 'until curl -f http://localhost:8502/healthz || curl -f http://localhost:8502; do sleep 2; done' || {
           echo "Application failed to start"
-          docker-compose logs
+          docker compose logs
           exit 1
         }
     
@@ -58,14 +58,14 @@ jobs:
         response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8502)
         if [ "$response" != "200" ]; then
           echo "Application not responding correctly. HTTP status: $response"
-          docker-compose logs
+          docker compose logs
           exit 1
         fi
         echo "✅ Application is responding correctly"
     
     - name: Check application logs for errors
       run: |
-        logs=$(docker-compose logs auto-dev 2>&1)
+        logs=$(docker compose logs auto-dev 2>&1)
         
         # Check for successful database initialization
         if echo "$logs" | grep -q "Processed.*documents\|text chunks"; then
@@ -90,5 +90,5 @@ jobs:
     - name: Cleanup
       if: always()
       run: |
-        docker-compose down
+        docker compose down
         docker system prune -f
