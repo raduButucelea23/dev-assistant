@@ -75,6 +75,11 @@ jobs:
     - name: Check application logs for errors
       run: |
         logs=$(docker compose logs auto-dev 2>&1)
+
+        # Show logs for debugging
+        echo "=== FULL APPLICATION LOGS ==="
+        echo "$logs"
+        echo "=== END LOGS ==="
         
         # Check for successful database initialization
         if echo "$logs" | grep -q "Successfully created Chroma database"; then
