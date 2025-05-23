@@ -22,7 +22,6 @@ RUN echo "conda activate auto-dev" >> ~/.bashrc
 
 # Copy application code (excluding large files)
 COPY app/ /app/app/
-COPY .env /app/.env
 COPY *.py /app/
 
 # Create entrypoint script to ensure conda environment is activated
