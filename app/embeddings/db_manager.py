@@ -186,9 +186,13 @@ class DBManager:
         Returns:
             Initialized Chroma database or None if initialization fails
         """
+        print(f"DEBUG: Checking for existing database at: {self.persist_directory}")
+        
         # Try to load existing database
         try:
             if os.path.exists(self.persist_directory):
+                print("DEBUG: Database directory exists - attempting to load existing database")
+                
                 # Load tracking index first to get expected count
                 self.tracking_index = self._load_tracking_index() # Reload in case it changed
                 expected_count = len(self.tracking_index.get("documents", {}))
@@ -197,59 +201,35 @@ class DBManager:
                 
                 try:
                     client = chromadb.PersistentClient(path=self.persist_directory)
-                except ValueError as ve:
-                    # Check specifically for the tenant error
-                    if "Could not connect to tenant" in str(ve):
-                        error_msg = "❌ ChromaDB tenant initialization error. This typically occurs after deleting the database directory."
-                        print(f"DEBUG: {error_msg}")
-                        print(f"DEBUG: Original error: {str(ve)}")
-                        
-                        # Suggest app restart
-                        st.error(error_msg)
-                        st.warning("The application needs to be restarted completely to fix this issue. Please close this window and restart the app, or click the 'Clear DB' button which will restart the app for you.")
-                        
-                        # Provide a button to trigger restart if main.py has restart_app function
-                        if st.button("🔄 Restart Application"):
-                            # Get the path to the current Python executable
-                            python_executable = sys.executable
-                            
-                            # Get the full path to the main.py file
-                            main_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "main.py"))
-                            
-                            # Start a new process to run the Streamlit app
-                            print(f"Restarting app using: {python_executable} -m streamlit run {main_path}")
-                            
-                            try:
-                                # Start a new process directly with the current Python executable
-                                # which already has the conda environment activated
-                                subprocess.Popen([python_executable, "-m", "streamlit", "run", main_path])
-                                
-                                # Add a sleep to ensure the new process has time to start
-                                print("Waiting for new process to start...")
-                                time.sleep(2)
-                                
-                                # Exit the current process with success code
-                                print("Exiting current process...")
-                                os._exit(0)
-                            except Exception as e:
-                                print(f"Error in restart process: {str(e)}")
-                                # If something goes wrong, we should still exit
-                                os._exit(1)
-                    
-                    # Re-raise for broader exception handling
-                    raise ve
+                    print("DEBUG: ChromaDB client created successfully")
+                except Exception as client_err:
+                    print(f"ERROR: Failed to create ChromaDB client: {str(client_err)}")
+                    raise client_err
                 
-                embeddings = self._get_embeddings_function()
+                # Use dynamic embeddings function based on provider
+                print(f"DEBUG: Initializing embeddings with provider: {self.embedding_provider}, model: {self.embedding_model}")
+                try:
+                    embeddings = self._get_embeddings_function()
+                    print("DEBUG: Embeddings function created successfully")
+                except Exception as embed_err:
+                    print(f"ERROR: Failed to create embeddings function: {str(embed_err)}")
+                    raise embed_err
+
                 self.db = Chroma(
                     persist_directory=self.persist_directory,
                     embedding_function=embeddings,
                     client=client
                 )
+                print("DEBUG: Chroma database object created successfully")
                 
                 # Test with a simple query to verify the DB is working
                 print("DEBUG: Testing loaded Chroma database...")
-                self.db.similarity_search("test", k=1) # Check if query runs
-                print("DEBUG: Chroma database test query successful.")
+                try:
+                    self.db.similarity_search("test", k=1) # Check if query runs
+                    print("DEBUG: Chroma database test query successful.")
+                except Exception as query_err:
+                    print(f"ERROR: Database test query failed: {str(query_err)}")
+                    raise query_err
                 
                 # Check if the database count matches expected count
                 actual_count = 0
@@ -258,16 +238,21 @@ class DBManager:
                     print(f"DEBUG: Actual document count from DB collection: {actual_count}")
                     
                     if actual_count == expected_count and actual_count > 0:
+                        print(f"✅ SUCCESS: Successfully loaded existing vector database with {actual_count} documents")
                         st.success(f"✅ Successfully loaded existing vector database with {actual_count} documents.")
                     elif actual_count > 0 and actual_count != expected_count:
+                        print(f"⚠️ WARNING: Loaded database count mismatch - actual: {actual_count}, expected: {expected_count}")
                         st.warning(f"⚠️ Loaded existing database, but document count ({actual_count}) differs from expected ({expected_count}). Consider rebuilding.")
                     elif actual_count == 0 and expected_count == 0:
+                        print("INFO: Empty database found, but tracking index also expects 0 documents")
                         st.info("Empty database, proceeding with initialization...")
                     elif actual_count == 0 and expected_count > 0:
+                        print(f"ERROR: Database is empty but tracking expected {expected_count} documents - database may be corrupt")
                         st.error(f"❌ Loaded database is empty, but {expected_count} documents were expected. Database may be corrupt. Please rebuild.")
                         # Treat as failure, force rebuild
                         raise ValueError(f"DB empty but expected {expected_count} docs")
                     else: # actual_count > 0 and expected_count == 0 (shouldn't happen if tracking is correct)
+                        print(f"WARNING: Database has {actual_count} documents but tracking expects 0 - tracking may be out of sync")
                         st.warning(f"⚠️ Loaded database has {actual_count} documents, but tracking index expected 0. Tracking might be out of sync.")
                 except Exception as count_err:
                     # If counting fails after load, it's suspicious
@@ -276,17 +261,21 @@ class DBManager:
                     raise count_err # Treat as failure to force rebuild
                 # End FIX
                 
+                print("DEBUG: Database initialization completed successfully")
                 return self.db
+            else:
+                print("DEBUG: Database directory does not exist - no existing database to load")
+                
         except Exception as e:
             # Add detailed logging for the exception
             traceback_info = traceback.format_exc()
-            print(f"DEBUG: Failed to load, query, or verify existing database. Error: {str(e)}")
+            print(f"ERROR: Failed to load existing database: {str(e)}")
             print(f"DEBUG: Traceback: {traceback_info}")
             st.error(f"❌ Could not load existing database. Attempting to rebuild index... Error: {str(e)}")
             
             # Only delete if there was an error accessing the existing DB
             if os.path.exists(self.persist_directory):
-                print(f"DEBUG: Removing existing persist directory: {self.persist_directory}")
+                print(f"DEBUG: Removing corrupted persist directory: {self.persist_directory}")
                 try:
                     shutil.rmtree(self.persist_directory)
                     print(f"DEBUG: Successfully removed directory: {self.persist_directory}")
@@ -295,7 +284,7 @@ class DBManager:
                     st.error(f"❌ Failed to remove corrupted database directory: {str(rm_err)}")
         
         # If we get here, loading failed or directory didn't exist.
-        print("DEBUG: Setting self.db to None and returning None from initialize_db.")
+        print("DEBUG: No existing database available - returning None to trigger creation")
         self.db = None
         return None
     
@@ -309,10 +298,15 @@ class DBManager:
             A tuple containing the created Chroma database (or None if creation fails)
             and the number of unique documents added.
         """
+        print("=== DATABASE CREATION FROM DOCUMENTS START ===")
+        print(f"DEBUG: create_db_from_documents called with {len(documents) if documents else 0} documents")
+        
         if not documents:
+            print("❌ FAILURE: No documents provided to create database")
             st.error("❌ No documents provided to create database.")
             return None, 0
         
+        print(f"DEBUG: Validating {len(documents)} input documents...")
         try:
             # Print diagnostic information
             print(f"DEBUG: Total documents to process: {len(documents)}")
@@ -323,8 +317,11 @@ class DBManager:
             if len(valid_documents) < len(documents):
                 print(f"WARNING: Filtered out {len(documents) - len(valid_documents)} invalid documents")
                 if not valid_documents:
+                    print("❌ FAILURE: No valid Document objects found in the provided documents")
                     st.error("❌ No valid Document objects found in the provided documents.")
                     return None, 0
+            
+            print(f"DEBUG: {len(valid_documents)} valid documents found, proceeding with deduplication...")
             
             # Deduplicate documents based on content hash
             unique_documents_dict = {}
@@ -464,18 +461,24 @@ class DBManager:
                      # Proceed, but inconsistency might occur later
                 # End move
 
+                print(f"✅ SUCCESS: Successfully created Chroma database with {final_unique_count} unique documents")
+                print("=== DATABASE CREATION FROM DOCUMENTS END ===")
                 st.success("✅ Successfully created vector embeddings and built the database.")
                 return self.db, final_unique_count
             except Exception as e:
-                print(f"DEBUG: Exception in Chroma.from_documents: {str(e)}")
+                print(f"ERROR: Exception in Chroma.from_documents: {str(e)}")
                 traceback_info = traceback.format_exc()
                 print(f"DEBUG: Traceback: {traceback_info}")
+                print("❌ FAILURE: Database creation failed during Chroma.from_documents")
+                print("=== DATABASE CREATION FROM DOCUMENTS END ===")
                 st.error(f"❌ Failed to create embeddings: {str(e)}")
                 return None, 0
         except Exception as e:
             traceback_info = traceback.format_exc()
-            print(f"DEBUG: Exception in create_db_from_documents: {str(e)}")
+            print(f"ERROR: Exception in create_db_from_documents: {str(e)}")
             print(f"DEBUG: Traceback: {traceback_info}")
+            print("❌ FAILURE: Database creation failed with unexpected error")
+            print("=== DATABASE CREATION FROM DOCUMENTS END ===")
             st.error(f"❌ Failed to create embeddings: {str(e)}")
             return None, 0
     

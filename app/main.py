@@ -423,22 +423,27 @@ def process_directory(directory_path, domain, all_documents):
     Returns:
         Number of files processed
     """
+    print(f"DEBUG: process_directory called for {directory_path} in domain {domain}")
     files_processed = 0
+    files_found = 0
     
     # Walk the directory tree once
     for root, _, files in os.walk(directory_path):
         for file in files:
+            files_found += 1
             # Skip backup files
             if file.endswith('.bak'):
+                print(f"DEBUG: Skipping backup file: {file}")
                 continue
                 
             file_path = os.path.join(root, file)
+            print(f"DEBUG: Attempting to process file: {file_path}")
             try:
                 # Get the appropriate processor for this file
                 processor = get_processor_for_file(file_path, domain)
                 
                 if processor:
-                    print(f"DEBUG: Processing file: {file}")
+                    print(f"DEBUG: Processing file: {file} with {processor.__class__.__name__}")
                     documents = processor.process_file(file_path)
                     files_processed += 1
                     
@@ -469,12 +474,15 @@ def process_directory(directory_path, domain, all_documents):
                     
                     print(f"DEBUG: File {file} produced {len(documents)} documents, {len(valid_docs)} valid after checking")
                     all_documents.extend(valid_docs)
+                else:
+                    print(f"DEBUG: No suitable processor found for file: {file}")
             except Exception as e:
-                print(f"DEBUG: Error processing file {file}: {str(e)}")
+                print(f"ERROR: Error processing file {file}: {str(e)}")
                 import traceback
                 print(f"DEBUG: Stack trace:\n{traceback.format_exc()}")
                 st.error(f"❌ Error processing file {file}: {str(e)}")
     
+    print(f"DEBUG: process_directory completed - found {files_found} files, processed {files_processed} files, created {len(all_documents)} total document chunks")
     return files_processed
 
 # --- Model Configuration - Keep hidden to maintain existing UI ---
@@ -669,18 +677,33 @@ if st.session_state["show_model_settings"]:
                     st.error("❌ Failed to update model settings. Please try again.")
 
 # Attempt to initialize an existing database
+print("=== DATABASE INITIALIZATION START ===")
+print("DEBUG: Attempting to initialize/load existing database...")
 vector_db = db_manager.initialize_db()
+
+if vector_db:
+    print("✅ SUCCESS: Existing database found and loaded successfully")
+    print("DEBUG: Database initialization completed - using existing database")
+else:
+    print("❌ INFO: No existing database found - will create new database")
+    print("DEBUG: Proceeding with document processing and database creation")
+
 st.session_state["vector_db"] = vector_db
 
 # If no database exists, process documents and create one
 if not vector_db:
+    print("=== DATABASE CREATION START ===")
+    print("DEBUG: Starting database creation process...")
+    
     # Show loading message
     with st.spinner("🔍 Initializing database and processing documents..."):
         # Get the path to the data directory
         data_dir = os.path.join(project_root, "data")
+        print(f"DEBUG: Looking for documents in data directory: {data_dir}")
         
         # Define the semantic domains
         domains = ["requirements", "catalogues", "standards"]
+        print(f"DEBUG: Processing domains: {domains}")
         
         # Initialize the document list
         all_documents = []
@@ -690,22 +713,40 @@ if not vector_db:
         for domain in domains:
             domain_dir = os.path.join(data_dir, domain)
             if not os.path.exists(domain_dir):
+                print(f"WARNING: Domain directory not found: {domain_dir}")
                 st.warning(f"Domain directory not found: {domain}")
                 continue
             
+            print(f"DEBUG: Processing domain directory: {domain_dir}")
             # Process all files in domain directory with a single traversal
             domain_files_processed = process_directory(domain_dir, domain, all_documents)
             files_processed += domain_files_processed
             print(f"DEBUG: Processed {domain_files_processed} files in {domain} domain")
         
+        print(f"DEBUG: Total files processed: {files_processed}")
+        print(f"DEBUG: Total document chunks created: {len(all_documents)}")
+        
         # Create the database from documents
         if all_documents:
+            print("DEBUG: Documents found - proceeding with database creation...")
             vector_db, unique_doc_count = db_manager.create_db_from_documents(all_documents)
-            # Update session state after creation
-            st.session_state["vector_db"] = vector_db
-            st.info(f"📄 Processed {len(all_documents)} text chunks from {files_processed} files across {len([d for d in domains if os.path.exists(os.path.join(data_dir, d))])} domains, storing {unique_doc_count} unique documents.")
+            
+            if vector_db:
+                print(f"✅ SUCCESS: Database created successfully with {unique_doc_count} unique documents")
+                # Update session state after creation
+                st.session_state["vector_db"] = vector_db
+                st.info(f"📄 Processed {len(all_documents)} text chunks from {files_processed} files across {len([d for d in domains if os.path.exists(os.path.join(data_dir, d))])} domains, storing {unique_doc_count} unique documents.")
+            else:
+                print("❌ FAILURE: Database creation failed despite having documents")
+                st.error("❌ Failed to create database despite having documents. Check logs for details.")
         else:
+            print("❌ FAILURE: No documents found to process - cannot create database")
+            print(f"DEBUG: Searched in {len(domains)} domains, processed {files_processed} files")
             st.error("❌ No documents found to process. Please add files to the domain directories.")
+    
+    print("=== DATABASE CREATION END ===")
+else:
+    print("=== DATABASE INITIALIZATION END ===")
 
 # Add the Utils section after the main app but before the chat history
 if st.session_state["show_utils"]:
