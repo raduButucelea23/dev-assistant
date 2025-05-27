@@ -43,8 +43,11 @@ RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     echo 'exec "$@"' >> /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh
 
+# Copy the startup script
+COPY startup.py /app/
+
 # Set the entrypoint script
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-# Default command - runs the Streamlit app with custom URL display
-CMD ["python", "-m", "streamlit", "run", "app/main.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true", "--browser.serverAddress=localhost", "--browser.serverPort=8502"] 
+# Default command - use our startup script instead of direct Streamlit
+CMD ["python", "startup.py"] 

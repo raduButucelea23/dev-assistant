@@ -107,7 +107,7 @@ project_root = os.path.dirname(app_dir)
 favicon_path = os.path.join(project_root, "images", "logo_2.png")
 
 # This must be the first Streamlit command in the script
-st.set_page_config(page_title="auto-dev-assistant", page_icon=favicon_path, layout="wide")
+st.set_page_config(page_title="dev-assistant", page_icon=favicon_path, layout="wide")
 
 # Apply Comic Sans font to the entire app
 st.markdown("""
@@ -208,7 +208,7 @@ if os.path.exists(logo_path):
 with col2:
     st.markdown("""
         <div class='title-container' style='text-align: left; padding-top: 20px;'>
-            <h1>auto-dev-assistant</h1>
+            <h1>dev-assistant</h1>
             <p>AI-powered assistant for automotive development documentation</p>
         </div>
     """, unsafe_allow_html=True)
