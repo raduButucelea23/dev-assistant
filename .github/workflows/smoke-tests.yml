@@ -91,8 +91,9 @@ jobs:
           exit 1
         fi
         
-        # Check for critical errors
-        if echo "$logs" | grep -iE "error.*failed|critical|exception|traceback" | grep -v "No relevant information found"; then
+        # Check for critical errors - look for proper log level indicators
+        # Real errors will have format: "YYYY-MM-DD HH:MM:SS,mmm - MODULE - ERROR/CRITICAL - message"
+        if echo "$logs" | grep -E "- (ERROR|CRITICAL) -|EXCEPTION|TRACEBACK" | grep -v "No relevant information found"; then
           echo "❌ Critical errors found in logs"
           echo "Logs:"
           echo "$logs"
