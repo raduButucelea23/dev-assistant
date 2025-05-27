@@ -80,6 +80,9 @@ archive/
 # Environment files
 environment_backup.yml
 
+# Backup files
+*.backup
+
 # Test files
 test_json_loader.py
 test/ 

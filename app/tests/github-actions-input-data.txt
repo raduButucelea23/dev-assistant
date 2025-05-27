@@ -1,0 +1,7 @@
+data/catalogues/IVI_Diagnostic_Catalogue.odx-c
+data/catalogues/ivi_signal_database.json
+data/requirements/fmea-battery-management-display.json
+data/requirements/IVI-system-spec-sysml3.md
+data/requirements/tara-impact-analysis-battery-management.json
+data/requirements/tara-risk-assessment-battery-management.json
+data/requirements/tara-threat-scenarios-battery-management.json

@@ -107,7 +107,7 @@ project_root = os.path.dirname(app_dir)
 favicon_path = os.path.join(project_root, "images", "logo_2.png")
 
 # This must be the first Streamlit command in the script
-st.set_page_config(page_title="auto-dev-assistant", page_icon=favicon_path, layout="wide")
+st.set_page_config(page_title="dev-assistant", page_icon=favicon_path, layout="wide")
 
 # Apply Comic Sans font to the entire app
 st.markdown("""
@@ -208,7 +208,7 @@ if os.path.exists(logo_path):
 with col2:
     st.markdown("""
         <div class='title-container' style='text-align: left; padding-top: 20px;'>
-            <h1>auto-dev-assistant</h1>
+            <h1>dev-assistant</h1>
             <p>AI-powered assistant for automotive development documentation</p>
         </div>
     """, unsafe_allow_html=True)
@@ -741,13 +741,13 @@ if user_question:
             
             if retrieved_docs:
                 # Format source information based on document type and trace info
-                source_info_list = []
+                source_info_dict = {}  # Use a dictionary to deduplicate sources
                 for i, doc in enumerate(retrieved_docs[:5]):
                     # Use trace info if available
                     trace_info = doc.metadata.get("trace_info", None)
                     if trace_info:
                         source_info = format_trace_info(trace_info)
-                        source_info_list.append(f"📖 **Source:** {source_info}")
+                        source_info_dict[source_info] = f"- {source_info}"
                     else:
                         # Fall back to standard metadata
                         source_type = doc.metadata.get('source_type', 'Unknown')
@@ -755,20 +755,25 @@ if user_question:
                         
                         if source_type == 'pdf':
                             page = doc.metadata.get('page', 'N/A')
-                            source_info_list.append(f"📖 **Source:** {source}, Page: {page}")
+                            source_info_dict[f"{source}:{page}"] = f"- {source}, Page: {page}"
                         else:
                             # For JSON, add relevant metadata details
                             service_id = doc.metadata.get('service_id', '')
                             service_name = doc.metadata.get('service_name', '')
                             instance_id = doc.metadata.get('instance_id', '')
+                            
+                            # Create a unique key for each source combination
                             if instance_id:
-                                source_info_list.append(f"📖 **Source:** {source} (Service: {service_name}, Service ID: {service_id}, Instance ID: {instance_id})")
+                                key = f"{source}:{service_name}:{service_id}:{instance_id}"
+                                source_info_dict[key] = f"- {source} (Service: {service_name}, Service ID: {service_id}, Instance ID: {instance_id})"
                             elif service_id or service_name:
-                                source_info_list.append(f"📖 **Source:** {source} (Service: {service_name}, ID: {service_id})")
+                                key = f"{source}:{service_name}:{service_id}"
+                                source_info_dict[key] = f"- {source} (Service: {service_name}, ID: {service_id})"
                             else:
-                                source_info_list.append(f"📖 **Source:** {source}")
+                                source_info_dict[source] = f"- {source}"
                 
-                source_info = "\n".join(source_info_list)
+                # Convert the deduplicated dictionary values to a list
+                source_info = "\n".join(source_info_dict.values())
                 
                 # Use content from top 5 retrieved documents for more comprehensive context
                 context_text = "\n\n---\n\n".join([doc.page_content for doc in retrieved_docs[:5]])
@@ -805,6 +810,8 @@ if user_question:
         - For technical terms like "FileTransferAgent", ensure you connect it to natural language terms like "file transfer service"
         - Make direct connections between technical identifiers and their functional descriptions
         - When asked about a specific service, verify you're using information from the correct service definition
+        - ALWAYS include source attribution in your response exactly as formatted in the Sources section
+        - Copy the entire Sources section with all bullet points intact, without modification
 
         ## RESPONSE FORMAT
            
@@ -815,6 +822,13 @@ if user_question:
         - Bullet point 2
         - Bullet point 3
 
+        📖 **Sources:**
+        Important: List each source once, with no duplications. Copy and preserve the exact format below:
+
+        Example:
+        - example.pdf, Page: 42
+        - example.json (Service: ExampleService, ID: SVC-123)
+
         {source_info}
         """
 
@@ -822,6 +836,9 @@ if user_question:
         try:
             llm_provider = st.session_state.get("llm_provider")
             llm_model = st.session_state.get("llm_model")
+            
+            # Flag to track if streaming was used
+            used_streaming = False
             
             # Prepare common message format for both providers
             messages = [{'role': 'user', 'content': prompt}]
@@ -853,13 +870,35 @@ if user_question:
                     # Call OpenAI API
                     logger.info(f"Calling OpenAI API with model: {llm_model}")
                     client = OpenAI(api_key=api_key)
-                    completion = client.chat.completions.create(
-                        messages=messages, 
-                        **model_params, 
-                        timeout=120
-                    )
-                    answer = completion.choices[0].message.content
-                    logger.info(f"Successfully received response from OpenAI model: {llm_model}")
+                    
+                    # Check if streaming is enabled
+                    is_streaming = model_params.get('stream', False)
+                    
+                    # Use streaming if enabled
+                    if is_streaming:
+                        logger.info(f"Streaming is enabled for OpenAI model: {llm_model}")
+                        with st.chat_message("assistant"):
+                            stream = client.chat.completions.create(
+                                messages=messages, 
+                                **model_params,
+                                timeout=120
+                            )
+                            answer = st.write_stream(stream)
+                            logger.info(f"Successfully streamed response from OpenAI model: {llm_model}")
+                        
+                        # Add message to history (already displayed by write_stream)
+                        st.session_state["messages"].append({"role": "assistant", "content": answer})
+                        # Mark that streaming was used
+                        used_streaming = True
+                    else:
+                        # Regular non-streaming response
+                        completion = client.chat.completions.create(
+                            messages=messages, 
+                            **model_params, 
+                            timeout=120
+                        )
+                        answer = completion.choices[0].message.content
+                        logger.info(f"Successfully received response from OpenAI model: {llm_model}")
                     
             elif llm_provider == "huggingface":
                 # Get HuggingFace API token from environment
@@ -895,6 +934,8 @@ if user_question:
             answer = f"❌ Error generating response: {str(e)}"
 
     # --- Display AI Response ---
-    st.session_state["messages"].append({"role": "assistant", "content": answer})
-    with st.chat_message("assistant"):
-        st.markdown(f"<div class='assistant-message'>{answer}</div>", unsafe_allow_html=True)
+    # Only display if we're not using streaming (streaming already displays the content)
+    if not used_streaming:
+        st.session_state["messages"].append({"role": "assistant", "content": answer})
+        with st.chat_message("assistant"):
+            st.markdown(f"<div class='assistant-message'>{answer}</div>", unsafe_allow_html=True)

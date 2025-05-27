@@ -1,0 +1,109 @@
+name: Smoke Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, feature/streaming-true ]  # Temporary for testing
+
+jobs:
+  smoke-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Free up disk space
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo docker image prune --all --force
+        df -h
+    
+    - name: Validate required secrets
+      run: |
+        if [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+          echo "❌ OPENAI_API_KEY secret is not configured"
+          exit 1
+        fi
+        echo "✅ Required secrets are configured"
+    
+    - name: Create .env file
+      run: |
+        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker image
+      run: docker compose build
+    
+    - name: Start application
+      run: |
+        docker compose up -d
+        echo "Waiting for application to start..."
+        sleep 30
+    
+    - name: Wait for services to be ready
+      run: |
+        echo "Waiting for all services to be healthy..."
+        timeout 60 bash -c 'until [ "$(docker compose ps --services --filter "status=running" | wc -l)" -eq "$(docker compose ps --services | wc -l)" ]; do sleep 2; done'
+    
+    - name: Check application health
+      run: |
+        # Wait for the application to be responsive - try multiple health check endpoints
+        timeout 60 bash -c 'until curl -f http://localhost:8502/healthz || curl -f http://localhost:8502; do sleep 2; done' || {
+          echo "Application failed to start"
+          docker compose logs
+          exit 1
+        }
+    
+    - name: Run basic connectivity test
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8502)
+        if [ "$response" != "200" ]; then
+          echo "Application not responding correctly. HTTP status: $response"
+          docker compose logs
+          exit 1
+        fi
+        echo "✅ Application is responding correctly"
+    
+    - name: Check application logs for errors
+      run: |
+        logs=$(docker compose logs auto-dev 2>&1)
+
+        # Show logs for debugging
+        echo "=== FULL APPLICATION LOGS ==="
+        echo "$logs"
+        echo "=== END LOGS ==="
+        
+        # Check for successful database initialization
+        if echo "$logs" | grep -q "Successfully created Chroma database"; then
+          echo "✅ Database initialization successful"
+        else
+          echo "❌ Database initialization may have failed"
+          echo "Logs:"
+          echo "$logs"
+          exit 1
+        fi
+        
+        # Check for critical errors - look for proper log level indicators
+        # Real errors will have format: "YYYY-MM-DD HH:MM:SS,mmm - MODULE - ERROR/CRITICAL - message"
+        if echo "$logs" | grep -E "- (ERROR|CRITICAL) -|EXCEPTION|TRACEBACK" | grep -v "No relevant information found"; then
+          echo "❌ Critical errors found in logs"
+          echo "Logs:"
+          echo "$logs"
+          exit 1
+        fi
+        
+        echo "✅ No critical errors found in logs"
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        docker compose down
+        docker system prune -f
